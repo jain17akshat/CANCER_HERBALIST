@@ -3,66 +3,66 @@ import { motion } from 'framer-motion';
 import { FaUserMd, FaGraduationCap, FaBriefcase, FaRegEnvelope } from 'react-icons/fa';
 
 const doctors = [
- {
-  id: 1,
-  name: 'Prof. Ramesh',
-  role: 'Pharmacologist,M.Pharm (PhD)',
-  experience: '22 Years Experience',
-  specialty: 'Clinical Oncology & Herbal Medicine Integration',
-  bio: 'Dr. Carter is a certified oncologist...',
-  edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
-  certifications: [
-    'Board Certified Oncologist',
-    'Integrative Medicine Specialist',
-    'Herbal Medicine Practitioner'
-  ],
-  image: 'public/images/doctor1.png',
-},
   {
-  id: 2,
-  name: 'TEAM',
-  role: 'Pharmacologist,M.Pharm (PhD)',
-  experience: '22 Years Experience',
-  specialty: 'Clinical Oncology & Herbal Medicine Integration',
-  bio: 'Dr. Carter is a certified oncologist...',
-  edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
-  certifications: [
-    'Board Certified Oncologist',
-    'Integrative Medicine Specialist',
-    'Herbal Medicine Practitioner'
-  ],
-  image: 'public/images/doctor33.png',
-},
+    id: 1,
+    name: 'Prof. Ramesh',
+    role: 'Pharmacologist,M.Pharm (PhD)',
+    experience: '22 Years Experience',
+    specialty: 'Clinical Oncology & Herbal Medicine Integration',
+    bio: 'Dr. Carter is a certified oncologist...',
+    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
+    certifications: [
+      'Board Certified Oncologist',
+      'Integrative Medicine Specialist',
+      'Herbal Medicine Practitioner'
+    ],
+    image: '/images/doctor1.png',
+  },
   {
-  id: 3,
-  name: 'Prof. Ramesh',
-  role: 'Pharmacologist,M.Pharm (PhD)',
-  experience: '22 Years Experience',
-  specialty: 'Clinical Oncology & Herbal Medicine Integration',
-  bio: 'Dr. Carter is a certified oncologist...',
-  edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
-  certifications: [
-    'Board Certified Oncologist',
-    'Integrative Medicine Specialist',
-    'Herbal Medicine Practitioner'
-  ],
-  image: 'public/images/doctor1.png',
-},
+    id: 2,
+    name: 'TEAM',
+    role: 'Pharmacologist,M.Pharm (PhD)',
+    experience: '22 Years Experience',
+    specialty: 'Clinical Oncology & Herbal Medicine Integration',
+    bio: 'Dr. Carter is a certified oncologist...',
+    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
+    certifications: [
+      'Board Certified Oncologist',
+      'Integrative Medicine Specialist',
+      'Herbal Medicine Practitioner'
+    ],
+    image: '/images/doctor33.png',
+  },
   {
-  id: 5,
-  name: 'Prof. Ramesh',
-  role: 'Pharmacologist,M.Pharm (PhD)',
-  experience: '22 Years Experience',
-  specialty: 'Clinical Oncology & Herbal Medicine Integration',
-  bio: 'Dr. Carter is a certified oncologist...',
-  edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
-  certifications: [
-    'Board Certified Oncologist',
-    'Integrative Medicine Specialist',
-    'Herbal Medicine Practitioner'
-  ],
-  image: 'public/images/doctor1.png',
-},
+    id: 3,
+    name: 'Prof. Ramesh',
+    role: 'Pharmacologist,M.Pharm (PhD)',
+    experience: '22 Years Experience',
+    specialty: 'Clinical Oncology & Herbal Medicine Integration',
+    bio: 'Dr. Carter is a certified oncologist...',
+    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
+    certifications: [
+      'Board Certified Oncologist',
+      'Integrative Medicine Specialist',
+      'Herbal Medicine Practitioner'
+    ],
+    image: '/images/doctor1.png',
+  },
+  {
+    id: 5,
+    name: 'Prof. Ramesh',
+    role: 'Pharmacologist,M.Pharm (PhD)',
+    experience: '22 Years Experience',
+    specialty: 'Clinical Oncology & Herbal Medicine Integration',
+    bio: 'Dr. Carter is a certified oncologist...',
+    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
+    certifications: [
+      'Board Certified Oncologist',
+      'Integrative Medicine Specialist',
+      'Herbal Medicine Practitioner'
+    ],
+    image: '/images/doctor1.png',
+  },
 ];
 
 export default function Doctors() {
