@@ -63,6 +63,8 @@ import TreatmentMethods from './pages/TreatmentMethods';
 import Doctors from './pages/Doctors';
 import Testimonials from './pages/Testimonials';
 import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
+import ServiceDetail from './pages/ServiceDetail';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
@@ -101,6 +103,8 @@ function App() {
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/testimonials" element={<Testimonials />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/services/:id" element={<ServiceDetail />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>

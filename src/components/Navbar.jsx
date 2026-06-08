@@ -283,7 +283,7 @@
 //   );
 // }
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { FaLeaf, FaBars, FaTimes, FaPhone } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -292,8 +292,8 @@ const navLinks = [
   { label: 'About', href: '/about' },
   { label: 'Services', href: '/services' },
   { label: 'Treatment', href: '/treatment-methods' },
-  { label: 'Doctors', href: '/doctors' },
-  { label: 'Testimonials', href: '/testimonials' },
+  { label: 'Our Team', href: '/doctors' },
+  { label: 'Success Stories', href: '/testimonials' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
 ];
@@ -301,9 +301,14 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState('Home');
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (href) => {
+    if (href === '/') return location.pathname === '/';
+    return location.pathname.startsWith(href);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -314,11 +319,6 @@ export default function Navbar() {
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleLinkClick = (label) => {
-    setActiveLink(label);
-    setMenuOpen(false);
-  };
 
   return (
     <>
@@ -385,7 +385,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 to={link.href}
-                onClick={() => handleLinkClick(link.label)}
+                onClick={() => setMenuOpen(false)}
                 style={{
                   padding: '8px 14px',
                   borderRadius: '8px',
@@ -393,11 +393,11 @@ export default function Navbar() {
                   fontWeight: '500',
                   textDecoration: 'none',
                   color:
-                    activeLink === link.label
+                    isActive(link.href)
                       ? 'var(--primary)'
                       : 'var(--dark-2)',
                   background:
-                    activeLink === link.label
+                    isActive(link.href)
                       ? 'var(--secondary-light)'
                       : 'transparent',
                   transition: 'all 0.3s ease',
@@ -501,20 +501,19 @@ export default function Navbar() {
                 transition={{ delay: i * 0.05 }}
                 onClick={() => {
                   navigate(link.href);
-                  setActiveLink(link.label);
                   setMenuOpen(false);
                 }}
                 style={{
                   display: 'block',
                   padding: '12px 16px',
                   borderRadius: '10px',
-                  color: 'var(--dark-2)',
+                  color: isActive(link.href) ? 'var(--primary)' : 'var(--dark-2)',
                   fontSize: '15px',
                   fontWeight: '500',
                   marginBottom: '4px',
                   cursor: 'pointer',
                   background:
-                    activeLink === link.label
+                    isActive(link.href)
                       ? 'var(--secondary-light)'
                       : 'transparent',
                 }}

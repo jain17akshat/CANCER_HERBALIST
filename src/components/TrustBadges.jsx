@@ -142,64 +142,7 @@ export default function TrustBadges() {
           ))}
         </div>
 
-        {/* Partners Bar */}
-        <motion.div
-          data-aos="fade-up"
-          data-aos-delay="200"
-          style={{
-            marginTop: '48px',
-            background: 'white',
-            borderRadius: '20px',
-            padding: 'var(--card-padding-sm, 28px 32px)',
-            boxShadow: 'var(--shadow-md)',
-            overflow: 'hidden',
-          }}
-        >
-          <p
-            style={{
-              textAlign: 'center',
-              color: 'var(--gray-3)',
-              fontSize: '13px',
-              fontWeight: '600',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              marginBottom: '20px',
-            }}
-          >
-            Trusted by patients from leading medical institutions worldwide
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: '32px',
-            }}
-          >
-            {[
-              'Mayo Clinic', 'Johns Hopkins', 'MD Anderson',
-              'Stanford Health', 'Cleveland Clinic', 'Cancer Research UK'
-            ].map((name) => (
-              <div
-                key={name}
-                style={{
-                  fontFamily: 'Playfair Display, serif',
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  color: 'var(--gray-3)',
-                  opacity: 0.6,
-                  transition: 'opacity 0.3s ease',
-                  cursor: 'default',
-                }}
-                onMouseEnter={(e) => (e.target.style.opacity = 1)}
-                onMouseLeave={(e) => (e.target.style.opacity = 0.6)}
-              >
-                {name}
-              </div>
-            ))}
-          </div>
-        </motion.div>
+        {/* / */}
       </div>
     </section>
   );

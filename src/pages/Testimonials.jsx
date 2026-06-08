@@ -10,7 +10,7 @@ const videos = [
     status: '5 Years Cancer-Free',
     title: 'Dr. Carter\'s support plan helped restore my cellular vitality.',
     thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600&h=400',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    videoUrl: 'https://www.youtube.com/watch?v=i5VuQjcV30w',
   },
   {
     id: 2,
