@@ -21,11 +21,10 @@ const doctors = [
   {
     id: 2,
     name: 'TEAM',
-    role: 'Pharmacologist,M.Pharm (PhD)',
     experience: '22 Years Experience',
     specialty: 'Clinical Oncology & Herbal Medicine Integration',
     bio: 'Dr. Carter is a certified oncologist...',
-    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
+    
     certifications: [
       'Board Certified Oncologist',
       'Integrative Medicine Specialist',
@@ -33,36 +32,8 @@ const doctors = [
     ],
     image: '/images/doctor33.png',
   },
-  {
-    id: 3,
-    name: 'Prof. Ramesh',
-    role: 'Pharmacologist,M.Pharm (PhD)',
-    experience: '22 Years Experience',
-    specialty: 'Clinical Oncology & Herbal Medicine Integration',
-    bio: 'Dr. Carter is a certified oncologist...',
-    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
-    certifications: [
-      'Board Certified Oncologist',
-      'Integrative Medicine Specialist',
-      'Herbal Medicine Practitioner'
-    ],
-    image: '/images/doctor1.png',
-  },
-  {
-    id: 5,
-    name: 'Prof. Ramesh',
-    role: 'Pharmacologist,M.Pharm (PhD)',
-    experience: '22 Years Experience',
-    specialty: 'Clinical Oncology & Herbal Medicine Integration',
-    bio: 'Dr. Carter is a certified oncologist...',
-    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
-    certifications: [
-      'Board Certified Oncologist',
-      'Integrative Medicine Specialist',
-      'Herbal Medicine Practitioner'
-    ],
-    image: '/images/doctor1.png',
-  },
+  
+
 ];
 
 export default function Doctors() {
@@ -74,7 +45,7 @@ export default function Doctors() {
             <FaUserMd /> Our Medical Team
           </span>
           <h2 className="section-title">
-            Meet Our Expert <span>Doctors</span>
+            Meet Our Expert Team <span>Doctors</span>
           </h2>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
             Our multidisciplinary team of medical doctors, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients.

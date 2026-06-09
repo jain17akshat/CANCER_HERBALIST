@@ -7,33 +7,34 @@ const ACCENT = '#38bed5';
 const blogs = [
   {
     id: 1,
-    title: 'Understanding Cancer Nutrition: Foods That Fight and Foods to Avoid',
+    title: 'A Remarkable Prostate Cancer Journey: When Symptoms Were Not Obvious',
     image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=80',
     category: 'Nutrition',
-    author: 'Dr. Evelyn Carter',
+    author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
-    date: 'March 15, 2026',
-    excerpt: 'Learn about evidence-based nutrition strategies that support recovery and improve quality of life during treatment.',
+    date: 'February 21, 2026',
+    excerpt: 'A 74-year-old man\'s prostate cancer diagnosis was delayed due to atypical symptoms. Learn how elevated PSA levels led to diagnosis and explore the role of supportive nutrition in his cancer care journey.',
   },
   {
     id: 2,
     title: 'Herbal Adaptogens for Stress Relief During Cancer Treatment',
+    author: 'By Prof. Ramesh  ',
+    readTime: '8 min read',
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80',
-    category: 'Herbal Care',
-    author: 'Dr. Marcus Vance',
-    readTime: '6 min read',
-    date: 'March 10, 2026',
-    excerpt: 'Understand how certain adaptogenic herbs may help manage treatment-related stress under professional supervision.',
+   category: "Cancer Research",
+title: "The Rise of Precision Oncology: How Personalized Cancer Treatment Is Changing Lives",
+excerpt: "Discover how genetic testing, artificial intelligence, targeted therapies, and immunotherapy are transforming cancer treatment through personalized care and improved patient outcomes.",
+
   },
   {
     id: 3,
     title: 'Managing Chemotherapy Side Effects Naturally',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
-    category: 'Treatment Support',
-    author: 'Dr. Daniel Sharma',
-    readTime: '9 min read',
-    date: 'February 28, 2026',
-    excerpt: 'Explore evidence-based supportive approaches that may help improve comfort during chemotherapy.',
+   author: 'By Prof. Ramesh  ',
+    readTime: '8 min read',
+    category: "Cancer Awareness",
+title: "10 Early Warning Signs of Cancer That Should Never Be Ignored",
+excerpt: "Many cancers can be treated more effectively when detected early. Learn about common warning signs, when to seek medical attention, and why early diagnosis can make a critical difference.",
   },
 ];
 
@@ -61,16 +62,7 @@ export default function Blog() {
         <p style={{ maxWidth: '700px', margin: '0 auto', color: '#64748b', lineHeight: '1.8', fontSize: '1.1rem' }}>
           Expert guidance on cancer awareness, nutrition, herbal support, wellness, and recovery.
         </p>
-        <div style={{ position: 'relative', marginTop: '30px', maxWidth: '600px', margin: '30px auto 0' }}>
-          <FaSearch style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-          <input
-            type="text"
-            placeholder="Search articles..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: '100%', padding: '16px 20px 16px 48px', borderRadius: '50px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '15px', boxSizing: 'border-box' }}
-          />
-        </div>
+       
       </section>
 
       {/* Blog Grid */}
