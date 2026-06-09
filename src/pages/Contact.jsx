@@ -6,17 +6,18 @@ import {
   FaLeaf, FaUserMd, FaChevronRight
 } from 'react-icons/fa';
 
-// ─────────────────────────────────────────────────────────
-// ✅ EMAILJS CONFIG — replace these three values after
-//    creating your EmailJS account (see setup guide below)
-// ─────────────────────────────────────────────────────────
-const EMAILJS_SERVICE_ID = 'service_yud2l0p';
 
-const EMAILJS_ADMIN_TEMPLATE_ID = 'template_4yh74au';
+const EMAILJS_SERVICE_ID =
+  import.meta.env.VITE_EMAILJS_SERVICE_ID;
 
-const EMAILJS_PATIENT_TEMPLATE_ID = 'template_56w5hnt';
+const EMAILJS_ADMIN_TEMPLATE_ID =
+  import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID;
 
-const EMAILJS_PUBLIC_KEY = '--356eiwt10SJ7xeV';
+const EMAILJS_PATIENT_TEMPLATE_ID =
+  import.meta.env.VITE_EMAILJS_PATIENT_TEMPLATE_ID;
+
+const EMAILJS_PUBLIC_KEY =
+  import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
 const ACCENT = '#38bed5';
 
