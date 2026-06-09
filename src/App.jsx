@@ -76,6 +76,7 @@ function App() {
       easing: 'ease-out-cubic',
       once: true,
       offset: 60,
+      disable: 'mobile',
     });
   }, []);
 

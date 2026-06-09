@@ -51,7 +51,7 @@ export default function Footer() {
 
       {/* ── Main Footer Grid ── */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '70px 20px 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,1.6fr) repeat(3, minmax(160px,1fr))', gap: '48px', marginBottom: '56px' }}>
+        <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(260px,1.6fr) repeat(3, minmax(160px,1fr))', gap: '48px', marginBottom: '56px' }}>
 
           {/* Column 1 — Brand */}
           <div>
@@ -94,6 +94,49 @@ export default function Footer() {
                 <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${ACCENT}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: ACCENT, flexShrink: 0 }}><FaEnvelope /></span>
                 cancerherbalist@gmail.com
               </a>
+             <a
+  href="mailto:drherbalistindia@gmail.com"
+  style={{
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '10px',
+    color: WHITE60,
+    textDecoration: 'none',
+    fontSize: '13px',
+    transition: 'color 0.2s'
+  }}
+  onMouseEnter={(e) => (e.currentTarget.style.color = ACCENT)}
+  onMouseLeave={(e) => (e.currentTarget.style.color = WHITE60)}
+>
+  <span
+    style={{
+      width: '32px',
+      height: '32px',
+      borderRadius: '8px',
+      background: `${ACCENT}22`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: ACCENT,
+      flexShrink: 0
+    }}
+  >
+    <FaEnvelope />
+  </span>
+
+  <div>
+    <div>drherbalistindia@gmail.com</div>
+    <div
+      style={{
+        fontSize: '11px',
+        opacity: 0.7,
+        marginTop: '2px'
+      }}
+    >
+      For Appointment Bookings & Patient Enquiries
+    </div>
+  </div>
+</a>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', color: WHITE60, fontSize: '13px' }}>
                 <span style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${ACCENT}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: ACCENT, flexShrink: 0, marginTop: '1px' }}><FaMapMarkerAlt /></span>
                 <span style={{ lineHeight: '1.7' }}>Agara Main Road, Near Dinnepalya Bus Stand, Kaggalipura Post, Off Kanakapura Road, Bangalore 560116</span>
@@ -226,12 +269,12 @@ export default function Footer() {
       {/* Responsive Grid Fix */}
       <style>{`
         @media (max-width: 900px) {
-          footer > div:nth-child(3) > div:first-child {
+          .footer-grid {
             grid-template-columns: 1fr 1fr !important;
           }
         }
         @media (max-width: 600px) {
-          footer > div:nth-child(3) > div:first-child {
+          .footer-grid {
             grid-template-columns: 1fr !important;
           }
         }

@@ -589,6 +589,16 @@ const trustItems = [
 export default function Hero() {
   const [currentWord, setCurrentWord] = useState(0);
   const words = ['Naturally', 'Holistically', 'Effectively', 'Safely'];
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -612,7 +622,7 @@ export default function Hero() {
     >
       {/* Animated Background Elements */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        {[...Array(5)].map((_, i) => (
+        {!isMobile && [...Array(5)].map((_, i) => (
           <motion.div
             key={i}
             animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.12, 0.05] }}
@@ -630,8 +640,7 @@ export default function Hero() {
           />
         ))}
 
-        {/* Floating leaves */}
-        {[...Array(8)].map((_, i) => (
+        {!isMobile && [...Array(8)].map((_, i) => (
           <motion.div
             key={`leaf-${i}`}
             animate={{ y: [-20, 20, -20], rotate: [0, 180, 360], opacity: [0.1, 0.3, 0.1] }}
@@ -991,8 +1000,8 @@ export default function Hero() {
             {/* Floating Badge - Top Right */}
             <motion.div
               className="hero-badge-tr"
-              animate={{ y: [-5, 5, -5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              animate={isMobile ? {} : { y: [-5, 5, -5] }}
+              transition={isMobile ? {} : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               style={{
                 position: 'absolute',
                 top: '-20px',
@@ -1014,8 +1023,8 @@ export default function Hero() {
             {/* Floating Badge - Bottom Left */}
             <motion.div
               className="hero-badge-bl"
-              animate={{ y: [5, -5, 5] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+              animate={isMobile ? {} : { y: [5, -5, 5] }}
+              transition={isMobile ? {} : { duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
               style={{
                 position: 'absolute',
                 bottom: '-20px',
@@ -1054,35 +1063,37 @@ export default function Hero() {
         </div>
 
         {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          style={{ display: 'flex', justifyContent: 'center', marginTop: '60px' }}
-        >
+        {!isMobile && (
           <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            style={{
-              width: '24px',
-              height: '40px',
-              border: `2px solid ${ACCENT}50`,
-              borderRadius: '12px',
-              display: 'flex',
-              justifyContent: 'center',
-              paddingTop: '6px',
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+            style={{ display: 'flex', justifyContent: 'center', marginTop: '60px' }}
           >
-            <div
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
               style={{
-                width: '4px',
-                height: '8px',
-                background: ACCENT,
-                borderRadius: '2px',
+                width: '24px',
+                height: '40px',
+                border: `2px solid ${ACCENT}50`,
+                borderRadius: '12px',
+                display: 'flex',
+                justifyContent: 'center',
+                paddingTop: '6px',
               }}
-            />
+            >
+              <div
+                style={{
+                  width: '4px',
+                  height: '8px',
+                  background: ACCENT,
+                  borderRadius: '2px',
+                }}
+              />
+            </motion.div>
           </motion.div>
-        </motion.div>
+        )}
       </div>
     </section>
   );

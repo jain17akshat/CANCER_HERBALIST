@@ -10,9 +10,13 @@ import {
 // ✅ EMAILJS CONFIG — replace these three values after
 //    creating your EmailJS account (see setup guide below)
 // ─────────────────────────────────────────────────────────
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // e.g. 'service_abc123'
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // e.g. 'template_xyz456'
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // e.g. 'A1b2C3d4E5f6G7h8'
+const EMAILJS_SERVICE_ID = 'service_yud2l0p';
+
+const EMAILJS_ADMIN_TEMPLATE_ID = 'template_4yh74au';
+
+const EMAILJS_PATIENT_TEMPLATE_ID = 'template_56w5hnt';
+
+const EMAILJS_PUBLIC_KEY = '--356eiwt10SJ7xeV';
 
 const ACCENT = '#38bed5';
 
@@ -92,9 +96,9 @@ const labelStyle = {
 export default function Contact() {
   const formRef = useRef();
 
-  const [step, setStep]       = useState(1); // 1=form, 2=slot, 3=success
+  const [step, setStep] = useState(1); // 1=form, 2=slot, 3=success
   const [sending, setSending] = useState(false);
-  const [error, setError]     = useState('');
+  const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '',
@@ -134,33 +138,43 @@ export default function Contact() {
 
     const templateParams = {
       // Fields used in EmailJS template
-      patient_name:    formData.name,
-      patient_phone:   formData.phone,
-      patient_email:   formData.email,
-      treatment_type:  formData.treatment,
-      cancer_stage:    formData.stage || 'Not specified',
+      patient_name: formData.name,
+      patient_phone: formData.phone,
+      patient_email: formData.email,
+      treatment_type: formData.treatment,
+      cancer_stage: formData.stage || 'Not specified',
       appointment_day: formData.selectedDay.full,
-      appointment_slot:formData.selectedSlot,
+      appointment_slot: formData.selectedSlot,
       patient_message: formData.message || 'No additional message.',
-      clinic_email:    'cancerherbalist@gmail.com',
+      clinic_email: 'cancerherbalist@gmail.com',
       // reply_to is used so clinic can reply directly to patient
-      reply_to:        formData.email,
+      reply_to: formData.email,
     };
 
-    try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams,
-        EMAILJS_PUBLIC_KEY
-      );
-      setSending(false);
-      setStep(3);
-    } catch (err) {
-      setSending(false);
-      setError('Failed to send. Please try WhatsApp or call us directly.');
-      console.error('EmailJS error:', err);
-    }
+  try {
+  // Send email to clinic
+  await emailjs.send(
+    EMAILJS_SERVICE_ID,
+    EMAILJS_ADMIN_TEMPLATE_ID,
+    templateParams,
+    EMAILJS_PUBLIC_KEY
+  );
+
+  // Send confirmation email to patient
+  await emailjs.send(
+    EMAILJS_SERVICE_ID,
+    EMAILJS_PATIENT_TEMPLATE_ID,
+    templateParams,
+    EMAILJS_PUBLIC_KEY
+  );
+
+  setSending(false);
+  setStep(3);
+} catch (err) {
+  setSending(false);
+  setError('Failed to send. Please try WhatsApp or call us directly.');
+  console.error('EmailJS error:', err);
+}
   };
 
   const reset = () => {
