@@ -93,7 +93,7 @@ export default function Stats() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(130px, calc(50% - 10px)), 1fr))',
             gap: '20px',
           }}
         >

@@ -84,7 +84,7 @@ export default function About() {
         {/* Overlay */}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, rgba(10,22,40,0.93) 0%, rgba(10,22,40,0.65) 55%, rgba(56,190,213,0.18) 100%)' }} />
 
-        <div className="hero-content" style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', margin: '0 auto', padding: '160px 40px 100px', width: '100%', boxSizing: 'border-box' }}>
+        <div className="hero-content" style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', margin: '0 auto', padding: 'clamp(120px, 18vw, 160px) clamp(16px, 4vw, 40px) clamp(60px, 10vw, 100px)', width: '100%', boxSizing: 'border-box' }}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${ACCENT}22`, border: `1px solid ${ACCENT}55`, color: ACCENT, padding: '8px 20px', borderRadius: '50px', fontSize: '13px', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '28px' }}>
               <FaLeaf /> About Cancer Herbalist
@@ -117,8 +117,8 @@ export default function About() {
       </section>
 
       {/* ══════════ STORY SECTION ══════════ */}
-      <section style={{ background: '#fff', padding: '100px 20px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '64px', alignItems: 'center' }}>
+      <section style={{ background: '#fff', padding: 'clamp(50px, 8vw, 100px) 20px' }}>
+        <div className="about-story-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
           {/* Image side */}
           <motion.div data-aos="fade-right" style={{ position: 'relative' }}>
             <img
@@ -169,7 +169,7 @@ export default function About() {
       </section>
 
       {/* ══════════ MISSION + VISION ══════════ */}
-      <section style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0f3460 50%, #0e6655 100%)', padding: '100px 20px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0f3460 50%, #0e6655 100%)', padding: 'clamp(50px, 8vw, 100px) 20px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: ACCENT, opacity: 0.05, filter: 'blur(80px)' }} />
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '64px' }}>
@@ -181,7 +181,7 @@ export default function About() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '32px' }}>
             {/* Mission */}
             <motion.div data-aos="fade-up"
               style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${ACCENT}33`, borderRadius: '28px', padding: '44px 40px', backdropFilter: 'blur(10px)', position: 'relative', overflow: 'hidden' }}>
@@ -212,7 +212,7 @@ export default function About() {
       </section>
 
       {/* ══════════ CORE VALUES ══════════ */}
-      <section style={{ background: '#fff', padding: '100px 20px' }}>
+      <section style={{ background: '#fff', padding: 'clamp(50px, 8vw, 100px) 20px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '64px' }} data-aos="fade-up">
             <span style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>What Drives Us</span>
@@ -224,7 +224,7 @@ export default function About() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '28px' }}>
             {values.map((v, i) => (
               <motion.div key={i} data-aos="fade-up" data-aos-delay={i * 70}
                 whileHover={{ y: -8, boxShadow: `0 20px 50px rgba(0,0,0,0.1)` }}
@@ -241,7 +241,7 @@ export default function About() {
       </section>
 
       {/* ══════════ TIMELINE ══════════ */}
-      <section style={{ background: '#f0fdfe', padding: '100px 20px' }}>
+      <section style={{ background: '#f0fdfe', padding: 'clamp(50px, 8vw, 100px) 20px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '72px' }} data-aos="fade-up">
             <span style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>Our Journey</span>
@@ -279,7 +279,7 @@ export default function About() {
       </section>
 
       {/* ══════════ OUR APPROACH ══════════ */}
-      <section style={{ background: '#fff', padding: '100px 20px' }}>
+      <section style={{ background: '#fff', padding: 'clamp(50px, 8vw, 100px) 20px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '64px' }} data-aos="fade-up">
             <span style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>How We Work</span>
@@ -291,7 +291,7 @@ export default function About() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '28px' }}>
             {approach.map((a, i) => (
               <motion.div key={i} data-aos="fade-up" data-aos-delay={i * 80}
                 style={{ background: 'linear-gradient(135deg, #f0fdfe, #fff)', borderRadius: '24px', padding: '36px 28px', border: `1px solid ${ACCENT}22`, textAlign: 'center' }}>
@@ -328,10 +328,13 @@ export default function About() {
       </section>
 
       <style>{`
-        @media (max-width: 768px) {
-          .hero-content {
-            padding: 120px 20px 60px !important;
+        @media (max-width: 900px) {
+          .about-story-grid {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
           }
+        }
+        @media (max-width: 768px) {
           .about-timeline-line { display: none !important; }
           .timeline-dot { display: none !important; }
           .timeline-item {
@@ -343,20 +346,13 @@ export default function About() {
              max-width: 100% !important;
           }
           .quote-card {
-             right: 10px !important;
-             bottom: -20px !important;
-             max-width: calc(100% - 40px) !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .quote-card {
              position: relative !important;
              bottom: 0 !important;
              right: 0 !important;
-             margin-top: -30px;
+             margin-top: -24px;
              margin-left: auto;
              margin-right: auto;
-             max-width: 90% !important;
+             max-width: 100% !important;
              z-index: 10;
           }
         }

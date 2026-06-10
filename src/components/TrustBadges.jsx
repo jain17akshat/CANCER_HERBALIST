@@ -87,7 +87,7 @@ export default function TrustBadges() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(140px, calc(50% - 10px)), 1fr))',
             gap: '20px',
           }}
         >

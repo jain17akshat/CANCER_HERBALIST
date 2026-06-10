@@ -32,8 +32,21 @@
   --border-radius: 16px;
   --border-radius-lg: 24px;
   --border-radius-xl: 32px;
+
+  /* Responsive spacing tokens */
+  --card-padding-lg: 40px;
+  --card-padding-md: 32px;
+  --card-padding: 36px;
+  --card-padding-sm: 28px;
+  --faq-padding: 22px 28px;
+  --faq-content-padding: 0 28px 24px;
+  --footer-padding: 80px 0 30px;
+  --section-padding-y: 80px;
+  --container-padding-x: 20px;
+  --navbar-height: 72px;
 }
 
+/* ── Global Reset ── */
 * {
   margin: 0;
   padding: 0;
@@ -42,6 +55,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -50,6 +64,8 @@ body {
   color: var(--dark);
   overflow-x: hidden;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,6 +73,14 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.3;
 }
 
+/* ── Responsive Images ── */
+img, video, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Scrollbar ── */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -70,16 +94,19 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 3px;
 }
 
+/* ── Layout Utilities ── */
 .section-padding {
-  padding: 80px 0;
+  padding: var(--section-padding-y) 0;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--container-padding-x);
+  width: 100%;
 }
 
+/* ── Section Headers ── */
 .section-badge {
   display: inline-flex;
   align-items: center;
@@ -97,10 +124,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-title {
-  font-size: clamp(28px, 5vw, 48px);
+  font-size: clamp(24px, 5vw, 48px);
   font-weight: 700;
   color: var(--dark-2);
   margin-bottom: 16px;
+  line-height: 1.25;
 }
 
 .section-title span {
@@ -111,12 +139,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-subtitle {
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 16px);
   color: var(--gray-3);
   max-width: 600px;
   line-height: 1.7;
 }
 
+/* ── Buttons ── */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -132,6 +161,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.3s ease;
   box-shadow: var(--shadow-primary);
   text-decoration: none;
+  min-height: 48px; /* Touch-friendly */
 }
 
 .btn-primary:hover {
@@ -154,6 +184,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.3s ease;
   box-shadow: 0 8px 32px rgba(96,165,250,0.12);
   text-decoration: none;
+  min-height: 48px;
 }
 
 .btn-secondary:hover {
@@ -175,6 +206,7 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
+  min-height: 48px;
 }
 
 .btn-outline:hover {
@@ -183,6 +215,7 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-2px);
 }
 
+/* ── Cards ── */
 .card {
   background: white;
   border-radius: var(--border-radius);
@@ -196,7 +229,7 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-lg);
 }
 
-/* Custom Slick Carousel Dot Styles */
+/* ── Slick Carousel ── */
 .slick-dots li button:before {
   font-size: 12px;
   color: var(--primary) !important;
@@ -207,18 +240,19 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--primary) !important;
 }
 
-/* Form Styles */
+/* ── Forms ── */
 .form-input, .form-select, .form-textarea {
   width: 100%;
   padding: 14px 20px;
   border: 1px solid var(--gray-2);
   border-radius: 12px;
   font-family: 'Poppins', sans-serif;
-  font-size: 14px;
+  font-size: 16px; /* Prevents zoom on iOS */
   background: var(--gray-1);
   color: var(--dark-2);
   outline: none;
   transition: all 0.3s ease;
+  min-height: 48px;
 }
 
 .form-input:focus, .form-select:focus, .form-textarea:focus {
@@ -227,11 +261,12 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
 }
 
-/* Video Testimonial Overlay */
+/* ── Video Overlay ── */
 .video-card-overlay {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
 }
 
+/* ── Animations ── */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -252,16 +287,11 @@ h1, h2, h3, h4, h5, h6 {
   100% { background-position: 200% 0; }
 }
 
-:root {
-  --card-padding-lg: 40px;
-  --card-padding-md: 32px;
-  --card-padding: 36px;
-  --card-padding-sm: 28px;
-  --faq-padding: 22px 28px;
-  --faq-content-padding: 0 28px 24px;
-  --footer-padding: 80px 0 30px;
-}
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ══════════════════════════════════════════════════════ */
 
+/* ── Tablet & Below (≤ 768px) ── */
 @media (max-width: 768px) {
   :root {
     --card-padding-lg: 24px;
@@ -271,24 +301,23 @@ h1, h2, h3, h4, h5, h6 {
     --faq-padding: 16px 20px;
     --faq-content-padding: 0 20px 16px;
     --footer-padding: 50px 0 30px;
-  }
-
-  .section-padding {
-    padding: 50px 0;
-  }
-  
-  .container {
-    padding: 0 16px;
+    --section-padding-y: 50px;
+    --container-padding-x: 16px;
   }
 
   .section-title {
-    font-size: clamp(24px, 7vw, 36px) !important;
+    font-size: clamp(22px, 7vw, 32px) !important;
     line-height: 1.25 !important;
     margin-bottom: 12px !important;
   }
 
   .section-subtitle {
     font-size: 14px !important;
+  }
+
+  .section-badge {
+    font-size: 11px;
+    padding: 5px 12px;
   }
 
   /* Hero button stacking */
@@ -299,7 +328,8 @@ h1, h2, h3, h4, h5, h6 {
     gap: 12px !important;
   }
 
-  .hero-btns a {
+  .hero-btns a,
+  .hero-btns button {
     width: 100% !important;
     justify-content: center !important;
     text-align: center !important;
@@ -339,10 +369,35 @@ h1, h2, h3, h4, h5, h6 {
   .rating-row .divider {
     display: none !important;
   }
+
+  /* Reduce motion for mobile performance */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
+/* ── Small Mobile (≤ 576px) ── */
 @media (max-width: 576px) {
   .hero-badge-tr, .hero-badge-bl {
     display: none !important;
+  }
+}
+
+/* ── Very Small Screens (≤ 375px) ── */
+@media (max-width: 375px) {
+  :root {
+    --container-padding-x: 12px;
+    --section-padding-y: 40px;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline {
+    padding: 12px 20px;
+    font-size: 14px;
   }
 }

@@ -202,7 +202,7 @@ export default function Contact() {
 
       {/* ── Info Cards ── */}
       <section style={{ maxWidth: '1300px', margin: '-40px auto 0', padding: '0 20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '20px' }}>
           {[
             { icon: <FaPhone />, title: 'Call Us', text: '+91 88845 88835', href: 'tel:+918884588835' },
             { icon: <FaEnvelope />, title: 'Email', text: 'cancerherbalist@gmail.com', href: 'mailto:cancerherbalist@gmail.com' },
@@ -224,10 +224,10 @@ export default function Contact() {
 
       {/* ── Main Form + WhatsApp ── */}
       <section style={{ maxWidth: '1300px', margin: '56px auto', padding: '0 20px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(400px,1fr))', gap: '36px', alignItems: 'start' }}>
+        <div className="contact-main-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(380px, 100%), 1fr))', gap: '36px', alignItems: 'start' }}>
 
           {/* ── Booking Form Card ── */}
-          <div style={{ background: '#fff', padding: '44px', borderRadius: '28px', boxShadow: '0 12px 40px rgba(0,0,0,0.09)', border: `1px solid ${ACCENT}22` }}>
+          <div style={{ background: '#fff', padding: 'clamp(24px, 4vw, 44px)', borderRadius: '28px', boxShadow: '0 12px 40px rgba(0,0,0,0.09)', border: `1px solid ${ACCENT}22` }}>
 
             {/* Step Indicator */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0', marginBottom: '32px' }}>
@@ -309,7 +309,7 @@ export default function Contact() {
 
                 {/* Day Picker */}
                 <label style={labelStyle}>Select Date *</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '24px', maxHeight: '200px', overflowY: 'auto', paddingRight: '4px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100px, 100%), 1fr))', gap: '8px', marginBottom: '24px', maxHeight: '200px', overflowY: 'auto', paddingRight: '4px' }}>
                   {DAYS.slice(0, 18).map((day, i) => {
                     const selected = formData.selectedDay?.label === day.label;
                     return (
@@ -325,7 +325,7 @@ export default function Contact() {
                 {formData.selectedDay && (
                   <>
                     <label style={labelStyle}>Select Time Slot for {formData.selectedDay.label} *</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(80px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
                       {TIME_SLOTS.map((slot) => {
                         const selected = formData.selectedSlot === slot;
                         return (
@@ -393,7 +393,7 @@ export default function Contact() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
             {/* WhatsApp Card */}
-            <div style={{ background: 'linear-gradient(135deg,#0f3460,#1a5276)', color: '#fff', borderRadius: '24px', padding: '40px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ background: 'linear-gradient(135deg,#0f3460,#1a5276)', color: '#fff', borderRadius: '24px', padding: 'clamp(24px, 4vw, 40px)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <FaWhatsapp style={{ fontSize: '60px', color: '#25d366' }} />
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.5rem' }}>Quick WhatsApp Consultation</h2>
               <p style={{ opacity: 0.85, lineHeight: '1.8', fontSize: '0.95rem' }}>

@@ -68,6 +68,7 @@ import ServiceDetail from './pages/ServiceDetail';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 
 function App() {
   useEffect(() => {
@@ -112,6 +113,7 @@ function App() {
 
         <Footer />
         <WhatsAppButton />
+        <Chatbot />
         <StickyMobileBar />
       </div>
     </Router>

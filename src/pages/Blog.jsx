@@ -17,18 +17,16 @@ const blogs = [
   },
   {
     id: 2,
-    title: 'Herbal Adaptogens for Stress Relief During Cancer Treatment',
     author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80',
-   category: "Cancer Research",
-title: "The Rise of Precision Oncology: How Personalized Cancer Treatment Is Changing Lives",
-excerpt: "Discover how genetic testing, artificial intelligence, targeted therapies, and immunotherapy are transforming cancer treatment through personalized care and improved patient outcomes.",
-
+    category: "Cancer Research",
+    title: "The Rise of Precision Oncology: How Personalized Cancer Treatment Is Changing Lives",
+    excerpt: "Discover how genetic testing, artificial intelligence, targeted therapies, and immunotherapy are transforming cancer treatment through personalized care and improved patient outcomes.",
   },
-  {
+
+ {
     id: 3,
-    title: 'Managing Chemotherapy Side Effects Naturally',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
    author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
@@ -75,7 +73,7 @@ export default function Blog() {
           <p style={{ color: '#64748b', fontSize: '1.1rem' }}>No articles found. Try a different search term.</p>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '30px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '30px' }}>
           {filtered.map((blog) => (
             <div
               key={blog.id}

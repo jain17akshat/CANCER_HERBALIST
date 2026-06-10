@@ -676,8 +676,8 @@ export default function Hero() {
           className="hero-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '60px',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 'clamp(30px, 4vw, 60px)',
             alignItems: 'center',
           }}
         >
@@ -1095,6 +1095,21 @@ export default function Hero() {
           </motion.div>
         )}
       </div>
+
+      <style>{`
+        @media (max-width: 900px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          #home {
+            padding-top: 72px !important;
+            min-height: auto !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

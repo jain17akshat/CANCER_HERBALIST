@@ -8,7 +8,7 @@ import TreatmentProcess from '../components/TreatmentProcess';
 // import VideoTestimonials from '../components/VideoTestimonials';
 import Reviews from '../components/Reviews';
 import SuccessStories from '../components/SuccessStories';
-import ConsultationForm from '../components/ConsultationForm';
+// import ConsultationForm from '../components/ConsultationForm';
 import FAQ from '../components/FAQ';
 
 export default function Home() {
@@ -23,7 +23,7 @@ export default function Home() {
       {/* <VideoTestimonials /> */}
       <Reviews />
       <SuccessStories />
-      <ConsultationForm />
+      {/* <ConsultationForm /> */}
       <FAQ />
     </>
   );
