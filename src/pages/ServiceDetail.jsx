@@ -297,7 +297,22 @@ export default function ServiceDetail() {
 
         {/* CTA */}
         <div style={{ textAlign: 'center' }}>
-          <Link to="/contact" style={{ display: 'inline-block', background: ACCENT, color: '#fff', padding: '16px 40px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '1rem', boxShadow: `0 8px 24px ${ACCENT}44` }}>
+          <Link
+            to="/contact"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: ACCENT,
+              color: '#fff',
+              padding: '16px 40px',
+              borderRadius: '50px',
+              fontWeight: 700,
+              textDecoration: 'none',
+              fontSize: '1rem',
+              boxShadow: `0 8px 24px ${ACCENT}44`,
+            }}
+          >
             Book a Free Consultation
           </Link>
         </div>
