@@ -108,8 +108,24 @@ export default function TreatmentMethods() {
         <p style={{ maxWidth: '700px', margin: '0 auto 36px', opacity: 0.88, lineHeight: '1.8', fontSize: '1.1rem' }}>
           Our integrative herbal oncology approach combines ancient botanical wisdom with modern clinical evidence to support your body through every phase of the cancer journey.
         </p>
-        <Link to="/contact" style={{ background: ACCENT, color: '#fff', padding: '16px 40px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '1rem', boxShadow: `0 8px 32px ${ACCENT}55` }}>
-          Start Your Journey <FaArrowRight style={{ marginLeft: '8px' }} />
+        <Link
+          to="/contact"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            background: ACCENT,
+            color: '#fff',
+            padding: '16px 40px',
+            borderRadius: '50px',
+            fontWeight: 700,
+            textDecoration: 'none',
+            fontSize: '1rem',
+            boxShadow: `0 8px 32px ${ACCENT}55`,
+          }}
+        >
+          Start Your Journey <FaArrowRight />
         </Link>
       </section>
 
@@ -211,10 +227,42 @@ export default function TreatmentMethods() {
             Book a free 30-minute discovery consultation with one of our senior herbal practitioners today.
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/contact" style={{ background: ACCENT, color: '#fff', padding: '16px 36px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '1rem', boxShadow: `0 8px 24px ${ACCENT}55` }}>
+            <Link
+              to="/contact"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                background: ACCENT,
+                color: '#fff',
+                padding: '16px 36px',
+                borderRadius: '50px',
+                fontWeight: 700,
+                textDecoration: 'none',
+                fontSize: '1rem',
+                boxShadow: `0 8px 24px ${ACCENT}55`,
+              }}
+            >
               Book Free Consultation
             </Link>
-            <Link to="/services" style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', padding: '16px 36px', borderRadius: '50px', fontWeight: 600, textDecoration: 'none', fontSize: '1rem', border: '1px solid rgba(255,255,255,0.25)' }}>
+            <Link
+              to="/services"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                background: 'rgba(255,255,255,0.12)',
+                color: '#fff',
+                padding: '16px 36px',
+                borderRadius: '50px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                fontSize: '1rem',
+                border: '1px solid rgba(255,255,255,0.25)',
+              }}
+            >
               View All Services
             </Link>
           </div>

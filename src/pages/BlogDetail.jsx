@@ -200,7 +200,22 @@ export default function BlogDetail() {
         <div style={{ textAlign: 'center', background: 'linear-gradient(135deg, #f0fdfe, #e0f7fa)', borderRadius: '24px', padding: '40px' }}>
           <h3 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', fontSize: '1.5rem', marginBottom: '12px' }}>Ready to Start Your Healing Journey?</h3>
           <p style={{ color: '#64748b', marginBottom: '24px' }}>Book a free consultation with our herbal medicine specialists today.</p>
-          <Link to="/contact" style={{ background: ACCENT, color: '#fff', padding: '14px 36px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '1rem', boxShadow: `0 8px 24px ${ACCENT}44` }}>
+          <Link
+            to="/contact"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: ACCENT,
+              color: '#fff',
+              padding: '14px 36px',
+              borderRadius: '50px',
+              fontWeight: 700,
+              textDecoration: 'none',
+              fontSize: '1rem',
+              boxShadow: `0 8px 24px ${ACCENT}44`,
+            }}
+          >
             Book Free Consultation
           </Link>
         </div>

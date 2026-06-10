@@ -403,8 +403,8 @@ export default function TreatmentProcess() {
             marginTop: '56px',
           }}
         >
-          <a
-            href="/Contact"
+          <Link
+            to="/contact"
             data-aos="fade-up"
             style={{
               display: 'inline-flex',
@@ -427,7 +427,7 @@ export default function TreatmentProcess() {
           >
             Start Your Journey Now
             <FaArrowRight />
-          </a>
+          </Link>
         </div>
       </div>
 
