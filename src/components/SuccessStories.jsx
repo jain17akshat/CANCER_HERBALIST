@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBookmark, FaRegChartBar, FaNotesMedical, FaRegClock, FaRibbon, FaFlask } from 'react-icons/fa';
+import Reviews from './Reviews';
 
 const caseStudies = [
   {
@@ -218,6 +219,9 @@ export default function SuccessStories() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Google Reviews — moved here from Home */}
+      <Reviews />
     </section>
   );
 }

@@ -393,6 +393,11 @@ img, video, svg {
   .hero-badge-tr, .hero-badge-bl {
     display: none !important;
   }
+
+  /* Disable smooth scroll on mobile for faster page loads */
+  html, body {
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ── Very Small Screens (≤ 375px) ── */

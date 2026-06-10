@@ -6,13 +6,7 @@ import {
 } from 'react-icons/fa';
 
 const badges = [
-  {
-    icon: <FaCertificate />,
-    title: 'WHO Certified',
-    subtitle: 'Global Standards',
-    color: '#38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5, #38bed5)',
-  },
+  
   {
     icon: <FaAward />,
     title: 'ISO 9001:2015',

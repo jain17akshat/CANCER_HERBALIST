@@ -1,60 +1,8 @@
-// import React, { useEffect } from 'react';
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-// import Navbar from './components/Navbar';
-// import Home from './pages/Home';
-// import About from './pages/About';
-// import Services from './pages/Services';
-// import TreatmentMethods from './pages/TreatmentMethods';
-// import Doctors from './pages/Doctors';
-// import Testimonials from './pages/Testimonials';
-
-
-// import WhatsAppButton from './components/WhatsAppButton';
-// import StickyMobileBar from './components/StickyMobileBar';
-// import Footer from './components/Footer';
-
-
-// function App() {
-//   useEffect(() => {
-//     AOS.init({
-//       duration: 800,
-//       easing: 'ease-out-cubic',
-//       once: true,
-//       offset: 60,
-//     });
-//   }, []);
-
-//   return (
-//     <Router>
-//       <div className="App" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-//         <Navbar />
-//         <main style={{ flex: 1 }}>
-//           <Routes>
-//             <Route path="/" element={<Home />} />
-//             <Route path="/about" element={<About />} />
-//             <Route path="/services" element={<Services />} />
-//             <Route path="/treatment-methods" element={<TreatmentMethods />} />
-//             <Route path="/doctors" element={<Doctors />} />
-//             <Route path="/testimonials" element={<Testimonials />} />
-            
-            
-//           </Routes>
-//         </main>
-//         <Footer />
-//         <WhatsAppButton />
-//         <StickyMobileBar />
-//       </div>
-//     </Router>
-//   );
-// }
-
-// export default App;
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Contact from './pages/Contact';
-import ExpertProfiles from './components/ExpertProfiles';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -70,6 +18,15 @@ import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 
+/* Scroll to the top whenever the route path changes */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   useEffect(() => {
     AOS.init({
@@ -83,6 +40,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <div
         className="App"
         style={{
@@ -101,10 +59,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
-            <Route
-              path="/treatment-methods"
-              element={<TreatmentMethods />}
-            />
+            <Route path="/treatment-methods" element={<TreatmentMethods />} />
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/testimonials" element={<Testimonials />} />
             <Route path="/blog" element={<Blog />} />
