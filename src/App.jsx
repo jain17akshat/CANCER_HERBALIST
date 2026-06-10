@@ -89,6 +89,9 @@ function App() {
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
+          width: '100%',
+          overflowX: 'hidden',
+          position: 'relative',
         }}
       >
         <Navbar />

@@ -378,6 +378,14 @@ img, video, svg {
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* Force AOS elements to be fully visible on mobile when JS initialization is disabled/fails */
+  [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* ── Small Mobile (≤ 576px) ── */

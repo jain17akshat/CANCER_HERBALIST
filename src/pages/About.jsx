@@ -76,11 +76,11 @@ export default function About() {
       {/* ══════════ HERO ══════════ */}
       <section style={{ position: 'relative', minHeight: '88vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         {/* Background image */}
-        <img
+        {/* <img
           src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1800&q=80"
           alt="Herbal medicine research"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-        />
+        /> */}
         {/* Overlay */}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, rgba(10,22,40,0.93) 0%, rgba(10,22,40,0.65) 55%, rgba(56,190,213,0.18) 100%)' }} />
 
@@ -121,11 +121,11 @@ export default function About() {
         <div className="about-story-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
           {/* Image side */}
           <motion.div data-aos="fade-right" style={{ position: 'relative' }}>
-            <img
+            {/* <img
               src="https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=700&q=80"
               alt="Our Clinic"
               style={{ width: '100%', borderRadius: '28px', boxShadow: '0 24px 64px rgba(56,190,213,0.18)', display: 'block' }}
-            />
+            /> */}
             {/* Quote card */}
             <div className="quote-card" style={{ position: 'absolute', bottom: '-28px', right: '-16px', background: '#fff', borderRadius: '20px', padding: '22px 26px', boxShadow: '0 16px 48px rgba(0,0,0,0.12)', maxWidth: '260px', border: `1px solid ${ACCENT}22` }}>
               <FaQuoteLeft style={{ color: ACCENT, fontSize: '22px', marginBottom: '10px' }} />
@@ -333,6 +333,16 @@ export default function About() {
             grid-template-columns: 1fr !important;
             gap: 32px !important;
           }
+          .quote-card {
+             position: relative !important;
+             bottom: 0 !important;
+             right: 0 !important;
+             margin-top: -24px;
+             margin-left: auto;
+             margin-right: auto;
+             max-width: 100% !important;
+             z-index: 10;
+          }
         }
         @media (max-width: 768px) {
           .about-timeline-line { display: none !important; }
@@ -344,16 +354,6 @@ export default function About() {
           }
           .timeline-content {
              max-width: 100% !important;
-          }
-          .quote-card {
-             position: relative !important;
-             bottom: 0 !important;
-             right: 0 !important;
-             margin-top: -24px;
-             margin-left: auto;
-             margin-right: auto;
-             max-width: 100% !important;
-             z-index: 10;
           }
         }
       `}</style>
