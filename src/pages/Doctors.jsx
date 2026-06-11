@@ -9,12 +9,10 @@ const doctors = [
     role: 'Pharmacologist,M.Pharm (PhD)',
     experience: '22 Years Experience',
     specialty: 'Clinical Oncology & Herbal Medicine Integration',
-    bio: 'Dr. Carter is a certified oncologist...',
+    bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD, demonstrating his deep expertise in pharmaceutical sciences and natural products. With over two decades of dedicated practice, he has made significant contributions to the understanding and application of herbal remedies for various health conditions.',
     edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
     certifications: [
-      'Board Certified Oncologist',
-      'Integrative Medicine Specialist',
-      'Herbal Medicine Practitioner'
+      
     ],
     image: '/images/doctor1.png',
   },
@@ -23,12 +21,10 @@ const doctors = [
     name: 'TEAM',
     experience: '22 Years Experience',
     specialty: 'Clinical Oncology & Herbal Medicine Integration',
-    bio: 'Dr. Carter is a certified oncologist...',
+    bio: 'Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individuals unique needs throughout their treatment journey.',
     
     certifications: [
-      'Board Certified Oncologist',
-      'Integrative Medicine Specialist',
-      'Herbal Medicine Practitioner'
+      
     ],
     image: '/images/doctor33.png',
   },

@@ -7,10 +7,10 @@ const ACCENT = '#38bed5';
 
 const blogData = {
   1: {
-    title: ' A Remarkable Prostate Cancer Journey: When Symptoms Were Not Obvious',
+    title: 'A Remarkable Prostate Cancer Journey: When Symptoms Were Not Obvious',
     image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1600&q=80',
-    category: 'Patient Story',
-    author: 'By Prof. Ramesh ',
+    category: 'Nutrition',
+    author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
     date: 'February 21, 2026',
     content: [
@@ -50,10 +50,10 @@ body: `This patient's journey demonstrates that prostate cancer can sometimes pr
     ]
   },
   2: {
-    title: 'Herbal Adaptogeddddns for Stress Relief During Cancer Treatment',
+    title: 'The Rise of Precision Oncology: How Personalized Cancer Treatment Is Changing Lives',
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=80',
-    category: 'Herbal Care',
-    author: 'By Prof. Ramesh ',
+    category: 'Cancer Research',
+    author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
     date: 'March 10, 2026',
     content: [
@@ -93,9 +93,9 @@ body: `Precision oncology represents one of the most exciting developments in mo
     ]
   },
   3: {
-    title: 'Managing Chemotherapy Side Effects Naturally',
+    title: '10 Early Warning Signs of Cancer That Should Never Be Ignored',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=80',
-    category: 'Treatment Support',
+    category: 'Cancer Awareness',
     author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
     date: 'February 28, 2026',

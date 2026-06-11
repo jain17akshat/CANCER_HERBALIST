@@ -23,7 +23,7 @@ export default function StickyMobileBar() {
       >
         {/* Call Now */}
         <a
-          href="tel:+1234567890"
+          href="tel:+8884588835"
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -42,7 +42,7 @@ export default function StickyMobileBar() {
 
         {/* WhatsApp Chat */}
         <a
-          href="https://wa.me/1234567890?text=Hi!%20I%20would%20like%20to%20inquire%20about%20herbal%20treatment%20support."
+          href="https://wa.me/8884588835?text=Hi!%20I%20would%20like%20to%20inquire%20about%20herbal%20treatment%20support."
           target="_blank"
           rel="noopener noreferrer"
           style={{

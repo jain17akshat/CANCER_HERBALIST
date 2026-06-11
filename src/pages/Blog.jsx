@@ -19,6 +19,7 @@ const blogs = [
     id: 2,
     author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
+    date: 'March 10, 2026',
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80',
     category: "Cancer Research",
     title: "The Rise of Precision Oncology: How Personalized Cancer Treatment Is Changing Lives",
@@ -30,10 +31,12 @@ const blogs = [
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
    author: 'By Prof. Ramesh  ',
     readTime: '8 min read',
+    date: 'February 28, 2026',
     category: "Cancer Awareness",
 title: "10 Early Warning Signs of Cancer That Should Never Be Ignored",
-excerpt: "Many cancers can be treated more effectively when detected early. Learn about common warning signs, when to seek medical attention, and why early diagnosis can make a critical difference.",
-  },
+excerpt: "Recognizing early warning signs of cancer—such as unexplained weight loss, persistent fatigue, unusual lumps, or chronic pain—can lead to timely diagnosis and significantly better treatment outcomes.",
+  
+},
 ];
 
 export default function Blog() {
@@ -77,7 +80,7 @@ export default function Blog() {
           {filtered.map((blog) => (
             <div
               key={blog.id}
-              style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', transition: 'transform 0.3s', cursor: 'pointer' }}
+              style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', transition: 'transform 0.3s', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
               onClick={() => navigate(`/blog/${blog.id}`)}
               onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-6px)')}
               onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
@@ -93,7 +96,7 @@ export default function Blog() {
                 </span>
               </div>
 
-              <div style={{ padding: '28px' }}>
+              <div style={{ padding: '28px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <h3 style={{ marginTop: '0', color: '#0f172a', lineHeight: '1.4', fontSize: '1.1rem', fontFamily: 'Playfair Display, serif' }}>{blog.title}</h3>
                 <p style={{ marginTop: '12px', color: '#64748b', lineHeight: '1.7', fontSize: '0.95rem' }}>{blog.excerpt}</p>
 
@@ -104,7 +107,7 @@ export default function Blog() {
 
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate(`/blog/${blog.id}`); }}
-                  style={{ marginTop: '20px', background: ACCENT, color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '999px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', transition: 'opacity 0.2s' }}
+                  style={{ marginTop: 'auto', paddingTop: '20px', background: ACCENT, color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '999px', cursor: 'pointer', fontWeight: 600, fontSize: '14px', transition: 'opacity 0.2s' }}
                   onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
                   onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
                 >
