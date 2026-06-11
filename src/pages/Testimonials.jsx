@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaPlay, FaTimes, FaVideo, FaCheckCircle, FaStar, FaQuoteLeft, FaBookmark, FaRegChartBar, FaNotesMedical, FaRegClock, FaRibbon, FaFlask } from 'react-icons/fa';
+
+const ACCENT = '#38bed5';
 
 const videos = [
   {
@@ -88,6 +91,7 @@ const caseStudies = [
 ];
 
 export default function Testimonials() {
+  const navigate = useNavigate();
   const [activeVideo, setActiveVideo] = useState(null);
   const [activeTab, setActiveTab] = useState('breast');
   const activeCaseStudy = caseStudies.find(study => study.id === activeTab);
@@ -115,7 +119,7 @@ export default function Testimonials() {
                 data-aos="fade-up"
                 data-aos-delay={i * 150}
                 whileHover={{ scale: 1.02 }}
-                style={{ background: 'var(--white)', border: '1px solid var(--gray-2)', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)', cursor: 'pointer' }}
+                style={{ background: 'var(--white)', border: '1px solid var(--gray-2)', borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                 onClick={() => setActiveVideo(video)}
               >
                 <div style={{ height: '220px', position: 'relative', overflow: 'hidden' }}>
@@ -126,7 +130,7 @@ export default function Testimonials() {
                     </motion.div>
                   </div>
                 </div>
-                <div style={{ padding: 'var(--card-padding-sm, 24px)' }}>
+                <div style={{ padding: 'var(--card-padding-sm, 24px)', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <div style={{ fontWeight: '700', fontSize: '18px', color: 'var(--dark-2)' }}>{video.name}</div>
                     <div style={{ display: 'flex', gap: '2px', color: '#FBBF24', fontSize: '12px' }}>
@@ -139,7 +143,27 @@ export default function Testimonials() {
                       <FaCheckCircle style={{ fontSize: '9px' }} /> {video.status}
                     </span>
                   </div>
-                  <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', fontStyle: 'italic' }}>"{video.title}"</p>
+                  <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', fontStyle: 'italic', marginBottom: '16px' }}>"{video.title}"</p>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); navigate(`/testimonials/${video.id}`); }}
+                    style={{
+                      width: '100%',
+                      background: ACCENT || 'var(--gradient-primary)',
+                      color: '#fff',
+                      border: 'none',
+                      padding: '11px 24px',
+                      borderRadius: '999px',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '14px',
+                      transition: 'opacity 0.2s, transform 0.2s',
+                      marginTop: 'auto',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  >
+                    Read Full Story →
+                  </button>
                 </div>
               </motion.div>
             ))}

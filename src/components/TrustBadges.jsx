@@ -7,13 +7,7 @@ import {
 
 const badges = [
   
-  {
-    icon: <FaAward />,
-    title: 'ISO 9001:2015',
-    subtitle: 'Quality Management',
-    color: '#38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5, #38bed5)',
-  },
+ 
   {
     icon: <FaFlask />,
     title: 'Research Backed',
