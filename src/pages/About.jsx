@@ -52,9 +52,9 @@ const values = [
 ];
 
 const milestones = [
-  { year: '2004', icon: <FaSeedling />, title: 'Clinic Founded', desc: 'Opened our first integrative herbal oncology clinic in Bangalore with a vision to merge botanical medicine with modern cancer care.' },
-  { year: '2008', icon: <FaShieldAlt />, title: 'Clinical Recognition', desc: 'Recognized by integrative medicine bodies for developing standardized, evidence-informed herbal support protocols for cancer patients.' },
-  { year: '2012', icon: <FaFlask />,    title: 'Research Wing Opens', desc: 'Established a dedicated botanical research laboratory to study herbal formulations, bioavailability, and drug-herb interactions.' },
+  { year: '20012', icon: <FaSeedling />, title: 'Clinic Founded', desc: 'Opened our first integrative herbal oncology clinic in Bangalore with a vision to merge botanical medicine with modern cancer care.' },
+  { year: '20014', icon: <FaShieldAlt />, title: 'Clinical Recognition', desc: 'Recognized by integrative medicine bodies for developing standardized, evidence-informed herbal support protocols for cancer patients.' },
+  { year: '2016', icon: <FaFlask />,    title: 'Research Wing Opens', desc: 'Established a dedicated botanical research laboratory to study herbal formulations, bioavailability, and drug-herb interactions.' },
   { year: '2016', icon: <FaGlobe />,   title: 'Global Teleconsultation', desc: 'Launched our digital consultation platform, enabling patients across India and internationally to access our specialized care remotely.' },
   { year: '2020', icon: <FaUserMd />,  title: 'Integrative Team Grows', desc: 'Expanded our multidisciplinary team of herbalists, nutritionists, and integrative oncologists to serve a wider range of cancer types.' },
   { year: '2024', icon: <FaLeaf />,    title: 'Two Decades of Healing', desc: 'Celebrating 20 years of service — continuing to refine our protocols, train new practitioners, and deepen our commitment to patient wellbeing.' },
@@ -99,7 +99,7 @@ export default function About() {
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}
             style={{ color: 'rgba(255,255,255,0.80)', fontSize: '1.15rem', lineHeight: '1.9', maxWidth: '620px', marginBottom: '40px' }}>
-            Since 2004, Cancer Herbalist has been a trusted partner for patients navigating cancer — combining the wisdom of botanical medicine with the rigour of modern integrative oncology to support healing at every level.
+            Since 2012 Cancer Herbalist has been a trusted partner for patients navigating cancer — combining the wisdom of botanical medicine with the rigour of modern integrative oncology to support healing at every level.
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
@@ -121,18 +121,65 @@ export default function About() {
         <div className="about-story-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
           {/* Image side */}
           <motion.div data-aos="fade-right" style={{ position: 'relative' }}>
-            {/* <img
-              src="https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=700&q=80"
-              alt="Our Clinic"
-              style={{ width: '100%', borderRadius: '28px', boxShadow: '0 24px 64px rgba(56,190,213,0.18)', display: 'block' }}
-            /> */}
-            {/* Quote card */}
-            <div className="quote-card" style={{ position: 'absolute', bottom: '-28px', right: '-16px', background: '#fff', borderRadius: '20px', padding: '22px 26px', boxShadow: '0 16px 48px rgba(0,0,0,0.12)', maxWidth: '260px', border: `1px solid ${ACCENT}22` }}>
-              <FaQuoteLeft style={{ color: ACCENT, fontSize: '22px', marginBottom: '10px' }} />
-              <p style={{ color: '#334155', fontSize: '13.5px', lineHeight: '1.7', fontStyle: 'italic', margin: 0 }}>
+            {/* Decorative accent frame behind the image */}
+            <div style={{
+              position: 'absolute', top: '-14px', left: '-14px',
+              width: '100%', height: '100%',
+              borderRadius: '28px',
+              border: `3px solid ${ACCENT}44`,
+              zIndex: 0,
+              pointerEvents: 'none',
+            }} />
+            {/* Decorative accent dot pattern */}
+            <div style={{
+              position: 'absolute', top: '-30px', right: '-30px',
+              width: '80px', height: '80px',
+              backgroundImage: `radial-gradient(${ACCENT}33 2px, transparent 2px)`,
+              backgroundSize: '12px 12px',
+              zIndex: 0,
+              pointerEvents: 'none',
+            }} />
+
+            <img
+              src="/images/doctor1.2.png"
+              alt="Prof Ramesh Babu — Founder, Cancer Herbalist"
+              style={{
+                width: '100%',
+                borderRadius: '28px',
+                boxShadow: '0 24px 64px rgba(56,190,213,0.18)',
+                display: 'block',
+                position: 'relative',
+                zIndex: 1,
+                objectFit: 'cover',
+                maxHeight: '520px',
+              }}
+            />
+
+            {/* Quote card overlay */}
+            <div className="quote-card" style={{
+              position: 'absolute', bottom: '-32px', right: '-20px',
+              background: 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              borderRadius: '20px',
+              padding: '24px 28px',
+              boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+              maxWidth: '290px',
+              border: `1px solid ${ACCENT}22`,
+              zIndex: 2,
+            }}>
+              <FaQuoteLeft style={{ color: ACCENT, fontSize: '24px', marginBottom: '12px' }} />
+              <p style={{ color: '#334155', fontSize: '14px', lineHeight: '1.75', fontStyle: 'italic', margin: 0, fontFamily: 'Playfair Display, serif' }}>
                 "Nature holds the answers. We hold the knowledge to translate them into healing."
               </p>
-              <p style={{ color: ACCENT, fontWeight: 700, fontSize: '12px', marginTop: '10px', margin: '10px 0 0' }}>— Founder, Cancer Herbalist</p>
+              <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '36px', height: '2px', background: ACCENT, borderRadius: '2px'
+                }} />
+                <p style={{ color: ACCENT, fontWeight: 700, fontSize: '12.5px', margin: 0, letterSpacing: '0.3px' }}>
+                  Prof Ramesh Babu, Founder
+                </p>
+              </div>
             </div>
           </motion.div>
 
@@ -143,7 +190,7 @@ export default function About() {
               A Mission Born from <span style={{ color: ACCENT }}>Compassion</span>
             </h2>
             <p style={{ color: '#475569', lineHeight: '1.9', fontSize: '1rem', marginBottom: '18px' }}>
-              Cancer Herbalist was founded in 2004 by a team of integrative medicine practitioners who witnessed firsthand how conventional oncology, while life-saving, often left patients struggling with side effects, fear, and a sense of helplessness.
+              Cancer Herbalist was founded in 2012 by a team of integrative medicine practitioners who witnessed firsthand how conventional oncology, while life-saving, often left patients struggling with side effects, fear, and a sense of helplessness.
             </p>
             <p style={{ color: '#475569', lineHeight: '1.9', fontSize: '1rem', marginBottom: '18px' }}>
               Our founders believed that herbal medicine — when practised with scientific rigour and deep respect for conventional treatment — could meaningfully improve quality of life, reduce treatment burden, and support the body's innate capacity to heal.

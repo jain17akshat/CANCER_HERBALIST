@@ -5,20 +5,49 @@ import { useNavigate } from 'react-router-dom';
 
 const faqs = [
   {
-    q: 'Can I take herbal treatments alongside chemotherapy?',
-    a: 'Yes, our herbal support protocols are designed to complement conventional cancer treatments. We screen all ingredients against your current prescription to avoid interactions.',
+    q: 'What is cancer?',
+    a: 'It is a disorder where Cells divide without limitation & create pressure on neighbor tissue and produce chemicals which lead to death.',
+    keywords: ['what is cancer', 'cancer', 'define cancer', 'cancer meaning'],
   },
   {
-    q: 'Are there any side effects?',
-    a: 'Our formulations consist of premium, certified natural organic herbs. Adverse side effects are extremely rare. Any mild reactions are managed during weekly check-ins.',
+    q: 'Is cancer curable?',
+    a: 'Although legally nobody can claim cure, there are numerous instances where people lived to their life after detection of cancer. Unfortunately the survival rate with Chemo/Radio therapy doesn\'t exceed single digit even with such an enormous amount of research and effort. Although many natural products have shown better than Chemo effect, due to lack of study as per FDA, none of them has been accepted as Standard Therapy. Thus non-commercial organisations like Universities, PG/PhD students and some traditional research scientists, or some small scale studies conducts research on natural products. Combining these research results provide enough evidence to prove their use to include them in cancer therapy.',
+    keywords: ['curable', 'cure', 'can cancer be cured', 'survival'],
   },
   {
-    q: 'How do you determine which herbs I need?',
-    a: 'We review your biopsy reports, genomic profiles, and diagnostic scans. Based on this, Dr. Carter\'s team selects specific compounds to address tumor pathway support.',
+    q: 'What is this treatment?',
+    a: 'Standard therapy includes Surgery, Chemo/Radio therapy, as these have frequently proved to be a failure, it is essential to try other options. Other options include Ayurvedic Therapy, Herbal Therapy, Chinese Therapy, Homeopathy, Sidda/Unani, Acupuncture, Acupressure, Laetriele Therapy, Hyperbaric Oxy-therapy, Ketotherapy, Fasting, Yoga etc. Each of the above has its own advantages. Combining many of them has synergistic benefits. Herbal Chemotherapy (HCT) is a combination of many of the above systems and diet change, life style change and exercise. Objective of HCT is to use all options to provide relief of signs, symptoms, and pain to the patient.',
+    keywords: ['treatment', 'what is this treatment', 'hct', 'herbal chemotherapy', 'therapy options', 'ayurvedic', 'herbal therapy'],
   },
   {
-    q: 'Do you ship internationally?',
-    a: 'Yes. We deliver our customized formulations to patients in over 45 countries worldwide.',
+    q: 'Is it safe?',
+    a: 'All ingredients are natural and proved to be safe. Most of them are routinely used in Kitchen like Turmeric, Ginger, Tea, Grapes etc.',
+    keywords: ['safe', 'safety', 'is it safe', 'side effects', 'harmful'],
+  },
+  {
+    q: 'Can HCT be used during Chemo Therapy & Radio Therapy (CTRT)?',
+    a: 'Absolutely yes, you can use HC during CTRT. As HC makes cancer cells more vulnerable to chemo, you would get results better than Chemo alone. HC also provides protection against CTRT induced adverse reactions. As many ingredients like Ashwagandha, Tulsi are adaptogenic, they would reduce your hospital stay, ICU stay, infections, pain during Surgery and CTRT.',
+    keywords: ['chemo', 'radio', 'ctrt', 'chemotherapy', 'radiation', 'alongside', 'during chemo', 'with chemo'],
+  },
+  {
+    q: 'How long do we need to take this treatment?',
+    a: 'There is no standard duration for a particular type of Cancer. As soon as signs disappear you can stop. As it is nutrition, you have the freedom to start or stop any time. General duration in initial stages may be 1-3 months.',
+    keywords: ['how long', 'duration', 'how many months', 'time period', 'stop treatment'],
+  },
+  {
+    q: 'How much does it cost per month?',
+    a: 'Each patient is presented with different health conditions. Based on several tests, the therapy is personalised to suit their requirements. Please enquire about this during the review & counseling time of your case.',
+    keywords: ['cost', 'price', 'per month', 'how much', 'expensive', 'affordable', 'charges', 'fees'],
+  },
+  {
+    q: 'What would be the cost of whole treatment?',
+    a: 'It would be fraction of the Chemo/Radio therapy. A PETCT scan cost would cover the therapy for several months. As there is no standard format of duration for each type of cancer, it is not possible to calculate accurately.',
+    keywords: ['total cost', 'whole treatment cost', 'complete cost', 'overall cost', 'full treatment'],
+  },
+  {
+    q: 'How much time is required to procure therapy?',
+    a: 'In most cases formulations would be readily available for patients. In few cases special formulations would have to be prepared which would require a day or two. Prior information would reduce the delay.',
+    keywords: ['procure', 'time to get', 'delivery', 'ready', 'available', 'preparation time', 'how soon'],
   },
 ];
 
@@ -86,14 +115,36 @@ export default function Chatbot() {
     setOptions(newOptions);
   };
 
+  // Smart FAQ matching — scores each FAQ by how many keywords match the user's input
+  const findMatchingFaq = (text) => {
+    const lowerText = text.toLowerCase();
+    let bestMatch = -1;
+    let bestScore = 0;
+
+    faqs.forEach((faq, index) => {
+      let score = 0;
+      faq.keywords.forEach(keyword => {
+        if (lowerText.includes(keyword)) {
+          score += keyword.split(' ').length; // longer keyword matches score higher
+        }
+      });
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = index;
+      }
+    });
+
+    return bestScore > 0 ? bestMatch : -1;
+  };
+
   const handleUserMessage = (text) => {
     const userMessage = { id: Date.now(), text, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
 
-    // Basic keyword matching for known intents
     const lowerText = text.toLowerCase();
-    if (lowerText.includes('faq') || lowerText.includes('question')) {
-      // Show FAQ list
+
+    // Check for navigation intents first
+    if (lowerText.includes('faq') || lowerText.includes('all question')) {
       setTimeout(() => handleOptionClick('faq'), 600);
       return;
     }
@@ -101,8 +152,23 @@ export default function Chatbot() {
       setTimeout(() => handleOptionClick('about'), 600);
       return;
     }
-    if (lowerText.includes('book') || lowerText.includes('appointment') || lowerText.includes('consultation')) {
+    if (lowerText.includes('book') || lowerText.includes('appointment') || lowerText.includes('consultation') || lowerText.includes('contact')) {
       setTimeout(() => handleOptionClick('appointment'), 600);
+      return;
+    }
+
+    // Try to match a specific FAQ using keyword scoring
+    const matchedIndex = findMatchingFaq(text);
+    if (matchedIndex !== -1) {
+      const botTypingId = Date.now() + 1;
+      setMessages(prev => [...prev, { id: botTypingId, text: 'Thinking...', sender: 'bot' }]);
+      setTimeout(() => {
+        setMessages(prev => prev.map(m => m.id === botTypingId ? { id: Date.now() + 2, text: faqs[matchedIndex].a, sender: 'bot' } : m));
+        setOptions([
+          { id: 'faq', label: 'More Questions' },
+          { id: 'start', label: 'Back to main menu' }
+        ]);
+      }, 800);
       return;
     }
 
@@ -110,7 +176,7 @@ export default function Chatbot() {
     const botTypingId = Date.now() + 1;
     setMessages(prev => [...prev, { id: botTypingId, text: 'Thinking...', sender: 'bot' }]);
     setTimeout(() => {
-      const fallback = "I’m sorry, I didn’t understand that. Please choose an option below or ask another question.";
+      const fallback = "I'm sorry, I didn't understand that. Please choose an option below or ask another question.";
       setMessages(prev => prev.map(m => m.id === botTypingId ? { id: Date.now() + 2, text: fallback, sender: 'bot' } : m));
       setOptions([
         { id: 'faq', label: 'Frequently Asked Questions' },

@@ -5,7 +5,7 @@ import { FaUserMd, FaGraduationCap, FaBriefcase, FaRegEnvelope } from 'react-ico
 const doctors = [
   {
     id: 1,
-    name: 'Prof. Ramesh',
+    name: 'Prof. Ramesh Babu',
     role: 'Pharmacologist,M.Pharm (PhD)',
     experience: '22 Years Experience',
     specialty: 'Clinical Oncology & Herbal Medicine Integration',
