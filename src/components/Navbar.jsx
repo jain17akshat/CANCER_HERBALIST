@@ -19,6 +19,7 @@ const navLinks = [
     children: [
       { label: '📝 Blog', href: '/blog' },
       { label: '🧬 Patient Education', href: '/patient-education' },
+      { label: '🛒 Herbal Store', href: '/store' },
     ],
   },
   { label: 'Contact', href: '/contact' },
