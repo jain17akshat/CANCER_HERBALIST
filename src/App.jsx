@@ -14,6 +14,8 @@ import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import StoryDetail from './pages/StoryDetail';
 import ServiceDetail from './pages/ServiceDetail';
+import PatientEducation from './pages/PatientEducation';
+import TCellsVsNKCells from './pages/TCellsVsNKCells';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
@@ -67,6 +69,8 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogDetail />} />
             <Route path="/services/:id" element={<ServiceDetail />} />
+            <Route path="/patient-education" element={<PatientEducation />} />
+            <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>

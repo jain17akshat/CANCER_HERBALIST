@@ -12,7 +12,7 @@
 //     answer: 'Our formulations consist of premium, certified natural organic herbs with an established safety profile. Since they are personalized to your organ filtration capacity (liver & kidneys), adverse side effects are extremely rare. Any mild reactions (e.g., digestive adjustments) are managed during weekly check-ins.',
 //   },
 //   {
-//     question: 'How do you determine which herbs I need?',
+//     question: 'How do you determine which products I need?',
 //     answer: 'The process starts with our clinical evaluation. We review your biopsy reports, genomic profiles (if available), blood count summaries, and diagnostic scans. Based on this, Dr. Carter\'s team selects specific phytotherapeutic compounds to address tumor pathway support.',
 //   },
 //   {
