@@ -251,6 +251,20 @@ export default function Footer() {
             <FaLeaf style={{ color: ACCENT }} />
             <span>© {new Date().getFullYear()} <span style={{ color: WHITE80, fontWeight: 600 }}>Cancer Herbalist</span>. All rights reserved.</span>
           </div>
+
+          {/* ── FSSAI Badge ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '8px 16px' }}>
+            <img
+              src="/images/fssai logo.png"
+              alt="FSSAI Certified"
+              style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
+            />
+            <div style={{ borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: '12px' }}>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>FSSAI Licence No.</div>
+              <div style={{ color: WHITE80, fontWeight: 700, fontSize: '13px', letterSpacing: '0.5px' }}>11226998000043</div>
+            </div>
+          </div>
+
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
             {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item) => (
               <a key={item} href="#" style={{ color: WHITE60, textDecoration: 'none', fontSize: '12.5px', transition: 'color 0.2s' }}

@@ -16,7 +16,14 @@ const products = [
     originalPrice: 1999,
     rating: 4.8,
     reviews: 124,
-    image: null, // will use placeholder
+    image: '/products/product1.1.png',
+    images: [
+      '/products/product1.1.png',
+      '/products/product1.2.png',
+      '/products/product1.3.png',
+      '/products/product1.4.png',
+      '/products/product1.5.png',
+    ],
     color: '#38bed5',
     icon: '🌿',
     badge: 'Best Seller',
@@ -32,7 +39,12 @@ const products = [
     originalPrice: 2399,
     rating: 4.9,
     reviews: 98,
-    image: null,
+    image: '/products/product2.1.png',
+    images: [
+      '/products/product2.1.png',
+      '/products/product2.2.jpg',
+      '/products/product2.3.jpg',
+    ],
     color: '#f59e0b',
     icon: '🟡',
     badge: 'Top Rated',
@@ -48,7 +60,12 @@ const products = [
     originalPrice: 1299,
     rating: 4.6,
     reviews: 76,
-    image: null,
+    image: '/products/product3.1.jpg',
+    images: [
+      '/products/product3.1.jpg',
+      '/products/product3.2.jpg',
+      '/products/product3.3.jpg',
+    ],
     color: '#10b981',
     icon: '🍃',
     badge: null,
@@ -64,7 +81,13 @@ const products = [
     originalPrice: 1699,
     rating: 4.7,
     reviews: 89,
-    image: null,
+    image: '/products/product4.1.jpg',
+    images: [
+      '/products/product4.1.jpg',
+      '/products/product4.2.jpg',
+      '/products/product4.3.jpg', 
+
+    ],
     color: '#8b5cf6',
     icon: '🌱',
     badge: null,
@@ -80,7 +103,12 @@ const products = [
     originalPrice: 3199,
     rating: 4.9,
     reviews: 142,
-    image: null,
+    image: '/products/product5.1.jpg',
+    images: [
+      '/products/product5.1.jpg',
+      '/products/product5.2.jpg',
+      '/products/product5.3.jpg',
+    ],
     color: '#0f3460',
     icon: '💊',
     badge: 'Premium',
@@ -113,101 +141,22 @@ function ProductPlaceholder({ color, icon }) {
   return (
     <div style={{
       width: '100%',
-      height: '150px',
+      aspectRatio: '3 / 4',
       background: `linear-gradient(135deg, ${color}18, ${color}38)`,
       display: 'flex',
-      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '6px',
     }}>
       <span style={{ fontSize: '48px' }}>{icon}</span>
     </div>
   );
 }
 
-// Enquiry Modal
-function EnquiryModal({ product, onClose }) {
-  const navigate = useNavigate();
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      style={{
-        position: 'fixed', inset: 0, zIndex: 2000,
-        background: 'rgba(0,0,0,0.55)', display: 'flex',
-        alignItems: 'center', justifyContent: 'center', padding: '20px',
-      }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: '#fff', borderRadius: '20px', padding: '32px',
-          maxWidth: '480px', width: '100%', position: 'relative',
-          boxShadow: '0 24px 60px rgba(0,0,0,0.2)',
-        }}
-      >
-        <button onClick={onClose} style={{
-          position: 'absolute', top: '16px', right: '16px',
-          background: '#f3f4f6', border: 'none', borderRadius: '50%',
-          width: '32px', height: '32px', cursor: 'pointer', fontSize: '14px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <FaTimes />
-        </button>
-
-        <div style={{ fontSize: '48px', marginBottom: '12px' }}>{product.icon}</div>
-        <h3 style={{ color: '#0f172a', marginBottom: '4px', fontSize: '1.2rem' }}>{product.name}</h3>
-        <p style={{ color: ACCENT, fontWeight: 700, fontSize: '1.1rem', marginBottom: '16px' }}>
-          ₹{product.price.toLocaleString('en-IN')} <span style={{ color: '#94a3b8', textDecoration: 'line-through', fontSize: '0.9rem' }}>₹{product.originalPrice.toLocaleString('en-IN')}</span>
-        </p>
-        <p style={{ color: '#64748b', fontSize: '0.93rem', lineHeight: '1.7', marginBottom: '20px' }}>
-          {product.description}
-        </p>
-        <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '14px 16px', marginBottom: '24px' }}>
-          {product.benefits.map((b, i) => (
-            <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: i < product.benefits.length - 1 ? '8px' : 0 }}>
-              <FaCheck style={{ color: PRIMARY, fontSize: '11px', flexShrink: 0 }} />
-              <span style={{ fontSize: '13px', color: '#374151' }}>{b}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{ background: '#fffbeb', border: '1px solid #fbbf24', borderRadius: '10px', padding: '10px 14px', marginBottom: '20px' }}>
-          <p style={{ color: '#92400e', fontSize: '12px', margin: 0 }}>
-            ⚕️ <strong>Note:</strong> These products are complementary supplements. Please consult your oncologist before use.
-          </p>
-        </div>
-        <button
-          onClick={() => {
-            const params = new URLSearchParams({ product: product.name, price: product.price });
-            navigate(`/contact?${params.toString()}`);
-            onClose();
-          }}
-          style={{
-            width: '100%', padding: '14px',
-            background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
-            color: '#fff', border: 'none', borderRadius: '12px',
-            fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-            letterSpacing: '0.3px',
-          }}
-        >
-          📩 Send Enquiry for this Product
-        </button>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 // ── Main Store Component ────────────────────────────────────────
 export default function Store() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const filtered = products.filter(p => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
@@ -318,11 +267,21 @@ export default function Store() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              onClick={() => setSelectedProduct(product)}
+              onClick={() => navigate(`/store/${product.id}`)}
             >
               {/* Image */}
-              <div style={{ position: 'relative' }}>
-                <ProductPlaceholder color={product.color} icon={product.icon} />
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio: '3 / 4',
+                overflow: 'hidden',
+                background: '#f8f8f8',
+              }}>
+                {product.image ? (
+                  <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <ProductPlaceholder color={product.color} icon={product.icon} />
+                )}
                 {product.badge && (
                   <span style={{
                     position: 'absolute', top: '8px', left: '8px',
@@ -373,7 +332,7 @@ export default function Store() {
 
                 <button
                   className="store-card-btn"
-                  onClick={e => { e.stopPropagation(); setSelectedProduct(product); }}
+                  onClick={e => { e.stopPropagation(); navigate(`/store/${product.id}`); }}
                 >
                   <FaShoppingBag style={{ fontSize: '11px' }} /> Enquire
                 </button>
@@ -451,12 +410,7 @@ export default function Store() {
 
       {/* Enquiry Modal */}
       <AnimatePresence>
-        {selectedProduct && (
-          <EnquiryModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
-          />
-        )}
+        {/* Enquiry modal removed – navigation now opens detailed page */}
       </AnimatePresence>
     </div>
   );

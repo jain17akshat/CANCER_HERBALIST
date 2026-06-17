@@ -17,6 +17,7 @@ import ServiceDetail from './pages/ServiceDetail';
 import PatientEducation from './pages/PatientEducation';
 import TCellsVsNKCells from './pages/TCellsVsNKCells';
 import Store from './pages/Store';
+import ProductDetail from './pages/ProductDetail';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
@@ -73,6 +74,7 @@ function App() {
             <Route path="/patient-education" element={<PatientEducation />} />
             <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
             <Route path="/store" element={<Store />} />
+            <Route path="/store/:id" element={<ProductDetail />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
