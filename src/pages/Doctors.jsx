@@ -18,7 +18,7 @@ const doctors = [
   },
   {
     id: 2,
-    name: 'TEAM',
+    name: 'NUTRACEUTICAL TEAM',
     experience: '22 Years Experience',
     specialty: 'Clinical Oncology & Herbal Medicine Integration',
     bio: 'Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individuals unique needs throughout their treatment journey.',

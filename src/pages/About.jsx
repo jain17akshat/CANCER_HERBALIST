@@ -392,7 +392,7 @@ export default function About() {
             {/* Right — copy */}
             <motion.div data-aos="fade-left">
               <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)', color: '#fff', marginBottom: '6px', lineHeight: 1.2 }}>
-                Prof. Ramesh
+                Prof. Ramesh Babu
               </h3>
               <p style={{ color: ACCENT, fontWeight: 700, fontSize: '14px', letterSpacing: '0.5px', marginBottom: '32px', textTransform: 'uppercase' }}>
                 Founder &amp; Chief Herbalist
@@ -410,7 +410,7 @@ export default function About() {
                 <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.05rem, 2vw, 1.25rem)', color: '#fff', fontStyle: 'italic', lineHeight: '1.8', margin: 0 }}>
                   "Your immune system deserves a real conversation — not a footnote in a 15-minute appointment."
                 </p>
-                <p style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', marginTop: '12px', marginBottom: 0 }}>— Prof. Ramesh</p>
+                <p style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', marginTop: '12px', marginBottom: 0 }}>— Prof. Ramesh Babu</p>
               </div>
 
               <p style={{ color: 'rgba(255,255,255,0.78)', lineHeight: '1.9', fontSize: '1rem', marginBottom: '36px' }}>
