@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaStar, FaShieldAlt, FaLeaf, FaCheck, FaArrowLeft,
   FaWhatsapp, FaPhoneAlt, FaShoppingBag, FaTruck,
   FaUndo, FaAward, FaChevronDown, FaChevronUp,
+  FaTimes, FaPaperPlane, FaSpinner, FaCheckCircle,
 } from 'react-icons/fa';
+
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
@@ -21,11 +24,12 @@ export const products = [
     rating: 4.8,
     reviews: 124,
     images: [
-      '/products/product1.1.png',
+      '/products/product1.jpg',
+
       '/products/product1.2.png',
-      // '/products/product1.3.png',
+      '/products/product1.3.png',
       // '/products/product1.4.png',
-      '/products/product1.5.png',
+      // '/products/product1.5.png',
     ],
     color: '#38bed5',
     badge: 'Best Seller',
@@ -116,7 +120,7 @@ export const products = [
     images: [
       '/products/product4.1.jpg',
       '/products/product4.2.jpg',
-       '/products/product4.3.jpg',
+      '/products/product4.3.jpg',
     ],
     color: '#8b5cf6',
     badge: null,
@@ -235,10 +239,10 @@ export const products = [
     rating: 4.8,
     reviews: 74,
     images: [
-            '/products/product8.0.jpg',
+      '/products/product8.0.jpg',
 
       '/products/product8.1.jpg',
-      
+
       '/products/product8.4.jpg',
       // '/products/product8.3.jpg',
       // '/products/product8.2.jpg',
@@ -299,7 +303,9 @@ export const products = [
     rating: 4.6,
     reviews: 52,
     images: [
+      '/products/product10.jpg',
       '/products/product10.1.jpg',
+      '/products/product10.2.jpg',
     ],
     color: '#e11d48',
     badge: null,
@@ -479,7 +485,7 @@ export const products = [
     rating: 4.6,
     reviews: 47,
     images: [
-      
+
       '/products/product16.1.jpg',
       '/products/product16.jpg',
       '/products/product16.2.jpg',
@@ -507,7 +513,7 @@ function StarRating({ rating, count }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
       <div style={{ display: 'flex', gap: '2px' }}>
-        {[1,2,3,4,5].map(n => (
+        {[1, 2, 3, 4, 5].map(n => (
           <FaStar
             key={n}
             style={{
@@ -551,11 +557,367 @@ function AccordionItem({ title, children }) {
   );
 }
 
+// ── Enquiry Modal ────────────────────────────────────────────────────────────
+function EnquiryModal({ product, onClose }) {
+  const ACCENT = '#38bed5';
+  const PRIMARY = '#1a6e52';
+
+  const [form, setForm] = useState({
+    name: '', phone: '', email: '',
+    message: `Hi, I am interested in ${product.name} (₹${product.price.toLocaleString('en-IN')}). Please share more details.`,
+  });
+  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const validate = () => {
+    if (!form.name.trim()) return 'Please enter your name.';
+    if (!form.phone.trim()) return 'Please enter your phone number.';
+    if (!form.email.trim()) return 'Please enter your email address.';
+    return null;
+  };
+
+  const handleEmailSend = async () => {
+    const err = validate();
+    if (err) { setErrorMsg(err); return; }
+    setErrorMsg('');
+    setStatus('sending');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key:       WEB3FORMS_KEY,
+          subject:          `🌿 Product Enquiry — ${product.name}`,
+          from_name:        form.name,
+          email:            form.email,   // Web3Forms uses this as reply-to
+          // ── Fields that appear in the email body ──
+          'Customer Name':    form.name,
+          'Customer Phone':   form.phone,
+          'Customer Email':   form.email,
+          'Product':          product.name,
+          'Category':         product.category,
+          'Price':            `₹${product.price.toLocaleString('en-IN')}`,
+          'Message':          form.message || 'No additional message.',
+          'Product URL':      `${window.location.origin}/store/${product.id}`,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus('success');
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (e) {
+      console.error(e);
+      setStatus('error');
+      setErrorMsg('Failed to send. Please try WhatsApp below.');
+    }
+  };
+
+  const waText = encodeURIComponent(
+    `Hi, I am interested in *${product.name}* (₹${product.price.toLocaleString('en-IN')}).\n` +
+    (form.name ? `Name: ${form.name}\n` : '') +
+    (form.phone ? `Phone: ${form.phone}\n` : '') +
+    `\n${form.message}`
+  );
+
+  const inStyle = {
+    width: '100%', padding: '12px 16px', marginBottom: '14px',
+    border: '1.5px solid #e2e8f0', borderRadius: '10px',
+    fontSize: '14px', outline: 'none', background: '#f8fafc',
+    color: '#0f172a', boxSizing: 'border-box',
+    fontFamily: 'Poppins, sans-serif', transition: 'border-color 0.2s',
+  };
+  const focus = (e) => (e.target.style.borderColor = ACCENT);
+  const blur = (e) => (e.target.style.borderColor = '#e2e8f0');
+
+  return (
+    <AnimatePresence>
+      {/* Backdrop */}
+      <motion.div
+        key="backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(10,20,40,0.65)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '16px',
+        }}
+      >
+        {/* Modal card */}
+        <motion.div
+          key="modal"
+          initial={{ opacity: 0, y: 40, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 30, scale: 0.96 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            background: '#fff', borderRadius: '24px',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.25)',
+            width: '100%', maxWidth: '480px',
+            maxHeight: '92vh', overflowY: 'auto',
+            position: 'relative',
+          }}
+        >
+          {/* ── Close button ── */}
+          <button
+            onClick={onClose}
+            style={{
+              position: 'absolute', top: '16px', right: '16px',
+              background: '#f1f5f9', border: 'none', borderRadius: '50%',
+              width: '36px', height: '36px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#64748b', fontSize: '16px', zIndex: 10,
+              transition: 'background 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#e2e8f0')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = '#f1f5f9')}
+          >
+            <FaTimes />
+          </button>
+
+          {/* ── Product Banner ── */}
+          <div style={{
+            background: `linear-gradient(135deg, ${PRIMARY} 0%, ${ACCENT} 100%)`,
+            borderRadius: '24px 24px 0 0',
+            padding: '28px 28px 22px',
+            display: 'flex', gap: '16px', alignItems: 'center',
+          }}>
+            <div style={{
+              width: '72px', height: '72px', borderRadius: '14px',
+              background: 'rgba(255,255,255,0.15)',
+              border: '2px solid rgba(255,255,255,0.3)',
+              overflow: 'hidden', flexShrink: 0,
+            }}>
+              <img
+                src={product.images[0]} alt={product.name}
+                style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div>
+              <p style={{
+                color: 'rgba(255,255,255,0.75)', fontSize: '11px', fontWeight: 600,
+                textTransform: 'uppercase', letterSpacing: '1px', margin: '0 0 4px'
+              }}>
+                Product Enquiry
+              </p>
+              <h3 style={{
+                color: '#fff', fontFamily: 'Playfair Display, serif',
+                fontSize: '1.15rem', margin: '0 0 6px', lineHeight: 1.3
+              }}>
+                {product.name}
+              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.1rem' }}>
+                  ₹{product.price.toLocaleString('en-IN')}
+                </span>
+                <span style={{
+                  color: 'rgba(255,255,255,0.55)', fontSize: '13px',
+                  textDecoration: 'line-through'
+                }}>
+                  ₹{product.originalPrice.toLocaleString('en-IN')}
+                </span>
+
+              </div>
+            </div>
+          </div>
+
+          {/* ── Body ── */}
+          <div style={{ padding: '28px' }}>
+
+            {status === 'success' ? (
+              /* ── Success state ── */
+              <div style={{ textAlign: 'center', padding: '16px 0 8px' }}>
+                <div style={{
+                  width: '72px', height: '72px', borderRadius: '50%',
+                  background: `${ACCENT}18`, border: `3px solid ${ACCENT}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  margin: '0 auto 20px', fontSize: '32px', color: ACCENT,
+                }}>
+                  <FaCheckCircle />
+                </div>
+                <h3 style={{
+                  fontFamily: 'Playfair Display, serif', color: '#0f172a',
+                  fontSize: '1.4rem', marginBottom: '10px'
+                }}>
+                  Enquiry Sent! 🌿
+                </h3>
+                <p style={{ color: '#64748b', lineHeight: 1.7, marginBottom: '8px' }}>
+                  A confirmation has been sent to{' '}
+                  <strong style={{ color: ACCENT }}>{form.email}</strong>.
+                </p>
+                <p style={{ color: '#64748b', lineHeight: 1.7, marginBottom: '24px' }}>
+                  Our team will contact you at <strong>{form.phone}</strong> within 24 hours.
+                </p>
+                {/* WhatsApp follow-up */}
+                <a
+                  href={`https://wa.me/918884588835?text=${waText}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '8px',
+                    background: '#25d366', color: '#fff',
+                    padding: '12px 24px', borderRadius: '12px',
+                    textDecoration: 'none', fontWeight: 700, fontSize: '14px',
+                  }}
+                >
+                  <FaWhatsapp style={{ fontSize: '18px' }} /> Also message on WhatsApp
+                </a>
+              </div>
+            ) : (
+              /* ── Form ── */
+              <>
+                <p style={{
+                  color: '#64748b', fontSize: '13.5px', lineHeight: 1.7,
+                  marginBottom: '20px', marginTop: 0
+                }}>
+                  Fill in your details and we'll get back to you within 24 hours.
+                </p>
+
+                <label style={{
+                  display: 'block', fontSize: '12px', fontWeight: 700,
+                  color: '#334155', marginBottom: '6px', textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>Full Name *</label>
+                <input
+                  type="text" name="name" placeholder="e.g. Rahul Sharma"
+                  value={form.name} onChange={handleChange}
+                  style={inStyle} onFocus={focus} onBlur={blur}
+                />
+
+                <label style={{
+                  display: 'block', fontSize: '12px', fontWeight: 700,
+                  color: '#334155', marginBottom: '6px', textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>Phone Number *</label>
+                <input
+                  type="tel" name="phone" placeholder="+91 98765 43210"
+                  value={form.phone} onChange={handleChange}
+                  style={inStyle} onFocus={focus} onBlur={blur}
+                />
+
+                <label style={{
+                  display: 'block', fontSize: '12px', fontWeight: 700,
+                  color: '#334155', marginBottom: '6px', textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>Email Address *</label>
+                <input
+                  type="email" name="email" placeholder="your@email.com"
+                  value={form.email} onChange={handleChange}
+                  style={inStyle} onFocus={focus} onBlur={blur}
+                />
+
+                <label style={{
+                  display: 'block', fontSize: '12px', fontWeight: 700,
+                  color: '#334155', marginBottom: '6px', textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>Message</label>
+                <textarea
+                  name="message" rows={3}
+                  value={form.message} onChange={handleChange}
+                  style={{ ...inStyle, resize: 'vertical' }}
+                  onFocus={focus} onBlur={blur}
+                />
+
+                {(errorMsg || status === 'error') && (
+                  <p style={{ color: '#ef4444', fontSize: '13px', marginBottom: '12px' }}>
+                    ⚠ {errorMsg || 'Something went wrong. Try WhatsApp below.'}
+                  </p>
+                )}
+
+                {/* ── Dual CTA ── */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
+
+                  {/* Email send */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleEmailSend}
+                    disabled={status === 'sending'}
+                    style={{
+                      width: '100%', padding: '15px',
+                      background: status === 'sending'
+                        ? '#94a3b8'
+                        : `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
+                      color: '#fff', border: 'none', borderRadius: '12px',
+                      fontWeight: 700, fontSize: '14px', cursor: status === 'sending' ? 'not-allowed' : 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      gap: '8px', fontFamily: 'inherit',
+                      boxShadow: status !== 'sending' ? `0 6px 20px ${ACCENT}44` : 'none',
+                    }}
+                  >
+                    {status === 'sending'
+                      ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Sending Enquiry…</>
+                      : <><FaPaperPlane /> Send Enquiry via Email</>
+                    }
+                  </motion.button>
+
+                  {/* Divider */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
+                    <span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 600 }}>OR</span>
+                    <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
+                  </div>
+
+                  {/* WhatsApp */}
+                  <motion.a
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    href={`https://wa.me/918884588835?text=${waText}`}
+                    target="_blank" rel="noopener noreferrer"
+                    style={{
+                      width: '100%', padding: '14px',
+                      background: '#25d366',
+                      color: '#fff', borderRadius: '12px',
+                      fontWeight: 700, fontSize: '14px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      gap: '8px', textDecoration: 'none', boxSizing: 'border-box',
+                    }}
+                  >
+                    <FaWhatsapp style={{ fontSize: '18px' }} /> Enquire via WhatsApp
+                  </motion.a>
+
+                  {/* Call */}
+                  <a
+                    href="tel:8884588835"
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      gap: '8px', color: PRIMARY, fontWeight: 600, fontSize: '13px',
+                      textDecoration: 'none', padding: '10px',
+                      border: `1.5px solid ${PRIMARY}44`, borderRadius: '10px',
+                    }}
+                  >
+                    <FaPhoneAlt /> Call Us: 88845 88835
+                  </a>
+                </div>
+              </>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const product = products.find(p => p.id === Number(id));
   const [activeImg, setActiveImg] = useState(0);
+  const [enquiryOpen, setEnquiryOpen] = useState(false);
 
   if (!product) {
     return (
@@ -650,14 +1012,7 @@ export default function ProductDetail() {
                   {product.badge}
                 </span>
               )}
-              <span style={{
-                position: 'absolute', top: '16px', right: '16px', zIndex: 2,
-                background: '#22c55e', color: '#fff',
-                padding: '5px 12px', borderRadius: '8px',
-                fontSize: '12px', fontWeight: 700,
-              }}>
-                {discount}% OFF
-              </span>
+
               <img
                 src={product.images[activeImg]}
                 alt={product.name}
@@ -769,10 +1124,7 @@ export default function ProductDetail() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  const params = new URLSearchParams({ product: product.name, price: product.price });
-                  navigate(`/contact?${params.toString()}`);
-                }}
+                onClick={() => setEnquiryOpen(true)}
                 style={{
                   width: '100%', padding: '16px',
                   background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
@@ -823,6 +1175,20 @@ export default function ProductDetail() {
             }}>
               <p style={{ color: '#92400e', fontSize: '12px', margin: 0, lineHeight: '1.7' }}>
                 ⚕️ <strong>Medical Note:</strong> This product is a complementary herbal supplement and is not a substitute for conventional cancer treatment. Please consult your oncologist before use.
+              </p>
+            </div>
+
+            {/* Appearance disclaimer */}
+            <div style={{
+              display: 'flex', gap: '10px', alignItems: 'flex-start',
+              background: '#f8fafc', border: '1px dashed #cbd5e1',
+              borderRadius: '10px', padding: '11px 14px', marginTop: '10px',
+            }}>
+              <span style={{ fontSize: '16px', lineHeight: 1, flexShrink: 0, marginTop: '1px' }}>🎨</span>
+              <p style={{ color: '#64748b', fontSize: '11.5px', margin: 0, lineHeight: '1.75' }}>
+                <strong style={{ color: '#475569' }}>Appearance Note:</strong>{' '}
+                Product colour, packaging, or label design may vary slightly from the images shown — a natural result of batch-to-batch sourcing of premium botanicals.
+                Rest assured, the <strong style={{ color: PRIMARY }}>formulation, potency, and therapeutic efficacy remain exactly the same</strong> in every batch.
               </p>
             </div>
           </div>
@@ -880,14 +1246,7 @@ export default function ProductDetail() {
               >
                 <div style={{ aspectRatio: '3 / 4', overflow: 'hidden', position: 'relative' }}>
                   <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <span style={{
-                    position: 'absolute', top: '8px', right: '8px',
-                    background: '#22c55e', color: '#fff',
-                    padding: '3px 8px', borderRadius: '6px',
-                    fontSize: '10px', fontWeight: 700,
-                  }}>
-                    {Math.round((1 - p.price / p.originalPrice) * 100)}% OFF
-                  </span>
+
                 </div>
                 <div style={{ padding: '12px 14px 14px' }}>
                   <p style={{ color: '#94a3b8', fontSize: '11px', margin: '0 0 4px', textTransform: 'uppercase', fontWeight: 600 }}>{p.category}</p>
@@ -946,11 +1305,11 @@ export default function ProductDetail() {
           }
           .pd-gallery {
             position: static;
-            flex-direction: column-reverse;
+            flex-direction: column;
           }
           .pd-main-img {
-            height: 420px;
-            min-height: 320px;
+            height: 320px;
+            min-height: 260px;
           }
           .pd-thumbs {
             flex-direction: row;
@@ -964,13 +1323,26 @@ export default function ProductDetail() {
         }
         @media (max-width: 560px) {
           .pd-main-img {
-            height: 350px;
-            min-height: 280px;
+            height: 280px;
+            min-height: 220px;
+          }
+          .pd-thumbs > div {
+            width: 56px !important;
+            height: 56px !important;
           }
           .pd-related {
             grid-template-columns: 1fr;
           }
         }
+      `}</style>
+
+      {/* Enquiry Modal */}
+      {enquiryOpen && product && (
+        <EnquiryModal product={product} onClose={() => setEnquiryOpen(false)} />
+      )}
+
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

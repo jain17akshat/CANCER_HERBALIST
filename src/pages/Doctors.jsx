@@ -38,7 +38,7 @@ export default function Doctors() {
       <div className="container">
         <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '56px' }}>
           <span className="section-badge">
-            <FaUserMd /> Our Medical Team
+            <FaUserMd /> OUR NUTRACEUTICAL TEAM
           </span>
           <h2 className="section-title">
             Meet Our Expert Team <span>Doctors</span>

@@ -16,9 +16,9 @@ const products = [
     originalPrice: 1999,
     rating: 4.8,
     reviews: 124,
-    image: '/products/product1.1.png',
+    image: '/products/product1.jpg',
     images: [
-      '/products/product1.1.png',
+      '/products/product1.jpg',
       '/products/product1.2.png',
       '/products/product1.3.png',
       '/products/product1.4.png',
@@ -211,9 +211,11 @@ const products = [
     originalPrice: 1499,
     rating: 4.6,
     reviews: 52,
-    image: '/products/product10.1.jpg',
+    image: '/products/product10.jpg',
     images: [
+      '/products/product10.jpg',
       '/products/product10.1.jpg',
+      '/products/product10.2.jpg',
     ],
     color: '#e11d48',
     icon: '💊',
@@ -511,15 +513,7 @@ export default function Store() {
                     {product.badge}
                   </span>
                 )}
-                {/* Discount badge top-right */}
-                <span style={{
-                  position: 'absolute', top: '8px', right: '8px',
-                  background: '#22c55e', color: '#fff',
-                  padding: '3px 8px', borderRadius: '6px',
-                  fontSize: '10px', fontWeight: 700,
-                }}>
-                  {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
-                </span>
+
               </div>
 
               {/* Info */}

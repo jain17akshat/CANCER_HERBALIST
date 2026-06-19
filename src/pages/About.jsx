@@ -351,6 +351,81 @@ export default function About() {
         </div>
       </section>
 
+      {/* ══════════ FOUNDER SECTION ══════════ */}
+      <section style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2a45 60%, #0e3d30 100%)', padding: 'clamp(60px, 10vw, 120px) 20px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '500px', height: '500px', borderRadius: '50%', background: ACCENT, opacity: 0.04, filter: 'blur(100px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '400px', height: '400px', borderRadius: '50%', background: '#10b981', opacity: 0.05, filter: 'blur(80px)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+            <span style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', letterSpacing: '1.5px', textTransform: 'uppercase' }}>The Person Behind the Practice</span>
+            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: '#fff', marginTop: '12px', lineHeight: 1.25 }}>
+              Meet the <span style={{ color: ACCENT }}>Founder</span>
+            </h2>
+          </div>
+
+          <div className="founder-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 'clamp(32px, 6vw, 80px)', alignItems: 'center' }}>
+            {/* Left — image + credentials */}
+            <motion.div data-aos="fade-right" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+              <div style={{ position: 'relative', width: '100%', maxWidth: '300px' }}>
+                <div style={{ position: 'absolute', inset: '-8px', borderRadius: '50%', background: `conic-gradient(${ACCENT}, #10b981, ${ACCENT})`, opacity: 0.3, filter: 'blur(14px)' }} />
+                <img
+                  src="/images/doctor1.2.png"
+                  alt="Prof. Ramesh Babu — Founder, Cancer Herbalist"
+                  style={{ width: '100%', borderRadius: '50%', display: 'block', position: 'relative', zIndex: 1, border: `4px solid ${ACCENT}44`, aspectRatio: '1 / 1', objectFit: 'cover' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', maxWidth: '300px' }}>
+                {[
+                  { icon: '🎓', text: 'University Trained Integrative Pharmacologist' },
+                  { icon: '🏛️', text: 'Member — Karnataka State Pharmacy Council' },
+                  { icon: '✅', text: 'Board-Registered Practitioner' },
+                ].map((c, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '10px 14px' }}>
+                    <span style={{ fontSize: '16px', flexShrink: 0 }}>{c.icon}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12.5px', lineHeight: '1.5', fontWeight: 500 }}>{c.text}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Right — copy */}
+            <motion.div data-aos="fade-left">
+              <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)', color: '#fff', marginBottom: '6px', lineHeight: 1.2 }}>
+                Prof. Ramesh
+              </h3>
+              <p style={{ color: ACCENT, fontWeight: 700, fontSize: '14px', letterSpacing: '0.5px', marginBottom: '32px', textTransform: 'uppercase' }}>
+                Founder &amp; Chief Herbalist
+              </p>
+
+              <p style={{ color: 'rgba(255,255,255,0.78)', lineHeight: '1.9', fontSize: '1rem', marginBottom: '20px' }}>
+                He spends <strong style={{ color: '#fff' }}>one to two hours with every patient</strong> — compared to the industry average of 17 minutes. Not because he has to. Because he believes that no meaningful healing conversation can happen in a fraction of that time.
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.78)', lineHeight: '1.9', fontSize: '1rem', marginBottom: '20px' }}>
+                Prof. Ramesh Babu uses conventional treatment every day. He is not against it. He has seen it save lives. But he also sees what it leaves behind — fatigue, fear, and a body that needs more than a prescription to recover.
+              </p>
+
+              {/* Pull quote */}
+              <div style={{ borderLeft: `4px solid ${ACCENT}`, paddingLeft: '24px', margin: '32px 0' }}>
+                <p style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.05rem, 2vw, 1.25rem)', color: '#fff', fontStyle: 'italic', lineHeight: '1.8', margin: 0 }}>
+                  "Your immune system deserves a real conversation — not a footnote in a 15-minute appointment."
+                </p>
+                <p style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', marginTop: '12px', marginBottom: 0 }}>— Prof. Ramesh</p>
+              </div>
+
+              <p style={{ color: 'rgba(255,255,255,0.78)', lineHeight: '1.9', fontSize: '1rem', marginBottom: '36px' }}>
+                That conviction is why Cancer Herbalist was built the way it was — unhurried, deeply personal, and rooted in the belief that the body's own intelligence, properly supported, is one of the most powerful healing forces in medicine.
+              </p>
+
+              <Link to="/contact"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: ACCENT, color: '#fff', padding: '14px 32px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '15px', boxShadow: `0 8px 28px ${ACCENT}44` }}>
+                Book a Consultation <FaArrowRight />
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ══════════ CTA STRIP ══════════ */}
       <section style={{ background: `linear-gradient(135deg, ${DARK} 0%, #0f3460 60%, #0e6655 100%)`, padding: '80px 20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', bottom: '-60px', left: '-60px', width: '300px', height: '300px', borderRadius: '50%', background: ACCENT, opacity: 0.06, filter: 'blur(60px)' }} />
@@ -379,6 +454,9 @@ export default function About() {
           .about-story-grid {
             grid-template-columns: 1fr !important;
             gap: 32px !important;
+          }
+          .founder-grid {
+            grid-template-columns: 1fr !important;
           }
           .quote-card {
              position: relative !important;
