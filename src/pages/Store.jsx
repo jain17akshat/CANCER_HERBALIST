@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaLeaf, FaSearch, FaTimes, FaShoppingBag, FaStar, FaShieldAlt, FaCheck } from 'react-icons/fa';
+import { FaLeaf, FaSearch, FaTimes, FaShoppingBag, FaStar, FaShieldAlt, FaCheck, FaHeart, FaRegHeart } from 'react-icons/fa';
+import { useWishlist } from '../context/WishlistContext';
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
@@ -374,6 +375,7 @@ function ProductPlaceholder({ color, icon }) {
 // ── Main Store Component ────────────────────────────────────────
 export default function Store() {
   const navigate = useNavigate();
+  const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
 
@@ -508,11 +510,26 @@ export default function Store() {
                       ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
                       : `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
                     color: '#fff', padding: '3px 9px', borderRadius: '50px',
-                    fontSize: '10px', fontWeight: 700,
+                    fontSize: '10px', fontWeight: 700, zIndex: 5
                   }}>
                     {product.badge}
                   </span>
                 )}
+
+                {/* Wishlist Button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
+                  style={{
+                    position: 'absolute', top: '8px', right: '8px', zIndex: 10,
+                    background: '#fff', border: 'none', borderRadius: '50%',
+                    width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', color: isInWishlist(product.id) ? '#ef4444' : '#94a3b8',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)', transition: 'all 0.2s'
+                  }}
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  {isInWishlist(product.id) ? <FaHeart style={{ fontSize: '14px' }} /> : <FaRegHeart style={{ fontSize: '14px' }} />}
+                </button>
 
               </div>
 
@@ -591,7 +608,7 @@ export default function Store() {
           .store-card-btn {
             width: 100%;
             padding: 8px;
-            background: linear-gradient(135deg, ${PRIMARY}, ${ACCENT});
+            background: ${PRIMARY};
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -603,6 +620,10 @@ export default function Store() {
             justify-content: center;
             gap: 5px;
             font-family: inherit;
+            transition: background 0.2s;
+          }
+          .store-card-btn:hover {
+            background: #14533d;
           }
           @media (max-width: 1024px) {
             .store-grid { grid-template-columns: repeat(3, 1fr); }

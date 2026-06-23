@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaPhone, FaChevronDown, FaLeaf } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPhone, FaChevronDown, FaLeaf, FaHeart } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ACCENT = '#38bed5';
@@ -34,6 +34,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
+  
+  // We'd use useWishlist here, but to avoid an error if context isn't available everywhere we can just show the icon.
+  // We will import it at the top.
 
   const isActive = (href) => {
     if (href === '#') return false;
@@ -189,6 +192,21 @@ export default function Navbar() {
               +91 88845 88835
             </a>
 
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/wishlist')}
+              style={{
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '40px', height: '40px', borderRadius: '50%', background: '#f1f5f9',
+                color: '#ef4444', transition: 'background 0.2s'
+              }}
+              className="ch-wishlist-icon"
+              title="My Wishlist"
+            >
+              <FaHeart style={{ fontSize: '18px' }} />
+            </motion.div>
+
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
@@ -295,6 +313,27 @@ export default function Navbar() {
                 </motion.div>
               ))}
 
+              <Link
+                to="/wishlist"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#ef4444',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  fontSize: '15px',
+                  marginTop: '10px',
+                  padding: '10px 14px',
+                  background: '#fef2f2',
+                  borderRadius: '10px'
+                }}
+                onClick={() => setMenuOpen(false)}
+              >
+                <FaHeart style={{ fontSize: '14px' }} />
+                My Wishlist
+              </Link>
+
               <motion.a
                 href="tel:+918884588835"
                 style={{
@@ -305,7 +344,7 @@ export default function Navbar() {
                   textDecoration: 'none',
                   fontWeight: 600,
                   fontSize: '14px',
-                  marginTop: '4px',
+                  marginTop: '10px',
                   padding: '10px 14px',
                 }}
               >

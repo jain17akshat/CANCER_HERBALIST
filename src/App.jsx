@@ -18,10 +18,13 @@ import PatientEducation from './pages/PatientEducation';
 import TCellsVsNKCells from './pages/TCellsVsNKCells';
 import Store from './pages/Store';
 import ProductDetail from './pages/ProductDetail';
+import Checkout from './pages/Checkout';
+import Wishlist from './pages/Wishlist';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
+import { WishlistProvider } from './context/WishlistContext';
 
 /* Scroll to the top whenever the route path changes */
 function ScrollToTop() {
@@ -44,47 +47,51 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <ScrollToTop />
-      <div
-        className="App"
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          overflowX: 'hidden',
-          position: 'relative',
-        }}
-      >
-        <Navbar />
+    <WishlistProvider>
+      <Router>
+        <ScrollToTop />
+        <div
+          className="App"
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            overflowX: 'hidden',
+            position: 'relative',
+          }}
+        >
+          <Navbar />
 
-        <main style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/treatment-methods" element={<TreatmentMethods />} />
-            <Route path="/doctors" element={<Doctors />} />
-            <Route path="/testimonials" element={<Testimonials />} />
-            <Route path="/testimonials/:id" element={<StoryDetail />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:id" element={<BlogDetail />} />
-            <Route path="/services/:id" element={<ServiceDetail />} />
-            <Route path="/patient-education" element={<PatientEducation />} />
-            <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/store/:id" element={<ProductDetail />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </main>
+          <main style={{ flex: 1 }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/treatment-methods" element={<TreatmentMethods />} />
+              <Route path="/doctors" element={<Doctors />} />
+              <Route path="/testimonials" element={<Testimonials />} />
+              <Route path="/testimonials/:id" element={<StoryDetail />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogDetail />} />
+              <Route path="/services/:id" element={<ServiceDetail />} />
+              <Route path="/patient-education" element={<PatientEducation />} />
+              <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
+              <Route path="/store" element={<Store />} />
+              <Route path="/store/:id" element={<ProductDetail />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/contact" element={<Contact />} />
+            </Routes>
+          </main>
 
-        <Footer />
-        <WhatsAppButton />
-        <Chatbot />
-        <StickyMobileBar />
-      </div>
-    </Router>
+          <Footer />
+          <WhatsAppButton />
+          <Chatbot />
+          <StickyMobileBar />
+        </div>
+      </Router>
+    </WishlistProvider>
   );
 }
 

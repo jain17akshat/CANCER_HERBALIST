@@ -5,8 +5,9 @@ import {
   FaStar, FaShieldAlt, FaLeaf, FaCheck, FaArrowLeft,
   FaWhatsapp, FaPhoneAlt, FaShoppingBag, FaTruck,
   FaUndo, FaAward, FaChevronDown, FaChevronUp,
-  FaTimes, FaPaperPlane, FaSpinner, FaCheckCircle,
+  FaTimes, FaPaperPlane, FaSpinner, FaCheckCircle, FaHeart, FaRegHeart
 } from 'react-icons/fa';
+import { useWishlist } from '../context/WishlistContext';
 
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
@@ -918,6 +919,7 @@ export default function ProductDetail() {
   const product = products.find(p => p.id === Number(id));
   const [activeImg, setActiveImg] = useState(0);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
+  const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
 
   if (!product) {
     return (
@@ -1121,51 +1123,93 @@ export default function ProductDetail() {
 
             {/* CTAs */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+
+              {/* ── Order Now & Wishlist ── */}
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  id="orderNowBtn"
+                  onClick={() => navigate('/checkout', { state: { product, qty: 1 } })}
+                  style={{
+                    flex: 1, padding: '16px',
+                    background: PRIMARY,
+                    color: '#fff', border: 'none', borderRadius: '12px',
+                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: '8px', fontFamily: 'inherit',
+                    boxShadow: `0 4px 14px ${PRIMARY}40`,
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  <FaShoppingBag /> Order Now
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => toggleWishlist(product.id)}
+                  style={{
+                    width: '56px', background: '#fff', border: '2px solid #e2e8f0',
+                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', color: isInWishlist(product.id) ? '#ef4444' : '#64748b',
+                    fontSize: '20px', transition: 'all 0.2s'
+                  }}
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  {isInWishlist(product.id) ? <FaHeart /> : <FaRegHeart />}
+                </motion.button>
+              </div>
+
+              {/* ── Enquiry ── */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setEnquiryOpen(true)}
                 style={{
-                  width: '100%', padding: '16px',
-                  background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
-                  color: '#fff', border: 'none', borderRadius: '12px',
+                  width: '100%', padding: '15px',
+                  background: '#f8fafc',
+                  color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
                   fontWeight: 700, fontSize: '15px', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   gap: '8px', fontFamily: 'inherit',
-                  boxShadow: `0 6px 20px ${ACCENT}44`,
-                }}
-              >
-                <FaShoppingBag /> Send Product Enquiry
-              </motion.button>
-              <motion.a
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                href={`https://wa.me/918884588835?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(product.name)}%20(₹${product.price})`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  width: '100%', padding: '14px',
-                  background: '#25d366',
-                  color: '#fff', border: 'none', borderRadius: '12px',
-                  fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: '8px', textDecoration: 'none', boxSizing: 'border-box',
-                }}
-              >
-                <FaWhatsapp style={{ fontSize: '18px' }} /> Order via WhatsApp
-              </motion.a>
-              <a
-                href="tel:8884588835"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: '8px', color: PRIMARY, fontWeight: 600, fontSize: '14px',
-                  textDecoration: 'none', padding: '10px',
-                  border: `1.5px solid ${PRIMARY}44`, borderRadius: '10px',
                   transition: 'background 0.2s',
                 }}
               >
-                <FaPhoneAlt /> Call to Order: 88845 88835
-              </a>
+                Send Product Enquiry
+              </motion.button>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <motion.a
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  href={`https://wa.me/918884588835?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(product.name)}%20(₹${product.price})`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    padding: '14px',
+                    background: '#25d366',
+                    color: '#fff', border: 'none', borderRadius: '12px',
+                    fontWeight: 600, fontSize: '14px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: '8px', textDecoration: 'none', boxSizing: 'border-box',
+                    boxShadow: '0 2px 8px rgba(37,211,102,0.3)',
+                  }}
+                >
+                  <FaWhatsapp style={{ fontSize: '16px' }} /> WhatsApp
+                </motion.a>
+                <a
+                  href="tel:8884588835"
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: '8px', color: '#475569', fontWeight: 600, fontSize: '14px',
+                    textDecoration: 'none', padding: '14px',
+                    background: '#f1f5f9', borderRadius: '12px',
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  <FaPhoneAlt style={{ fontSize: '14px' }} /> Call Us
+                </a>
+              </div>
             </div>
 
             {/* Medical disclaimer */}
