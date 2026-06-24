@@ -52,8 +52,8 @@ const values = [
 ];
 
 const milestones = [
-  { year: '20012', icon: <FaSeedling />, title: 'Clinic Founded', desc: 'Opened our first integrative herbal oncology clinic in Bangalore with a vision to merge botanical medicine with modern cancer care.' },
-  { year: '20014', icon: <FaShieldAlt />, title: 'Clinical Recognition', desc: 'Recognized by integrative medicine bodies for developing standardized, evidence-informed herbal support protocols for cancer patients.' },
+  { year: '2012', icon: <FaSeedling />, title: 'Clinic Founded', desc: 'Opened our first integrative herbal oncology clinic in Bangalore with a vision to merge botanical medicine with modern cancer care.' },
+  { year: '2014', icon: <FaShieldAlt />, title: 'Clinical Recognition', desc: 'Recognized by integrative medicine bodies for developing standardized, evidence-informed herbal support protocols for cancer patients.' },
   { year: '2016', icon: <FaFlask />,    title: 'Research Wing Opens', desc: 'Established a dedicated botanical research laboratory to study herbal formulations, bioavailability, and drug-herb interactions.' },
   { year: '2016', icon: <FaGlobe />,   title: 'Global Teleconsultation', desc: 'Launched our digital consultation platform, enabling patients across India and internationally to access our specialized care remotely.' },
   { year: '2020', icon: <FaUserMd />,  title: 'Integrative Team Grows', desc: 'Expanded our multidisciplinary team of herbalists, nutritionists, and integrative oncologists to serve a wider range of cancer types.' },
@@ -399,7 +399,7 @@ export default function About() {
               </p>
 
               <p style={{ color: 'rgba(255,255,255,0.78)', lineHeight: '1.9', fontSize: '1rem', marginBottom: '20px' }}>
-                He spends <strong style={{ color: '#fff' }}>one to two hours with every patient</strong> — compared to the industry average of 17 minutes. Not because he has to. Because he believes that no meaningful healing conversation can happen in a fraction of that time.
+                He spends <strong style={{ color: '#fff' }}>one to two hours with every patient</strong> — compared to the industry average of 5 minutes. Not because he has to. Because he believes that no meaningful healing conversation can happen in a fraction of that time.
               </p>
               <p style={{ color: 'rgba(255,255,255,0.78)', lineHeight: '1.9', fontSize: '1rem', marginBottom: '20px' }}>
                 Prof. Ramesh Babu uses conventional treatment every day. He is not against it. He has seen it save lives. But he also sees what it leaves behind — fatigue, fear, and a body that needs more than a prescription to recover.
@@ -417,10 +417,10 @@ export default function About() {
                 That conviction is why Cancer Herbalist was built the way it was — unhurried, deeply personal, and rooted in the belief that the body's own intelligence, properly supported, is one of the most powerful healing forces in medicine.
               </p>
 
-              <Link to="/contact"
+              {/* <Link to="/contact"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: ACCENT, color: '#fff', padding: '14px 32px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '15px', boxShadow: `0 8px 28px ${ACCENT}44` }}>
                 Book a Consultation <FaArrowRight />
-              </Link>
+              </Link> */}
             </motion.div>
           </div>
         </div>

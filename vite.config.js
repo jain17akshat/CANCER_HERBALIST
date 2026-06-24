@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    host: true,   // expose to local network — lets you test on phone via 192.168.x.x:3000
     open: true
   }
 })

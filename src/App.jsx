@@ -20,6 +20,10 @@ import Store from './pages/Store';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import Wishlist from './pages/Wishlist';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import RefundPolicy from './pages/RefundPolicy';
+import NotFound from './pages/NotFound';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
@@ -82,6 +86,10 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
 

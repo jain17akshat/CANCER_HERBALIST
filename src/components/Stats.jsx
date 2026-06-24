@@ -10,7 +10,7 @@ import {
 const stats = [
   {
     icon: <FaUsers />,
-    value: 10000,
+    value: 4000,
     suffix: '+',
     label: 'Patients Served',
     sublabel: 'Worldwide',
@@ -19,7 +19,7 @@ const stats = [
   },
   {
     icon: <FaGlobe />,
-    value: 45,
+    value: 10,
     suffix: '+',
     label: 'Countries',
     sublabel: 'Global Reach',
@@ -28,7 +28,7 @@ const stats = [
   },
   {
     icon: <FaCalendarCheck />,
-    value: 25000,
+    value: 7000,
     suffix: '+',
     label: 'Consultations',
     sublabel: 'Completed',
@@ -37,22 +37,14 @@ const stats = [
   },
   {
     icon: <FaLeaf />,
-    value: 20,
+    value: 25,
     suffix: '+',
-    label: 'Years Experience',
+    label: 'Years Research Experience',
     sublabel: 'Expert Practice',
     color: '#38bed5ff',
     gradient: 'linear-gradient(135deg, #38bed5ff , #38bed5ff )',
   },
-  {
-    icon: <FaAward />,
-    value: 50,
-    suffix: '+',
-    label: 'Awards Won',
-    sublabel: 'Recognition',
-    color: ' #38bed5ff',
-    gradient: 'linear-gradient(135deg, #38bed5ff,  #38bed5ff)',
-  }, 
+  
   {
     icon: <FaHospital />,
     value: 98,

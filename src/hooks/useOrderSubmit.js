@@ -2,7 +2,8 @@
  * useOrderSubmit.js
  *
  * Submits order data to a Google Apps Script Web App which writes to Google Sheets.
- * The Apps Script URL is stored in the VITE_APPS_SCRIPT_URL environment variable.
+ * The Apps Script URL is read from env first, with a hardcoded fallback to prevent
+ * "endpoint not set" errors when env vars fail to load (e.g. first deploys, phone testing).
  *
  * Returns { submitOrder, status, error, reset }
  *   status: 'idle' | 'submitting' | 'success' | 'error'
@@ -10,7 +11,10 @@
 
 import { useState, useCallback } from 'react';
 
-const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL;
+// Env var is preferred; hardcoded fallback ensures orders always work
+const APPS_SCRIPT_URL =
+  import.meta.env.VITE_APPS_SCRIPT_URL ||
+  'https://script.google.com/macros/s/AKfycbyDj0frsEleto9rUpfDz3OFiywKMCXa7WyWqP5C9O6yvdsI054xvcfEMur_y6cBm8iK/exec';
 
 export function useOrderSubmit() {
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error

@@ -45,7 +45,7 @@ const badges = [
   },
   {
     icon: <FaStar />,
-    title: '4.9★ Rated',
+    title: '4.5★ Rated',
     subtitle: '2500+ Reviews',
     color: '#38bed5',
     gradient: 'linear-gradient(135deg, #38bed5, #38bed5)',

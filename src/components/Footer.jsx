@@ -17,7 +17,7 @@ const quickLinks = [
   { label: 'About Us', to: '/about' },
   { label: 'Our Services', to: '/services' },
   { label: 'Treatment Methods', to: '/treatment-methods' },
-  { label: 'Our Doctors', to: '/doctors' },
+  { label: 'Our Team', to: '/doctors' },
   { label: 'Testimonials', to: '/testimonials' },
   { label: 'Blog & Articles', to: '/blog' },
   { label: 'Contact Us', to: '/contact' },
@@ -189,7 +189,7 @@ export default function Footer() {
             <div style={{ marginTop: '28px', background: `${ACCENT}15`, border: `1px solid ${ACCENT}33`, borderRadius: '12px', padding: '14px 16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                 <FaLeaf style={{ color: ACCENT }} />
-                <span style={{ color: '#fff', fontWeight: 700, fontSize: '13px' }}>100% Natural & Safe</span>
+                <span style={{ color: '#fff', fontWeight: 700, fontSize: '13px' }}>100% Natural  </span>
               </div>
               <p style={{ color: WHITE60, fontSize: '12px', lineHeight: '1.6', margin: 0 }}>
                 All our herbal formulas are reviewed for safety, purity, and drug-herb interactions.
@@ -206,7 +206,7 @@ export default function Footer() {
               {[
                 { day: 'Monday – Friday', time: '9:00 AM – 6:00 PM' },
                 { day: 'Saturday', time: '9:00 AM – 4:00 PM' },
-                { day: 'Sunday', time: 'By Appointment' },
+              
               ].map((h, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <span style={{ color: WHITE60, fontSize: '12.5px' }}>{h.day}</span>
@@ -266,12 +266,16 @@ export default function Footer() {
           </div>
 
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            {['Privacy Policy', 'Terms of Service', 'Refund Policy'].map((item) => (
-              <a key={item} href="#" style={{ color: WHITE60, textDecoration: 'none', fontSize: '12.5px', transition: 'color 0.2s' }}
+            {[
+              { label: 'Privacy Policy', to: '/privacy-policy' },
+              { label: 'Terms of Service', to: '/terms-of-service' },
+              { label: 'Refund Policy', to: '/refund-policy' },
+            ].map((item) => (
+              <Link key={item.label} to={item.to} style={{ color: WHITE60, textDecoration: 'none', fontSize: '12.5px', transition: 'color 0.2s' }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = ACCENT)}
                 onMouseLeave={(e) => (e.currentTarget.style.color = WHITE60)}>
-                {item}
-              </a>
+                {item.label}
+              </Link>
             ))}
           </div>
           <div style={{ color: WHITE60, fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>

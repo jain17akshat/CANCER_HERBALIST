@@ -12,23 +12,23 @@ const doctors = [
     bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD, demonstrating his deep expertise in pharmaceutical sciences and natural products. With over two decades of dedicated practice, he has made significant contributions to the understanding and application of herbal remedies for various health conditions.',
     edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
     certifications: [
-      
+
     ],
     image: '/images/doctor1.png',
   },
   {
     id: 2,
     name: 'NUTRACEUTICAL TEAM',
-    experience: '22 Years Experience',
+
     specialty: 'Clinical Oncology & Herbal Medicine Integration',
     bio: 'Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individuals unique needs throughout their treatment journey.',
-    
+
     certifications: [
-      
+
     ],
     image: '/images/doctor33.png',
   },
-  
+
 
 ];
 
@@ -41,7 +41,7 @@ export default function Doctors() {
             <FaUserMd /> OUR NUTRACEUTICAL TEAM
           </span>
           <h2 className="section-title">
-            Meet Our Expert Team <span>Doctors</span>
+            Meet Our Expert Team <span></span>
           </h2>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
             Our multidisciplinary team of medical doctors, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients.

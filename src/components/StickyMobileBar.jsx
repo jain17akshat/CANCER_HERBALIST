@@ -23,7 +23,7 @@ export default function StickyMobileBar() {
       >
         {/* Call Now */}
         <a
-          href="tel:+8884588835"
+          href="tel:+918884588835"
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -63,7 +63,7 @@ export default function StickyMobileBar() {
 
         {/* Book Assessment */}
         <a
-          href="#consultation"
+          href="/contact"
           style={{
             display: 'flex',
             flexDirection: 'column',
