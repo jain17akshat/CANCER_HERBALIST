@@ -232,7 +232,7 @@ export default function Checkout() {
 
             {/* ── FORM ── */}
             {status !== 'success' && (
-              <form onSubmit={handleSubmit}
+              <form onSubmit={handleSubmit} className="checkout-form"
                 style={{
                   background: '#fff', borderRadius: '20px',
                   boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
@@ -252,7 +252,7 @@ export default function Checkout() {
                   />
                 </Field>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div className="form-row-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   <Field label="Phone Number" required>
                     <input
                       type="tel" name="phone" id="phone"
@@ -282,7 +282,7 @@ export default function Checkout() {
                   />
                 </Field>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px', gap: '12px' }}>
+                <div className="form-row-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px', gap: '12px' }}>
                   <Field label="City" required>
                     <input
                       type="text" name="city" id="city"
@@ -468,6 +468,19 @@ export default function Checkout() {
         @media (max-width: 768px) {
           .checkout-grid {
             grid-template-columns: 1fr !important;
+          }
+          .form-row-2,
+          .form-row-3 {
+            grid-template-columns: 1fr !important;
+          }
+          .checkout-form {
+            padding: 20px 16px !important;
+            border-radius: 16px !important;
+          }
+        }
+        @media (max-width: 400px) {
+          .checkout-form {
+            padding: 16px 12px !important;
           }
         }
       `}</style>

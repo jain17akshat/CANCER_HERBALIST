@@ -9,8 +9,7 @@ const PRIMARY = '#1a6e52';
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Services', href: '/services' },
-  { label: 'Treatment', href: '/treatment-methods' },
+  { label: 'Care Programs', href: '/care-programs' },
   { label: 'Our Team', href: '/doctors' },
   { label: 'Stories', href: '/testimonials' },
   {

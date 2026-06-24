@@ -397,38 +397,7 @@ export default function TreatmentProcess() {
           ))}
         </div>
 
-        <div
-          style={{
-            textAlign: 'center',
-            marginTop: '56px',
-          }}
-        >
-          <Link
-            to="/contact"
-            data-aos="fade-up"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              background: `linear-gradient(
-                135deg,
-                ${ACCENT},
-                ${ACCENT_DARK}
-              )`,
-              color: '#ffffff',
-              padding: '15px 34px',
-              borderRadius: '50px',
-              fontWeight: '600',
-              fontSize: '15px',
-              textDecoration: 'none',
-              boxShadow: `0 10px 25px ${ACCENT_MID}`,
-              transition: 'all 0.3s ease',
-            }}
-          >
-            Start Your Journey Now
-            <FaArrowRight />
-          </Link>
-        </div>
+
       </div>
 
       <style>{`

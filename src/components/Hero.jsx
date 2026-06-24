@@ -23,7 +23,7 @@ const slides = [
       'Natural Herbal Treatments',
       'Certified Practitioners',
       'Personalized Care Plans',
-      '24/7 Patient Support',
+      'Regular Support (9AM–6PM)',
     ],
     stat: { value: '4000+', label: 'Patients Supported' },
     cta: { label: 'Book Free Consultation', href: '/contact' },
@@ -91,14 +91,14 @@ const slides = [
     badge: '🛡️ Certified, Safe & Trusted',
     headline: ['FSSAI Certified', 'Formulations'],
     headlineAccent: 'Formulations',
-    subline: 'Every herbal product is lab-tested, organically sourced, and FSSAI certified. We\'re not making claims — we\'re backed by science, certification, and 22+ years of practice.',
+    subline: 'Every herbal product is lab-tested, made by standardized extracts, and FSSAI certified. We\'re not making claims — we\'re backed by science, certification, and 35+ years of research & practice.',
     highlights: [
       'Lab-Tested Purity',
-      'GMP Certified Farms',
+      'Standardized Extracts',
       'FSSAI Licence Verified',
-      '22+ Years of Practice',
+      '35+ Years of Research',
     ],
-    stat: { value: '22+', label: 'Years of Clinical Experience' },
+    stat: { value: '35+', label: 'Years of Research & Practice' },
     cta: { label: 'Shop Certified Products', href: '/store' },
     secondaryCta: { label: 'Learn About Us', href: '/about' },
   },
@@ -114,7 +114,6 @@ const slideVariants = {
 export default function Hero() {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [paused, setPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -137,12 +136,11 @@ export default function Hero() {
     goTo((current - 1 + slides.length) % slides.length, -1);
   }, [current, goTo]);
 
-  // Auto-advance every 5s
+  // Auto-advance every 4s — always on
   useEffect(() => {
-    if (paused) return;
-    const t = setInterval(next, 5000);
+    const t = setInterval(next, 4000);
     return () => clearInterval(t);
-  }, [next, paused]);
+  }, [next]);
 
   const slide = slides[current];
 
@@ -150,8 +148,6 @@ export default function Hero() {
     <section
       id="home"
       style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', paddingTop: '80px', display: 'flex', flexDirection: 'column' }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
       {/* ── Animated background ── */}
       <AnimatePresence initial={false}>
@@ -339,17 +335,15 @@ export default function Hero() {
           ))}
         </div>
         {/* Auto-play progress bar */}
-        {!paused && (
-          <div style={{ width: '120px', height: '2px', background: `${slide.accentColor}25`, borderRadius: '1px', overflow: 'hidden' }}>
-            <motion.div
-              key={current}
-              initial={{ width: '0%' }}
-              animate={{ width: '100%' }}
-              transition={{ duration: 5, ease: 'linear' }}
-              style={{ height: '100%', background: slide.accentColor, borderRadius: '1px' }}
-            />
-          </div>
-        )}
+        <div style={{ width: '120px', height: '2px', background: `${slide.accentColor}25`, borderRadius: '1px', overflow: 'hidden' }}>
+          <motion.div
+            key={current}
+            initial={{ width: '0%' }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 4, ease: 'linear' }}
+            style={{ height: '100%', background: slide.accentColor, borderRadius: '1px' }}
+          />
+        </div>
       </div>
 
       {/* Mobile swipe hint */}

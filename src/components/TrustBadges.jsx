@@ -24,7 +24,7 @@ const badges = [
   },
   {
     icon: <FaShieldAlt />,
-    title: 'Govt. Registered',
+    title: 'Board Registered Pharmacist',
     subtitle: 'Licensed Practice',
     color: ' #38bed5',
     gradient: 'linear-gradient(135deg, #38bed5, #38bed5)',
@@ -32,7 +32,7 @@ const badges = [
   {
     icon: <FaGraduationCap />,
     title: 'Expert Team',
-    subtitle: 'MD Certified',
+    subtitle: 'Board Certified',
     color: ' #38bed5',
     gradient: 'linear-gradient(135deg, #38bed5,  #38bed5)',
   },

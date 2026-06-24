@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
 import TreatmentMethods from './pages/TreatmentMethods';
+import CarePrograms from './pages/CarePrograms';
 import Doctors from './pages/Doctors';
 import Testimonials from './pages/Testimonials';
 import Blog from './pages/Blog';
@@ -73,6 +74,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
               <Route path="/treatment-methods" element={<TreatmentMethods />} />
+              <Route path="/care-programs" element={<CarePrograms />} />
               <Route path="/doctors" element={<Doctors />} />
               <Route path="/testimonials" element={<Testimonials />} />
               <Route path="/testimonials/:id" element={<StoryDetail />} />

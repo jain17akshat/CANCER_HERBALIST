@@ -104,10 +104,10 @@ export default function About() {
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
             style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-            <Link to="/contact"
+            {/* <Link to="/contact"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: ACCENT, color: '#fff', padding: '15px 32px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '15px', boxShadow: `0 8px 28px ${ACCENT}55` }}>
               Book Free Consultation <FaArrowRight />
-            </Link>
+            </Link> */}
             <Link to="/treatment-methods"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '15px 32px', borderRadius: '50px', fontWeight: 600, textDecoration: 'none', fontSize: '15px', border: '1px solid rgba(255,255,255,0.25)' }}>
               Our Approach
@@ -120,29 +120,13 @@ export default function About() {
       <section style={{ background: '#fff', padding: 'clamp(50px, 8vw, 100px) 20px' }}>
         <div className="about-story-grid" style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 64px)', alignItems: 'center' }}>
           {/* Image side */}
-          <motion.div data-aos="fade-right" style={{ position: 'relative' }}>
-            {/* Decorative accent frame behind the image */}
-            <div style={{
-              position: 'absolute', top: '-14px', left: '-14px',
-              width: '100%', height: '100%',
-              borderRadius: '28px',
-              border: `3px solid ${ACCENT}44`,
-              zIndex: 0,
-              pointerEvents: 'none',
-            }} />
-            {/* Decorative accent dot pattern */}
-            <div style={{
-              position: 'absolute', top: '-30px', right: '-30px',
-              width: '80px', height: '80px',
-              backgroundImage: `radial-gradient(${ACCENT}33 2px, transparent 2px)`,
-              backgroundSize: '12px 12px',
-              zIndex: 0,
-              pointerEvents: 'none',
-            }} />
+          <motion.div data-aos="fade-right" style={{ position: 'relative', paddingBottom: '60px', paddingRight: '28px' }}>
+
 
             <img
-              src="/images/doctor1.2.png"
+              src="/images/doctor1.png"
               alt="Prof Ramesh Babu — Founder, Cancer Herbalist"
+              className="founder-img"
               style={{
                 width: '100%',
                 borderRadius: '28px',
@@ -201,10 +185,10 @@ export default function About() {
 
             {/* Key differentiators */}
             {[
-              'Practitioner team trained in both herbal and integrative medicine',
-              'All protocols reviewed for drug-herb interaction safety',
-              'Teleconsultation available across India and internationally',
-              'Personalised formulas — never one-size-fits-all',
+              'Carefully selected herbal medicines as part of a holistic care approach',
+'Trusted herbal formulations developed through years of clinical practice',
+'Traditional herbal medicines integrated with supportive patient care',
+'Quality herbal formulations guided by extensive clinical experience',
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', marginBottom: '12px' }}>
                 <FaCheckCircle style={{ color: ACCENT, flexShrink: 0, marginTop: '3px', fontSize: '16px' }} />
@@ -443,7 +427,7 @@ export default function About() {
             </Link>
             <Link to="/doctors"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '16px 36px', borderRadius: '50px', fontWeight: 600, textDecoration: 'none', fontSize: '15px', border: '1px solid rgba(255,255,255,0.22)' }}>
-              Meet Our Doctors
+              Meet Our Team
             </Link>
           </div>
         </div>
@@ -459,14 +443,24 @@ export default function About() {
             grid-template-columns: 1fr !important;
           }
           .quote-card {
-             position: relative !important;
-             bottom: 0 !important;
-             right: 0 !important;
-             margin-top: -24px;
-             margin-left: auto;
-             margin-right: auto;
-             max-width: 100% !important;
-             z-index: 10;
+            position: relative !important;
+            bottom: auto !important;
+            right: auto !important;
+            left: auto !important;
+            margin: 16px 0 0 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            z-index: 2;
+          }
+          .founder-img {
+            max-height: 320px !important;
+            width: 100% !important;
+            object-fit: cover !important;
+          }
+          .about-story-grid > div:first-child {
+            padding-bottom: 0 !important;
+            padding-right: 0 !important;
           }
         }
         @media (max-width: 768px) {

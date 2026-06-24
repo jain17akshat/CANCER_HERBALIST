@@ -46,7 +46,7 @@ const steps = [
   {
     num: '01',
     icon: <FaCalendarAlt />,
-    title: 'Free Discovery Consultation',
+    title: 'Free Consultaion',
     desc: 'Your journey begins with a no-obligation discovery call with one of our senior practitioners. We listen to your story, understand your diagnosis, discuss your goals, and explain how our programs work.',
     detail: 'Duration: 30–45 minutes | Format: Phone, video, or in-person | Cost: Free',
   },
@@ -108,7 +108,7 @@ export default function TreatmentMethods() {
         <p style={{ maxWidth: '700px', margin: '0 auto 36px', opacity: 0.88, lineHeight: '1.8', fontSize: '1.1rem' }}>
           Our integrative herbal oncology approach combines ancient botanical wisdom with modern clinical evidence to support your body through every phase of the cancer journey.
         </p>
-        <Link
+        {/* <Link
           to="/contact"
           style={{
             display: 'inline-flex',
@@ -126,7 +126,7 @@ export default function TreatmentMethods() {
           }}
         >
           Start Your Journey <FaArrowRight />
-        </Link>
+        </Link> */}
       </section>
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '60px 20px' }}>

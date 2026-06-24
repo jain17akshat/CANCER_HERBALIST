@@ -216,7 +216,7 @@ export default function ServiceDetail() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(10,30,60,0.82) 0%, rgba(10,30,60,0.4) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 5%', maxWidth: '900px' }}>
           <Link to="/services" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '14px', fontWeight: 600 }}>
-            <FaArrowLeft /> Back to Services
+            <FaArrowLeft /> Back to Care Programs
           </Link>
           <div style={{ fontSize: '48px', color: ACCENT, marginBottom: '16px' }}>{service.icon}</div>
           <h1 style={{ color: '#fff', fontSize: 'clamp(1.8rem,4vw,3rem)', fontFamily: 'Playfair Display, serif', marginBottom: '12px' }}>{service.title}</h1>

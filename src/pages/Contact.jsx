@@ -55,7 +55,7 @@ function getAvailableDays() {
 const DAYS = getAvailableDays();
 
 const TREATMENTS = [
-  'Free Discovery Consultation',
+  'Free Consultation',
   'Breast Cancer Support',
   'Lung Cancer Support',
   'Colon Cancer Support',

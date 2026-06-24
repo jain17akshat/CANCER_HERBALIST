@@ -37,7 +37,7 @@ const stats = [
   },
   {
     icon: <FaLeaf />,
-    value: 25,
+    value: 35,
     suffix: '+',
     label: 'Years Research Experience',
     sublabel: 'Expert Practice',

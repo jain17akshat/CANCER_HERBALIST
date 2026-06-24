@@ -8,7 +8,7 @@ import {
 import Hero from '../components/Hero';
 import Stats from '../components/Stats';
 import TrustBadges from '../components/TrustBadges';
-import Services from '../components/Services';
+
 import TreatmentProcess from '../components/TreatmentProcess';
 
 
@@ -51,7 +51,7 @@ export default function Home() {
       <Hero />
       <Stats />
       <TrustBadges />
-      <Services />
+
       <TreatmentProcess />
 
       {/* ═══ NEW: Why Choose Us – unique to Home page ═══ */}
