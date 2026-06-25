@@ -10,6 +10,14 @@ const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
 
 /* ─── Slide Data ─────────────────────────────────────── */
+const CANCER_TYPES = [
+  'Breast','Lung','Colon','Prostate','Liver','Blood',
+  'Cervical','Ovarian','Pancreatic','Thyroid','Bladder',
+  'Kidney','Brain','Skin / Melanoma','Bone','Oral',
+  'Oesophageal','Uterine','Lymphoma','Myeloma',
+  'Testicular','Rectal','Gallbladder','Stomach',
+];
+
 const slides = [
   {
     id: 1,
@@ -31,8 +39,8 @@ const slides = [
   },
   {
     id: 2,
-    bg: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 60%, #f0fdf4 100%)',
-    accentColor: PRIMARY,
+    bg: 'linear-gradient(135deg, #eff6ff 0%, #bfdbfe 60%, #eff6ff 100%)',
+    accentColor: '#2563eb',
     badge: '⏰ Unmatched Patient Dedication',
     headline: ['1–2 Hours With', 'Every Patient'],
     headlineAccent: 'Every Patient',
@@ -43,13 +51,31 @@ const slides = [
       'Personalized Strategy',
       'Zero Rushed Consultations',
     ],
-    stat: { value: '15 min', label: 'vs Our 1–2 Hour Sessions' },
-    statDanger: true,
+    stat: { value: '1–2 Hrs', label: 'Personal Time Per Patient' },
     cta: { label: 'Book Your Session', href: '/contact' },
     secondaryCta: { label: 'Read Success Stories', href: '/testimonials' },
   },
   {
     id: 3,
+    bg: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 60%, #fdf4ff 100%)',
+    accentColor: '#db2777',
+    badge: '🎗️ Complete Cancer Coverage',
+    headline: ['Every Cancer Type,', 'One Team'],
+    headlineAccent: 'One Team',
+    subline: 'From common to rare — breast, lung, blood, brain, pancreatic and beyond. No diagnosis is out of scope. We build a personalised herbal pathway for every patient.',
+    highlights: [
+      'Breast & Gynaecological',
+      'Lung & Respiratory',
+      'Blood & Lymphatic',
+      'Brain, Bone & Rare Types',
+    ],
+    stat: { value: '∞', label: 'No Cancer Is Out of Scope' },
+    cta: { label: 'Find Your Program', href: '/care-programs' },
+    secondaryCta: { label: 'See All Programs', href: '/care-programs' },
+    cancerTicker: true,
+  },
+  {
+    id: 4,
     bg: 'linear-gradient(135deg, #faf5ff 0%, #ede9fe 60%, #f5f3ff 100%)',
     accentColor: '#7c3aed',
     badge: '🧪 Integrative, Not Alternative',
@@ -67,9 +93,9 @@ const slides = [
     secondaryCta: { label: 'Explore Our Products', href: '/store' },
   },
   {
-    id: 4,
-    bg: 'linear-gradient(135deg, #fff1f2 0%, #ffe4e6 60%, #fff5f5 100%)',
-    accentColor: '#e11d48',
+    id: 5,
+    bg: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 60%, #fff7ed 100%)',
+    accentColor: '#ea580c',
     badge: '❤️ No Patient Left Alone',
     headline: ['Weekly Follow-Ups,', 'Every Time'],
     headlineAccent: 'Every Time',
@@ -85,7 +111,7 @@ const slides = [
     secondaryCta: { label: 'Meet Our Team', href: '/doctors' },
   },
   {
-    id: 5,
+    id: 6,
     bg: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 60%, #fffdf0 100%)',
     accentColor: '#d97706',
     badge: '🛡️ Certified, Safe & Trusted',
@@ -243,45 +269,78 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* RIGHT — Visual stat card */}
+            {/* RIGHT — Visual panel */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* Main stat card */}
-              <div style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', borderRadius: '28px', padding: '40px', border: `1px solid ${slide.accentColor}25`, boxShadow: `0 20px 60px ${slide.accentColor}15`, position: 'relative', overflow: 'hidden' }}>
-                {/* bg circle */}
-                <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: slide.accentColor, opacity: 0.07, filter: 'blur(30px)' }} />
 
-                {/* Slide number */}
-                <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '11px', fontWeight: '700', color: `${slide.accentColor}80`, letterSpacing: '1px' }}>
-                  {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
-                </div>
+              {slide.cancerTicker ? (
+                /* ── Cancer types card (slide 3 only) ── */
+                <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(20px)', borderRadius: '28px', padding: '32px', border: `1px solid ${slide.accentColor}30`, boxShadow: `0 20px 60px ${slide.accentColor}18`, position: 'relative', overflow: 'hidden' }}>
+                  {/* Glow blob */}
+                  <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: slide.accentColor, opacity: 0.08, filter: 'blur(40px)' }} />
 
-                {/* Big stat */}
-                <div style={{ marginBottom: '24px' }}>
-                  <div style={{ fontSize: 'clamp(44px, 6vw, 72px)', fontWeight: '900', color: slide.statDanger ? '#ef4444' : slide.accentColor, lineHeight: 1, fontFamily: 'Poppins, sans-serif' }}>
-                    {slide.stat.value}
+                  {/* Slide counter */}
+                  <div style={{ position: 'absolute', top: '18px', right: '18px', fontSize: '11px', fontWeight: '700', color: `${slide.accentColor}80`, letterSpacing: '1px' }}>
+                    {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
                   </div>
-                  <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '600', marginTop: '6px' }}>
-                    {slide.stat.label}
+
+                  {/* Infinity symbol */}
+                  <div style={{ marginBottom: '4px' }}>
+                    <span style={{ fontSize: 'clamp(52px, 7vw, 80px)', fontWeight: '900', color: slide.accentColor, lineHeight: 1, fontFamily: 'Georgia, serif', letterSpacing: '-2px' }}>∞</span>
+                  </div>
+                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a', marginBottom: '2px' }}>Every Cancer. Every Patient.</div>
+                  <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '500', marginBottom: '20px' }}>No diagnosis is ever turned away</div>
+
+                  <div style={{ height: '1px', background: `${slide.accentColor}20`, marginBottom: '18px' }} />
+
+                  {/* Pill grid — scrollable on small screens */}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
+                    {CANCER_TYPES.map((name) => (
+                      <span key={name} style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '5px',
+                        padding: '5px 13px', borderRadius: '50px',
+                        fontSize: '11.5px', fontWeight: '600',
+                        background: `${slide.accentColor}12`,
+                        border: `1px solid ${slide.accentColor}30`,
+                        color: '#1e4d4a',
+                        whiteSpace: 'nowrap',
+                        letterSpacing: '0.1px',
+                      }}>
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: slide.accentColor, display: 'inline-block', flexShrink: 0 }} />
+                        {name}
+                      </span>
+                    ))}
                   </div>
                 </div>
-
-                {/* Divider */}
-                <div style={{ height: '1px', background: `${slide.accentColor}20`, marginBottom: '24px' }} />
-
-                {/* Highlights grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  {slide.highlights.map((h) => (
-                    <div key={h} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                      <div style={{ width: '20px', height: '20px', borderRadius: '6px', background: `${slide.accentColor}15`, border: `1px solid ${slide.accentColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
-                        <FaCheckCircle style={{ color: slide.accentColor, fontSize: '10px' }} />
-                      </div>
-                      <span style={{ fontSize: '12px', color: '#475569', fontWeight: '500', lineHeight: '1.4' }}>{h}</span>
+              ) : (
+                /* ── Normal stat card ── */
+                <div style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', borderRadius: '28px', padding: '40px', border: `1px solid ${slide.accentColor}25`, boxShadow: `0 20px 60px ${slide.accentColor}15`, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: slide.accentColor, opacity: 0.07, filter: 'blur(30px)' }} />
+                  <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '11px', fontWeight: '700', color: `${slide.accentColor}80`, letterSpacing: '1px' }}>
+                    {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                  </div>
+                  <div style={{ marginBottom: '24px' }}>
+                    <div style={{ fontSize: 'clamp(44px, 6vw, 72px)', fontWeight: '900', color: slide.statDanger ? '#ef4444' : slide.accentColor, lineHeight: 1, fontFamily: 'Poppins, sans-serif' }}>
+                      {slide.stat.value}
                     </div>
-                  ))}
+                    <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '600', marginTop: '6px' }}>
+                      {slide.stat.label}
+                    </div>
+                  </div>
+                  <div style={{ height: '1px', background: `${slide.accentColor}20`, marginBottom: '24px' }} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    {slide.highlights.map((h) => (
+                      <div key={h} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <div style={{ width: '20px', height: '20px', borderRadius: '6px', background: `${slide.accentColor}15`, border: `1px solid ${slide.accentColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
+                          <FaCheckCircle style={{ color: slide.accentColor, fontSize: '10px' }} />
+                        </div>
+                        <span style={{ fontSize: '12px', color: '#475569', fontWeight: '500', lineHeight: '1.4' }}>{h}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Trust strip */}
+              {/* Trust strip — always shown */}
               <div style={{ background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)', borderRadius: '16px', padding: '14px 20px', border: `1px solid ${slide.accentColor}20`, display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '10px' }}>
                 {[
                   { icon: <FaStar />, v: '4.9★', s: 'Rating' },
