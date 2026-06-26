@@ -36,10 +36,12 @@ const videos = [
 ];
 
 const reviewsList = [
-  { name: 'Emily Watson', location: 'United Kingdom', rating: 5, text: 'Dr. Carter\'s team was incredibly supportive. We integrated the herbal mixtures alongside chemotherapy, and my oncology team was amazed at my blood count stability.', date: '2 weeks ago' },
-  { name: 'Arthur Pendelton', location: 'United States', rating: 5, text: 'Getting a custom cancer herbal support protocol helped me regain my appetite and sleep. My fatigue levels went down significantly within the first 3 weeks.', date: '1 month ago' },
-  { name: 'Kari Niemi', location: 'Finland', rating: 5, text: 'Absolutely recommend the free discovery call. They reviewed my biopsy and scan results, explaining the exact role of each herb in my personalized formulation.', date: '2 months ago' },
-  { name: 'Devendra Sharma', location: 'India', rating: 5, text: 'The support doesn\'t stop at sending herbal supplements. The lifestyle diet charts and weekly follow-up consultations were vital in keeping me positive.', date: '3 months ago' },
+  { name: 'Subash Ricardo S', location: 'Chennai', rating: 5, text: `My uncle was diagnosed with advanced colon cancer, and we started treatment at Cancer Herbalist after several cycles of chemotherapy. Although it was very late, the doctors and staff were supportive and always available for guidance.
+
+After taking the herbal kit, my uncle felt better for several months. Sadly, he later passed away. We are grateful to the entire Cancer Herbalist team for their care, support, and compassion during a difficult time.`, date: 'Recent' },
+  { name: 'Anand Keerthana', location: 'Vandawasi, near Chennai', rating: 5, text: 'My son Sarvesh is 2 years old and diagnosed with Adrenal cancer. We gave treatment of radiotherapy and chemotherapy after surgery. Last scan showed spread to bones. With the fear of losing him, we went to Cancer Herbalist, Bangalore and started herbal therapy. It was the right place. Now after 6 months, the child is very active, normal and no pain or swelling. The leg bone spread appears to be not active. Sarvesh also gained 3 kg weight. Don\'t fear for herbal therapy. It is safe for children.', date: 'a year ago' },
+  { name: 'Nayana Gowda', location: 'Bangalore, India', rating: 5, text: 'It\'s really heartening to see my friend getting relieved from breast cancer after taking treatment from Cancer Herbalist Bangalore. Best part is no side effects and economical. Hope she completely gets cured. I recommend all cancer patients to try once.', date: '3 years ago' },
+  { name: 'Devendra Sharma', location: 'India', rating: 5, text: 'The support doesn\'t stop at sending herbal supplements. The lifestyle diet charts and weekly follow-up consultations were vital in keeping me positive throughout my treatment.', date: '3 months ago' },
 ];
 
 const caseStudies = [

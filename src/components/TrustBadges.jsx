@@ -6,49 +6,47 @@ import {
 } from 'react-icons/fa';
 
 const badges = [
-  
- 
   {
     icon: <FaFlask />,
     title: 'Research Backed',
     subtitle: 'Clinical Studies',
-    color: ' #38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5, #38bed5)',
+    color: '#38bed5',
+    gradient: 'linear-gradient(135deg, #38bed5, #0b5b67)',
   },
   {
     icon: <FaHandshake />,
     title: 'Trusted Partners',
     subtitle: 'Global Network',
     color: '#38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5 , #38bed5)',
+    gradient: 'linear-gradient(135deg, #0b5b67, #38bed5)',
   },
   {
     icon: <FaShieldAlt />,
-    title: 'Board Registered Pharmacist',
-    subtitle: 'Licensed Practice',
-    color: ' #38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5, #38bed5)',
+    title: 'Board Registered',
+    subtitle: 'Licensed Pharmacist',
+    color: '#38bed5',
+    gradient: 'linear-gradient(135deg, #38bed5, #2ca8be)',
   },
   {
     icon: <FaGraduationCap />,
     title: 'Expert Team',
     subtitle: 'Board Certified',
-    color: ' #38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5,  #38bed5)',
+    color: '#38bed5',
+    gradient: 'linear-gradient(135deg, #2ca8be, #0b5b67)',
   },
   {
     icon: <FaMedkit />,
     title: 'Safe & Natural',
-    subtitle: 'Zero Side Effects',
-    color:  ' #38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5 ,  #38bed5)',
+    subtitle: 'Screened for Safety',
+    color: '#38bed5',
+    gradient: 'linear-gradient(135deg, #1a6e52, #38bed5)',
   },
   {
     icon: <FaStar />,
     title: '4.5★ Rated',
     subtitle: '2500+ Reviews',
     color: '#38bed5',
-    gradient: 'linear-gradient(135deg, #38bed5, #38bed5)',
+    gradient: 'linear-gradient(135deg, #38bed5, #1a6e52)',
   },
 ];
 

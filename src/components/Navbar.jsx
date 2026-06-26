@@ -188,7 +188,7 @@ export default function Navbar() {
               }}
             >
               <FaPhone style={{ fontSize: '11px' }} />
-              +91 88845 88835
+              +91 8884588835
             </a>
 
             <motion.div
@@ -348,7 +348,7 @@ export default function Navbar() {
                 }}
               >
                 <FaPhone style={{ fontSize: '12px' }} />
-                +91 88845 88835
+                +91 8884588835
               </motion.a>
 
               <button

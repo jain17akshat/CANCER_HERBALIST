@@ -14,7 +14,6 @@ const experts = [
   {
     name: 'Dr. Marcus Vance',
     role: 'ND - Naturopathic Physician',
-    experience: '18 Years Experience',
     specialty: 'Cancer Nutrition & Immunotherapy Botanicals',
     bio: 'Dr. Vance specializes in developing metabolic diets and botanical support formulations that optimize patient cellular defense during treatment.',
     edu: 'Bastyr University (ND - Doctor of Naturopathic Medicine)',
@@ -88,23 +87,6 @@ export default function ExpertProfiles() {
                   onMouseEnter={(e) => (e.target.style.transform = 'scale(1.08)')}
                   onMouseLeave={(e) => (e.target.style.transform = 'scale(1.0)')}
                 />
-                {/* Floating Experience Badge */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '16px',
-                    left: '16px',
-                    background: 'var(--gradient-green)',
-                    color: 'white',
-                    padding: '6px 14px',
-                    borderRadius: '50px',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    boxShadow: 'var(--shadow-green)',
-                  }}
-                >
-                  {expert.experience}
-                </div>
               </div>
 
               {/* Card Body */}

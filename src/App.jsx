@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Contact from './pages/Contact';
@@ -31,7 +31,6 @@ import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import { WishlistProvider } from './context/WishlistContext';
 
-/* Scroll to the top whenever the route path changes */
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -72,7 +71,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Services />} />
+              <Route path="/services" element={<Navigate to="/care-programs" replace />} />
               <Route path="/treatment-methods" element={<TreatmentMethods />} />
               <Route path="/care-programs" element={<CarePrograms />} />
               <Route path="/doctors" element={<Doctors />} />

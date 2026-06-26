@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
         <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', margin: '0 0 12px' }}>
           Privacy Policy
         </h1>
-        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>Last updated: June 2025</p>
+        <p style={{ opacity: 0.8, fontSize: '0.95rem' }}>Last updated: June 2026</p>
       </section>
 
       {/* Body */}

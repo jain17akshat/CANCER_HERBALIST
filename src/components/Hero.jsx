@@ -44,7 +44,7 @@ const slides = [
     badge: '⏰ Unmatched Patient Dedication',
     headline: ['1–2 Hours With', 'Every Patient'],
     headlineAccent: 'Every Patient',
-    subline: 'While the industry average is just 15 minutes, Prof. Ramesh Babu personally reviews your reports, scans, and history in a deep one-on-one session.',
+    subline: 'While the industry average is just 15 minutes, Prof. Ramesh  personally reviews your reports, scans, and history in a deep one-on-one session.',
     highlights: [
       'Full Report Review',
       'Scan & Biopsy Analysis',
@@ -173,7 +173,15 @@ export default function Hero() {
   return (
     <section
       id="home"
-      style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', paddingTop: '80px', display: 'flex', flexDirection: 'column' }}
+      style={{
+        minHeight: isMobile ? 'auto' : 'min(82vh, 760px)',
+        position: 'relative',
+        overflow: 'hidden',
+        paddingTop: isMobile ? '90px' : '80px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }}
     >
       {/* ── Animated background ── */}
       <AnimatePresence initial={false}>
@@ -204,7 +212,7 @@ export default function Hero() {
       )}
 
       {/* ── Slide Content ── */}
-      <div className="container" style={{ position: 'relative', zIndex: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '40px', paddingBottom: '100px' }}>
+      <div className="container" style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingTop: '24px', paddingBottom: '48px' }}>
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={current}
@@ -215,17 +223,17 @@ export default function Hero() {
             exit="exit"
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="hero-slide-content"
-            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(30px, 5vw, 80px)', alignItems: 'center' }}
+            style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.15fr 0.85fr', gap: 'clamp(24px, 4vw, 48px)', alignItems: 'center' }}
           >
             {/* LEFT — Text */}
             <div>
               {/* Badge */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${slide.accentColor}20`, border: `1px solid ${slide.accentColor}40`, color: slide.accentColor, padding: '8px 18px', borderRadius: '50px', fontSize: '13px', fontWeight: '700', marginBottom: '28px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${slide.accentColor}18`, border: `1px solid ${slide.accentColor}30`, color: slide.accentColor, padding: '6px 14px', borderRadius: '50px', fontSize: '12.5px', fontWeight: '700', marginBottom: '16px' }}>
                 {slide.badge}
               </div>
 
               {/* Headline */}
-              <h1 style={{ fontSize: 'clamp(34px, 5.5vw, 68px)', fontWeight: '900', color: '#0f172a', lineHeight: '1.12', marginBottom: '20px' }}>
+              <h1 style={{ fontSize: 'clamp(28px, 3.8vw, 44px)', fontWeight: '900', color: '#0f172a', lineHeight: '1.2', marginBottom: '14px' }}>
                 {slide.headline.map((line, li) => (
                   <span key={li} style={{ display: 'block', color: line === slide.headlineAccent ? slide.accentColor : '#0f172a' }}>
                     {line}
@@ -234,35 +242,35 @@ export default function Hero() {
               </h1>
 
               {/* Subline */}
-              <p style={{ fontSize: 'clamp(14px, 1.5vw, 17px)', color: '#475569', lineHeight: '1.8', marginBottom: '28px', maxWidth: '500px' }}>
+              <p style={{ fontSize: 'clamp(14px, 1.2vw, 15.5px)', color: '#475569', lineHeight: '1.65', marginBottom: '20px', maxWidth: '520px' }}>
                 {slide.subline}
               </p>
 
               {/* Highlights */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '36px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '24px' }}>
                 {slide.highlights.map((h) => (
-                  <div key={h} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '500', color: '#334155' }}>
-                    <FaCheckCircle style={{ color: slide.accentColor, fontSize: '13px', flexShrink: 0 }} /> {h}
+                  <div key={h} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px', fontWeight: '500', color: '#334155' }}>
+                    <FaCheckCircle style={{ color: slide.accentColor, fontSize: '12.5px', flexShrink: 0 }} /> {h}
                   </div>
                 ))}
               </div>
 
               {/* CTAs */}
-              <div className="hero-btns" style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+              <div className="hero-btns" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <a href={slide.cta.href}
-                  style={{ fontSize: '15px', padding: '14px 30px', background: slide.accentColor, color: 'white', borderRadius: '50px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', fontWeight: '700', boxShadow: `0 8px 24px ${slide.accentColor}44`, transition: 'transform 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                  style={{ fontSize: '14.5px', padding: '12px 26px', background: slide.accentColor, color: 'white', borderRadius: '50px', display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none', fontWeight: '700', boxShadow: `0 8px 20px ${slide.accentColor}33`, transition: 'transform 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 >
                   {slide.cta.label} <FaArrowRight />
                 </a>
                 <a href={slide.secondaryCta.href}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', color: '#1e293b', textDecoration: 'none', fontSize: '14px', fontWeight: '600', padding: '14px 22px', border: `2px solid ${slide.accentColor}50`, borderRadius: '50px', background: 'rgba(255,255,255,0.8)', transition: 'all 0.25s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = `${slide.accentColor}18`; e.currentTarget.style.borderColor = slide.accentColor; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.borderColor = `${slide.accentColor}50`; }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#1e293b', textDecoration: 'none', fontSize: '13.5px', fontWeight: '600', padding: '12px 20px', border: `2px solid ${slide.accentColor}40`, borderRadius: '50px', background: 'rgba(255,255,255,0.8)', transition: 'all 0.25s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = `${slide.accentColor}12`; e.currentTarget.style.borderColor = slide.accentColor; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.8)'; e.currentTarget.style.borderColor = `${slide.accentColor}40`; }}
                 >
-                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: slide.accentColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <FaPlay style={{ color: 'white', fontSize: '11px' }} />
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: slide.accentColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <FaPlay style={{ color: 'white', fontSize: '9px' }} />
                   </div>
                   {slide.secondaryCta.label}
                 </a>
@@ -270,42 +278,41 @@ export default function Hero() {
             </div>
 
             {/* RIGHT — Visual panel */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
               {slide.cancerTicker ? (
                 /* ── Cancer types card (slide 3 only) ── */
-                <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(20px)', borderRadius: '28px', padding: '32px', border: `1px solid ${slide.accentColor}30`, boxShadow: `0 20px 60px ${slide.accentColor}18`, position: 'relative', overflow: 'hidden' }}>
+                <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(20px)', borderRadius: '24px', padding: '24px', border: `1px solid ${slide.accentColor}25`, boxShadow: `0 16px 40px ${slide.accentColor}12`, position: 'relative', overflow: 'hidden' }}>
                   {/* Glow blob */}
-                  <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: slide.accentColor, opacity: 0.08, filter: 'blur(40px)' }} />
+                  <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '150px', height: '150px', borderRadius: '50%', background: slide.accentColor, opacity: 0.08, filter: 'blur(40px)' }} />
 
                   {/* Slide counter */}
-                  <div style={{ position: 'absolute', top: '18px', right: '18px', fontSize: '11px', fontWeight: '700', color: `${slide.accentColor}80`, letterSpacing: '1px' }}>
+                  <div style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '11px', fontWeight: '700', color: `${slide.accentColor}80`, letterSpacing: '1px' }}>
                     {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
                   </div>
 
                   {/* Infinity symbol */}
-                  <div style={{ marginBottom: '4px' }}>
-                    <span style={{ fontSize: 'clamp(52px, 7vw, 80px)', fontWeight: '900', color: slide.accentColor, lineHeight: 1, fontFamily: 'Georgia, serif', letterSpacing: '-2px' }}>∞</span>
+                  <div style={{ marginBottom: '2px' }}>
+                    <span style={{ fontSize: 'clamp(44px, 5vw, 64px)', fontWeight: '900', color: slide.accentColor, lineHeight: 1, fontFamily: 'Georgia, serif', letterSpacing: '-2px' }}>∞</span>
                   </div>
-                  <div style={{ fontSize: '15px', fontWeight: '800', color: '#0f172a', marginBottom: '2px' }}>Every Cancer. Every Patient.</div>
-                  <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '500', marginBottom: '20px' }}>No diagnosis is ever turned away</div>
+                  <div style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a', marginBottom: '2px' }}>Every Cancer. Every Patient.</div>
+                  <div style={{ fontSize: '11.5px', color: '#64748b', fontWeight: '500', marginBottom: '14px' }}>No diagnosis is ever turned away</div>
 
-                  <div style={{ height: '1px', background: `${slide.accentColor}20`, marginBottom: '18px' }} />
+                  <div style={{ height: '1px', background: `${slide.accentColor}15`, marginBottom: '14px' }} />
 
                   {/* Pill grid — scrollable on small screens */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '130px', overflowY: 'auto', paddingRight: '4px' }}>
                     {CANCER_TYPES.map((name) => (
                       <span key={name} style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '5px',
-                        padding: '5px 13px', borderRadius: '50px',
-                        fontSize: '11.5px', fontWeight: '600',
-                        background: `${slide.accentColor}12`,
-                        border: `1px solid ${slide.accentColor}30`,
+                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                        padding: '4px 10px', borderRadius: '50px',
+                        fontSize: '11px', fontWeight: '600',
+                        background: `${slide.accentColor}10`,
+                        border: `1px solid ${slide.accentColor}25`,
                         color: '#1e4d4a',
                         whiteSpace: 'nowrap',
-                        letterSpacing: '0.1px',
                       }}>
-                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: slide.accentColor, display: 'inline-block', flexShrink: 0 }} />
+                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: slide.accentColor, display: 'inline-block', flexShrink: 0 }} />
                         {name}
                       </span>
                     ))}
@@ -313,27 +320,27 @@ export default function Hero() {
                 </div>
               ) : (
                 /* ── Normal stat card ── */
-                <div style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', borderRadius: '28px', padding: '40px', border: `1px solid ${slide.accentColor}25`, boxShadow: `0 20px 60px ${slide.accentColor}15`, position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', borderRadius: '50%', background: slide.accentColor, opacity: 0.07, filter: 'blur(30px)' }} />
-                  <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '11px', fontWeight: '700', color: `${slide.accentColor}80`, letterSpacing: '1px' }}>
+                <div style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px)', borderRadius: '24px', padding: '30px 24px', border: `1px solid ${slide.accentColor}20`, boxShadow: `0 16px 40px ${slide.accentColor}10`, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '150px', height: '150px', borderRadius: '50%', background: slide.accentColor, opacity: 0.07, filter: 'blur(30px)' }} />
+                  <div style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '11px', fontWeight: '700', color: `${slide.accentColor}80`, letterSpacing: '1px' }}>
                     {String(current + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
                   </div>
-                  <div style={{ marginBottom: '24px' }}>
-                    <div style={{ fontSize: 'clamp(44px, 6vw, 72px)', fontWeight: '900', color: slide.statDanger ? '#ef4444' : slide.accentColor, lineHeight: 1, fontFamily: 'Poppins, sans-serif' }}>
+                  <div style={{ marginBottom: '18px' }}>
+                    <div style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: '900', color: slide.statDanger ? '#ef4444' : slide.accentColor, lineHeight: 1, fontFamily: 'Poppins, sans-serif' }}>
                       {slide.stat.value}
                     </div>
-                    <div style={{ fontSize: '14px', color: '#64748b', fontWeight: '600', marginTop: '6px' }}>
+                    <div style={{ fontSize: '13px', color: '#64748b', fontWeight: '600', marginTop: '4px' }}>
                       {slide.stat.label}
                     </div>
                   </div>
-                  <div style={{ height: '1px', background: `${slide.accentColor}20`, marginBottom: '24px' }} />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div style={{ height: '1px', background: `${slide.accentColor}15`, marginBottom: '18px' }} />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     {slide.highlights.map((h) => (
-                      <div key={h} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                        <div style={{ width: '20px', height: '20px', borderRadius: '6px', background: `${slide.accentColor}15`, border: `1px solid ${slide.accentColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
-                          <FaCheckCircle style={{ color: slide.accentColor, fontSize: '10px' }} />
+                      <div key={h} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
+                        <div style={{ width: '18px', height: '18px', borderRadius: '5px', background: `${slide.accentColor}12`, border: `1px solid ${slide.accentColor}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
+                          <FaCheckCircle style={{ color: slide.accentColor, fontSize: '9px' }} />
                         </div>
-                        <span style={{ fontSize: '12px', color: '#475569', fontWeight: '500', lineHeight: '1.4' }}>{h}</span>
+                        <span style={{ fontSize: '11.5px', color: '#475569', fontWeight: '500', lineHeight: '1.3' }}>{h}</span>
                       </div>
                     ))}
                   </div>
@@ -341,16 +348,16 @@ export default function Hero() {
               )}
 
               {/* Trust strip — always shown */}
-              <div style={{ background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)', borderRadius: '16px', padding: '14px 20px', border: `1px solid ${slide.accentColor}20`, display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '10px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)', borderRadius: '14px', padding: '10px 16px', border: `1px solid ${slide.accentColor}15`, display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '8px' }}>
                 {[
                   { icon: <FaStar />, v: '4.9★', s: 'Rating' },
                   { icon: <FaUserMd />, v: '22 Yrs', s: 'Experience' },
                   { icon: <FaShieldAlt />, v: 'FSSAI', s: 'Certified' },
                 ].map((t) => (
-                  <div key={t.v} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ color: slide.accentColor, fontSize: '14px' }}>{t.icon}</span>
+                  <div key={t.v} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ color: slide.accentColor, fontSize: '13px' }}>{t.icon}</span>
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: '800', color: '#0f172a', lineHeight: 1 }}>{t.v}</div>
+                      <div style={{ fontSize: '11.5px', fontWeight: '800', color: '#0f172a', lineHeight: 1 }}>{t.v}</div>
                       <div style={{ fontSize: '9px', color: '#94a3b8', fontWeight: '500' }}>{t.s}</div>
                     </div>
                   </div>
@@ -383,7 +390,7 @@ export default function Hero() {
       )}
 
       {/* Dot indicators + progress bar */}
-      <div style={{ position: 'absolute', bottom: '28px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+      <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
         {/* Dots */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {slides.map((s, i) => (
@@ -407,7 +414,7 @@ export default function Hero() {
 
       {/* Mobile swipe hint */}
       {isMobile && (
-        <div style={{ position: 'absolute', bottom: '60px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <div style={{ position: 'absolute', bottom: '50px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', gap: '6px', alignItems: 'center' }}>
           <FaChevronLeft style={{ fontSize: '10px', color: `${slide.accentColor}80` }} />
           <span style={{ fontSize: '10px', color: `${slide.accentColor}80`, fontWeight: '600', letterSpacing: '1px' }}>SWIPE</span>
           <FaChevronRight style={{ fontSize: '10px', color: `${slide.accentColor}80` }} />
@@ -421,7 +428,7 @@ export default function Hero() {
         @media (max-width: 900px) {
           .hero-slide-content {
             grid-template-columns: 1fr !important;
-            gap: 32px !important;
+            gap: 24px !important;
           }
         }
         @media (max-width: 480px) {

@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaRibbon, FaLungs, FaAppleAlt, FaHeartbeat, FaRegHospital, FaTint, FaArrowRight, FaChevronDown, FaCalendarAlt, FaFileMedical, FaFileSignature, FaCapsules, FaUserShield, FaLeaf, FaCheckCircle } from 'react-icons/fa';
+import { FaRibbon, FaLungs, FaAppleAlt, FaHeartbeat, FaRegHospital, FaTint, FaArrowRight, FaChevronDown, FaCalendarAlt, FaFileMedical, FaFileSignature, FaCapsules, FaUserShield, FaLeaf, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 
 const A='#38bed5',AL='#38bed518',AM='#38bed535',AD='#2ca8be',P='#1a6e52';
 const up={hidden:{opacity:0,y:32},show:{opacity:1,y:0,transition:{duration:0.6,ease:[0.22,1,0.36,1]}}};
@@ -119,7 +119,7 @@ export default function CarePrograms(){
                 <h3 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.4rem,3vw,2rem)',color:'#fff',fontWeight:900,lineHeight:1.3,marginBottom:16}}>
                   Personalised herbal care for <span style={{color:A}}>every cancer</span>
                 </h3>
-                <p style={{color:'rgba(255,255,255,0.7)',fontSize:14,lineHeight:1.8,marginBottom:28}}>Each program is tailored by Prof. Ramesh Babu to your specific cancer type, stage, and medical history.</p>
+                <p style={{color:'rgba(255,255,255,0.7)',fontSize:14,lineHeight:1.8,marginBottom:28}}>Each program is tailored by Prof. Ramesh to your specific cancer type, stage, and medical history.</p>
                 <div style={{display:'flex',flexDirection:'column',gap:10}}>
                   {['Evidence-based protocols','No drug-herb conflicts','Complementary to chemo','Weekly follow-up included'].map(f=>(
                     <div key={f} style={{display:'flex',alignItems:'center',gap:10,color:'rgba(255,255,255,0.85)',fontSize:13}}>
@@ -155,10 +155,10 @@ export default function CarePrograms(){
         <motion.div initial="hidden" whileInView="show" variants={stg} viewport={{once:true}} style={{textAlign:'center',padding:'clamp(52px,8vw,80px) 20px 36px'}}>
           <motion.div variants={up}>
             <span style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}15`,border:`1px solid ${A}33`,color:A,padding:'6px 16px',borderRadius:50,fontSize:12,fontWeight:700,marginBottom:16}}><FaLeaf/> Complete Cancer Coverage</span>
-            <motion.div animate={{opacity:[0.1,0.22,0.1],scale:[1,1.04,1]}} transition={{duration:3.5,repeat:Infinity}} style={{fontSize:'clamp(64px,14vw,96px)',lineHeight:0.85,color:A,fontFamily:'Georgia,serif',marginBottom:16,userSelect:'none'}}>&#8734;</motion.div>
+            <motion.div animate={{opacity:[0.2,1,0.2],scale:[1,1.05,1]}} transition={{duration:2.5,repeat:Infinity,ease:'easeInOut'}} style={{fontSize:'clamp(64px,14vw,96px)',lineHeight:0.85,color:A,fontFamily:'Georgia,serif',marginBottom:16,userSelect:'none'}}>&#8734;</motion.div>
             <h2 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(1.6rem,4vw,2.4rem)',color:'#0f172a',fontWeight:900,marginBottom:14}}>We treat <span style={{color:A}}>every</span> type of cancer</h2>
             <p style={{color:'#64748b',fontSize:'0.97rem',lineHeight:1.8,maxWidth:560,margin:'0 auto'}}>
-              Whether common or rare, Prof. Ramesh Babu's team creates a personalised herbal pathway for <strong style={{color:'#0f172a'}}>every known cancer type</strong> — no case is ever turned away.
+              Whether common or rare, Prof. Ramesh's team creates a personalised herbal pathway for <strong style={{color:'#0f172a'}}>every known cancer type</strong> — no case is ever turned away.
             </p>
           </motion.div>
         </motion.div>
@@ -186,17 +186,108 @@ export default function CarePrograms(){
       </section>
 
       {/* ── CTA ── */}
-      <section style={{background:`linear-gradient(135deg,${P} 0%,#0f3460 100%)`,padding:'clamp(52px,8vw,80px) 20px',textAlign:'center',position:'relative',overflow:'hidden'}}>
-        <Blob s={280} x="70%" y="-60px" c={A} d={1}/>
-        <Blob s={200} x="-50px" y="40%" c={P} d={3}/>
-        <motion.div initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:0.6}} style={{position:'relative',zIndex:1,maxWidth:520,margin:'0 auto'}}>
-          <h2 style={{fontFamily:'Playfair Display,serif',color:'#fff',fontSize:'clamp(1.5rem,4vw,2.1rem)',marginBottom:14,lineHeight:1.3}}>
-            Ready to Begin Your <span style={{color:A}}>Healing Journey?</span>
-          </h2>
-          <p style={{color:'rgba(255,255,255,0.72)',lineHeight:1.8,fontSize:'0.97rem'}}>
-            Speak with one of our senior practitioners — reach out via the contact page or WhatsApp.
-          </p>
-        </motion.div>
+      <section style={{ background: `linear-gradient(135deg, ${P} 0%, #0e2a47 100%)`, padding: 'clamp(110px, 12vw, 150px) 20px clamp(60px, 8vw, 90px)', position: 'relative', overflow: 'hidden' }}>
+        {/* Top Curve */}
+        <div style={{ position: 'absolute', top: -1, left: 0, right: 0, zIndex: 2 }}>
+          <svg viewBox="0 0 1440 60" style={{ display: 'block', width: '100%', transform: 'rotate(180deg)' }}><path d="M0,40 C360,80 1080,0 1440,40 L1440,60 L0,60 Z" fill="#fff" /></svg>
+        </div>
+
+        <Blob s={350} x="80%" y="-100px" c={A} d={1} />
+        <Blob s={280} x="-100px" y="30%" c={P} d={3} />
+
+        <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative', zIndex: 3 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '32px',
+              padding: '50px 40px',
+              textAlign: 'center',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.15)',
+            }}
+          >
+            {/* Glowing Icon Circle */}
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, ${A}20, ${A}40)`,
+                border: `1px solid ${A}60`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 24px',
+                color: A,
+                fontSize: '24px',
+                boxShadow: `0 8px 24px ${A}33`,
+              }}
+            >
+              <FaLeaf />
+            </div>
+
+            <h2 style={{ fontFamily: 'Playfair Display, serif', color: '#fff', fontSize: 'clamp(1.6rem, 4vw, 2.3rem)', fontWeight: 900, marginBottom: '14px', lineHeight: 1.25 }}>
+              Ready to Begin Your <span style={{ color: A }}>Healing Journey?</span>
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, fontSize: 'clamp(14px, 1.8vw, 15px)', maxWidth: '520px', margin: '0 auto 36px' }}>
+              Speak with Prof. Ramesh Babu or one of our senior practitioners today. Let us guide you through a personalized, integrative pathway to recovery.
+            </p>
+
+            {/* CTAs */}
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link
+                to="/contact"
+                style={{
+                  fontSize: '14px',
+                  padding: '14px 32px',
+                  background: A,
+                  color: 'white',
+                  borderRadius: '50px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  textDecoration: 'none',
+                  fontWeight: '700',
+                  boxShadow: `0 8px 24px ${A}44`,
+                  transition: 'all 0.25s ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 12px 32px ${A}66`; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = `0 8px 24px ${A}44`; }}
+              >
+                Book Free Consultation <FaArrowRight />
+              </Link>
+              <a
+                href="https://wa.me/918884588835?text=Hi!%20I%20would%20like%20to%20inquire%20about%20herbal%20treatment%20support."
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#fff',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  padding: '14px 28px',
+                  border: '1.5px solid rgba(255,255,255,0.25)',
+                  borderRadius: '50px',
+                  background: 'rgba(255,255,255,0.06)',
+                  transition: 'all 0.25s ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.borderColor = A; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                <FaWhatsapp style={{ fontSize: '18px', color: '#25D366' }} /> Chat on WhatsApp
+              </a>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       <style>{`

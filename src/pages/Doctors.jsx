@@ -1,35 +1,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaUserMd, FaGraduationCap, FaBriefcase, FaRegEnvelope } from 'react-icons/fa';
+import { FaUserMd, FaGraduationCap, FaBriefcase } from 'react-icons/fa';
 
 const doctors = [
   {
     id: 1,
     name: 'Prof. Ramesh Babu',
-    role: 'Pharmacologist,M.Pharm (PhD)',
+    role: 'Pharmacologist — M.Pharm, PhD',
     experience: '22 Years Experience',
-    specialty: 'Clinical Oncology & Herbal Medicine Integration',
-    bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD, demonstrating his deep expertise in pharmaceutical sciences and natural products. With over two decades of dedicated practice, he has made significant contributions to the understanding and application of herbal remedies for various health conditions.',
-    edu: 'Harvard Medical School (MD), Stanford University (PhD in Pharmacognosy)',
-    certifications: [
-
-    ],
+    specialty: 'Integrative Pharmacology & Herbal Oncology',
+    bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD in Pharmaceutical Sciences, demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.',
     image: '/images/doctor1.png',
   },
   {
     id: 2,
-    name: 'NUTRACEUTICAL TEAM',
-
-    specialty: 'Clinical Oncology & Herbal Medicine Integration',
-    bio: 'Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individuals unique needs throughout their treatment journey.',
-
-    certifications: [
-
-    ],
+    name: 'Nutraceutical Team',
+    role: 'Multidisciplinary Research & Care Team',
+    specialty: 'Clinical Nutrition, Herbal Research & Patient Support',
+    bio: "Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individual's unique needs throughout their treatment journey.",
     image: '/images/doctor33.png',
   },
-
-
 ];
 
 export default function Doctors() {
@@ -84,23 +74,6 @@ export default function Doctors() {
                   onMouseEnter={(e) => (e.target.style.transform = 'scale(1.05)')}
                   onMouseLeave={(e) => (e.target.style.transform = 'scale(1.0)')}
                 />
-                {/* Floating Experience Badge */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '16px',
-                    left: '16px',
-                    background: 'var(--gradient-primary)',
-                    color: 'white',
-                    padding: '6px 14px',
-                    borderRadius: '50px',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    boxShadow: 'var(--shadow-primary)',
-                  }}
-                >
-                  {doctor.experience}
-                </div>
               </div>
 
               {/* Card Body */}
@@ -137,32 +110,18 @@ export default function Doctors() {
                   {doctor.bio}
                 </p>
 
-                {/* Certifications */}
+                {/* Specialty Footer */}
                 <div
                   style={{
                     marginTop: 'auto',
-                    paddingTop: '16px',
+                    paddingTop: '14px',
                     borderTop: '1px solid var(--gray-2)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
                   }}
                 >
-                  {doctor.certifications.map((cert, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        fontSize: '12px',
-                        color: 'var(--dark-3)',
-                      }}
-                    >
-                      <FaRegEnvelope style={{ color: 'var(--primary)', fontSize: '14px', flexShrink: 0 }} />
-                      <span>{cert}</span>
-                    </div>
-                  ))}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--dark-3)' }}>
+                    <FaBriefcase style={{ color: 'var(--primary)', fontSize: '13px', flexShrink: 0 }} />
+                    <span style={{ fontWeight: '500' }}>{doctor.specialty}</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
