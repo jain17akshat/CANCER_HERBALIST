@@ -115,8 +115,8 @@ const slides = [
     bg: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 60%, #fffdf0 100%)',
     accentColor: '#d97706',
     badge: '🛡️ Certified, Safe & Trusted',
-    headline: ['FSSAI Certified', 'Formulations'],
-    headlineAccent: 'Formulations',
+    headline: ['FSSAI Certified', 'Pharmaceuticals'],
+    headlineAccent: 'Pharmaceuticals',
     subline: 'Every herbal product is lab-tested, made by standardized extracts, and FSSAI certified. We\'re not making claims — we\'re backed by science, certification, and 35+ years of research & practice.',
     highlights: [
       'Lab-Tested Purity',

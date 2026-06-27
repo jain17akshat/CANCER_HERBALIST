@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPlay, FaTimes, FaVideo, FaCheckCircle, FaStar, FaQuoteLeft, FaBookmark, FaRegChartBar, FaNotesMedical, FaRegClock, FaRibbon, FaFlask } from 'react-icons/fa';
+import { FaPlay, FaTimes, FaVideo, FaCheckCircle, FaStar, FaQuoteLeft, FaBookmark, FaRegChartBar, FaNotesMedical, FaRegClock, FaRibbon, FaFlask, FaUsers, FaGlobe, FaCalendarAlt, FaStethoscope, FaHourglassHalf } from 'react-icons/fa';
 
 const ACCENT = '#38bed5';
 
@@ -216,7 +216,7 @@ export default function Testimonials() {
             </div>
             <div className="rating-row" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '36px', fontWeight: '900', color: 'var(--dark-2)', lineHeight: 1 }}>4.9</div>
+                <div style={{ fontSize: '36px', fontWeight: '900', color: 'var(--dark-2)', lineHeight: 1 }}>4.5</div>
                 <div style={{ display: 'flex', gap: '2px', color: '#FBBF24', margin: '4px 0' }}>
                   {[...Array(5)].map((_, idx) => <FaStar key={idx} />)}
                 </div>
@@ -256,6 +256,158 @@ export default function Testimonials() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Patient Demographics & Reach Section */}
+      <section className="section-padding" style={{ background: 'linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 100%)', borderTop: '1px solid var(--gray-2)', borderBottom: '1px solid var(--gray-2)' }}>
+        <div className="container">
+          <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <span className="section-badge" style={{ background: 'var(--secondary-light)', border: '1px solid var(--primary-light)', color: 'var(--primary-dark)' }}>
+              <FaRegChartBar /> Overview & Demographics
+            </span>
+            <h2 className="section-title">Insights from <span>Our Success Stories</span></h2>
+            <p className="section-subtitle" style={{ margin: '0 auto', color: 'var(--gray-3)' }}>
+              A collective summary of patient groups, conditions, and geographic origins highlighting our holistic and integrative care model.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '24px' }}>
+            {/* Age Distribution Card */}
+            <motion.div
+              data-aos="fade-up"
+              data-aos-delay="0"
+              whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
+              style={{
+                background: 'white',
+                borderRadius: '20px',
+                padding: '30px 24px',
+                border: '1px solid var(--gray-2)',
+                boxShadow: 'var(--shadow-sm)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(56, 190, 213, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontSize: '24px', marginBottom: '20px' }}>
+                <FaCalendarAlt />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--dark-2)', marginBottom: '10px', fontFamily: 'inherit' }}>Age Distribution</h3>
+              <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary-dark)', marginBottom: '8px' }}>45–75 Years</div>
+              <p style={{ fontSize: '13px', color: 'var(--gray-3)', lineHeight: '1.6' }}>
+                The most common age group seeking our support, indicating a strong preference for gentle, supportive therapy among mature adults.
+              </p>
+            </motion.div>
+
+            {/* Cancer Types Card */}
+            <motion.div
+              data-aos="fade-up"
+              data-aos-delay="100"
+              whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
+              style={{
+                background: 'white',
+                borderRadius: '20px',
+                padding: '30px 24px',
+                border: '1px solid var(--gray-2)',
+                boxShadow: 'var(--shadow-sm)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(56, 190, 213, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontSize: '24px', marginBottom: '20px' }}>
+                <FaStethoscope />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--dark-2)', marginBottom: '10px', fontFamily: 'inherit' }}>Cancer Types</h3>
+              <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary-dark)', marginBottom: '8px' }}>Breast, Lung, Liver & Stomach</div>
+              <p style={{ fontSize: '13px', color: 'var(--gray-3)', lineHeight: '1.6' }}>
+                Frequently reported cancers include breast, lung, liver, and stomach, where our botanical protocols act as a supportive aid.
+              </p>
+            </motion.div>
+
+            {/* Geographic Reach Card */}
+            <motion.div
+              data-aos="fade-up"
+              data-aos-delay="200"
+              whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
+              style={{
+                background: 'white',
+                borderRadius: '20px',
+                padding: '30px 24px',
+                border: '1px solid var(--gray-2)',
+                boxShadow: 'var(--shadow-sm)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(56, 190, 213, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontSize: '24px', marginBottom: '20px' }}>
+                <FaGlobe />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--dark-2)', marginBottom: '10px', fontFamily: 'inherit' }}>Geographic Reach</h3>
+              <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary-dark)', marginBottom: '8px' }}>Across India & Internationally</div>
+              <p style={{ fontSize: '13px', color: 'var(--gray-3)', lineHeight: '1.6' }}>
+                Supporting patients from multiple regions across India and internationally with customized remote consults and global deliveries.
+              </p>
+            </motion.div>
+
+            {/* Treatment Stages Card */}
+            <motion.div
+              data-aos="fade-up"
+              data-aos-delay="300"
+              whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
+              style={{
+                background: 'white',
+                borderRadius: '20px',
+                padding: '30px 24px',
+                border: '1px solid var(--gray-2)',
+                boxShadow: 'var(--shadow-sm)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(56, 190, 213, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontSize: '24px', marginBottom: '20px' }}>
+                <FaHourglassHalf />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--dark-2)', marginBottom: '10px', fontFamily: 'inherit' }}>Treatment Stages</h3>
+              <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary-dark)', marginBottom: '8px' }}>During Every Stage</div>
+              <p style={{ fontSize: '13px', color: 'var(--gray-3)', lineHeight: '1.6' }}>
+                Support is sought before, during, and after conventional treatments, helping reduce side effects and accelerate recovery.
+              </p>
+            </motion.div>
+
+            {/* Family Involvement Card */}
+            <motion.div
+              data-aos="fade-up"
+              data-aos-delay="400"
+              whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
+              style={{
+                background: 'white',
+                borderRadius: '20px',
+                padding: '30px 24px',
+                border: '1px solid var(--gray-2)',
+                boxShadow: 'var(--shadow-sm)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(56, 190, 213, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontSize: '24px', marginBottom: '20px' }}>
+                <FaUsers />
+              </div>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--dark-2)', marginBottom: '10px', fontFamily: 'inherit' }}>Family Involvement</h3>
+              <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--primary-dark)', marginBottom: '8px' }}>Active Caregivers</div>
+              <p style={{ fontSize: '13px', color: 'var(--gray-3)', lineHeight: '1.6' }}>
+                Family members play an active role in administering care, monitoring nutritional charts, and keeping patient spirits high.
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>

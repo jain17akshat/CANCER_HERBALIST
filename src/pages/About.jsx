@@ -52,12 +52,18 @@ const values = [
 ];
 
 const milestones = [
-  { year: '2012', icon: <FaSeedling />, title: 'Clinic Founded', desc: 'Opened our first integrative herbal oncology clinic in Bangalore with a vision to merge botanical medicine with modern cancer care.' },
+  { year: '2012', icon: <FaSeedling />, title: 'Clinic Founded', desc: 'Following a remarkable recovery in one of our early brain cancer patients, we expanded our mission by opening our first integrative herbal oncology clinic in Bangalore.' },
   { year: '2014', icon: <FaShieldAlt />, title: 'Clinical Recognition', desc: 'Recognized by integrative medicine bodies for developing standardized, evidence-informed herbal support protocols for cancer patients.' },
   { year: '2016', icon: <FaFlask />,    title: 'Research Wing Opens', desc: 'Established a dedicated botanical research laboratory to study herbal formulations, bioavailability, and drug-herb interactions.' },
   { year: '2016', icon: <FaGlobe />,   title: 'Global Teleconsultation', desc: 'Launched our digital consultation platform, enabling patients across India and internationally to access our specialized care remotely.' },
   { year: '2020', icon: <FaUserMd />,  title: 'Integrative Team Grows', desc: 'Expanded our multidisciplinary team of herbalists, nutritionists, and integrative oncologists to serve a wider range of cancer types.' },
   { year: '2024', icon: <FaLeaf />,    title: 'Two Decades of Healing', desc: 'Celebrating 20 years of service — continuing to refine our protocols, train new practitioners, and deepen our commitment to patient wellbeing.' },
+  {
+  year: '2026',
+  icon: <FaLeaf />,
+  title: 'Continuing Our Mission',
+  desc: 'Building on years of experience by supporting patients at every stage of their cancer journey with compassionate integrative care.'
+}
 ];
 
 const approach = [
