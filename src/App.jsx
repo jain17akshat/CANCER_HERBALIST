@@ -30,6 +30,7 @@ import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import { WishlistProvider } from './context/WishlistContext';
+import SEO from './components/SEO';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -54,10 +55,12 @@ function App() {
     <WishlistProvider>
       <Router>
         <ScrollToTop />
+        <SEO />
         <div
           className="App"
           style={{
             minHeight: '100vh',
+
             display: 'flex',
             flexDirection: 'column',
             width: '100%',

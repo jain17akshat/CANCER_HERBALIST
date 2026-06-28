@@ -18,104 +18,97 @@ const PRIMARY = '#1a6e52';
 export const products = [
   {
     id: 1,
-    name: 'ImmunoHerb Complex',
+    name: 'Cap CH95 (30Cap)',
     category: 'Immunity',
-    price: 1499,
-    originalPrice: 1999,
+    price: 599,
+    originalPrice: 799,
     rating: 4.8,
     reviews: 124,
     images: [
       '/products/product1.jpg',
-
       '/products/product1.2.png',
       '/products/product1.3.png',
-      // '/products/product1.4.png',
-      // '/products/product1.5.png',
     ],
     color: '#38bed5',
+    icon: '🌿',
     badge: 'Best Seller',
-    tagline: 'Your daily immunity shield, clinically crafted from ancient herbs.',
-    description:
-      'ImmunoHerb Complex is a clinically validated blend of Tulsi, Ashwagandha & Giloy — three of Ayurveda\'s most potent immunomodulators — combined in precise therapeutic ratios. Designed to strengthen immune response during and after cancer treatment, this formulation works synergistically to elevate NK cell activity, restore white blood cell counts, and reduce post-chemotherapy fatigue.',
+    tagline: 'Premium immunity support capsule for cellular defense and resilience.',
+    description: 'Cap CH95 is a specialized herbal formulation designed to bolster the body\'s immune system, enhance cellular resilience, and combat chronic fatigue during intensive clinical treatments. Rich in natural immunomodulators and antioxidants, it supports general vitality and wellness.',
     benefits: [
-      'Boosts Natural Killer (NK) cell activity by up to 40%',
-      'Reduces chemotherapy-related fatigue and weakness',
-      'Supports white blood cell (WBC) count restoration',
-      'Adaptogenic — helps body cope with physical & emotional stress',
-      'Contains no steroids, synthetic hormones, or heavy metals',
+      'Boosts natural killer (NK) cell activity',
+      'Protects cells from oxidative damage',
+      'Helps reduce post-treatment fatigue',
+      'Supports white blood cell count restoration',
     ],
-    ingredients: 'Ocimum sanctum (Tulsi) 300mg, Withania somnifera (Ashwagandha KSM-66®) 250mg, Tinospora cordifolia (Giloy) 200mg, Piperine 5mg (bioavailability enhancer)',
-    dosage: '2 capsules twice daily after meals, or as directed by your herbalist.',
-    size: '60 capsules / 30-day supply',
+    ingredients: 'Tinospora Cordifolia (Giloy) 250mg, Ocimum Sanctum (Tulsi) 200mg, Withania Somnifera (Ashwagandha) 150mg.',
+    dosage: '1 capsule twice daily after meals, or as advised by your healthcare specialist.',
+    size: '30 capsules / 15-day supply',
     inStock: true,
   },
   {
     id: 2,
-    name: 'TurmaCure Gold',
-    category: 'Anti-Tumor',
-    price: 1799,
-    originalPrice: 2399,
+    name: 'C3M Powder',
+    category: 'Nutrition',
+    price: 2599,
+    originalPrice: 3299,
     rating: 4.9,
     reviews: 98,
     images: [
-      '/products/product2.1.png',
-      '/products/product2.2.jpg',
-      '/products/product2.3.jpg',
-      // '/products/product1.4.png',
+      '/products/product9.1.jpg',
+      '/products/product9.2.jpg',
+      '/products/product9.3.jpg',
     ],
     color: '#f59e0b',
+    icon: '🟡',
     badge: 'Top Rated',
-    tagline: 'Pharmaceutical-grade Curcumin with 95% curcuminoids.',
-    description:
-      'TurmaCure Gold features pharmaceutical-grade Curcumin standardised to 95% curcuminoids, combined with BioPerine® to enhance absorption by 2000%. Curcumin targets the NF-κB pathway — a key driver of tumor growth and inflammation — making it one of the most researched plant compounds in oncology support. Each capsule delivers a potent, bioavailable dose proven to complement conventional cancer therapy.',
+    tagline: 'High-absorption Curcumin & MCT blend for advanced nutritional therapy.',
+    description: 'C3M Powder combines premium Medium Chain Triglycerides (MCT) with highly bioavailable Curcumin (standardized to 95% curcuminoids). This synergistic formulation provides readily absorbable calories while delivering powerful anti-inflammatory and cellular protection support.',
     benefits: [
-      'Inhibits tumor angiogenesis (blood vessel formation in tumors)',
-      'Powerful anti-inflammatory — reduces CRP and IL-6 markers',
-      'NF-κB pathway suppression (key anti-tumor mechanism)',
-      'Enhances sensitivity of cancer cells to chemotherapy',
-      'Antioxidant protection against free-radical damage',
+      'High-bioavailability Curcumin (95% curcuminoids)',
+      'Rapid energy source via MCTs without glucose spikes',
+      'Supports healthy anti-inflammatory pathways',
+      'Preserves lean muscle mass and combats weight loss',
     ],
-    ingredients: 'Curcuma longa extract (95% curcuminoids) 500mg, BioPerine® (Piper nigrum) 5mg, Boswellia serrata extract 150mg',
-    dosage: '1 capsule three times daily with meals.',
-    size: '60 capsules / 20-day supply',
+    ingredients: 'Coconut-derived MCT Powder 70%, Curcuma Longa extract (95% curcuminoids) 25%, Piperine 5%.',
+    dosage: '1 scoop (approx. 10g) mixed into warm water, milk, or smoothies daily.',
+    size: '200g jar / 20-day supply',
     inStock: true,
   },
   {
     id: 3,
-    name: 'DetoxHerb Blend',
-    category: 'Detox',
-    price: 999,
-    originalPrice: 1299,
+    name: 'CUP Powder',
+    category: 'Alkaline Therapy',
+    price: 2299,
+    originalPrice: 2999,
     rating: 4.6,
     reviews: 76,
     images: [
-      '/products/product3.1.jpg',
-      '/products/product3.2.jpg',
-      '/products/product3.3.jpg',
+      '/products/product11.0.jpg',
+      '/products/product11.jpg',
+      '/products/product11.1.jpg',
     ],
     color: '#10b981',
+    icon: '🍃',
     badge: null,
-    tagline: 'Gentle liver & kidney detox tea for chemotherapy recovery.',
-    description:
-      'DetoxHerb Blend is a thoughtfully curated herbal tea that combines Neem leaf, Moringa, and Dandelion root — three renowned detoxifying botanicals that work in concert to support hepatic and renal clearance of chemotherapy metabolites. It gently restores digestive enzymes, improves appetite, and helps normalise liver function tests (LFTs) elevated by oncological treatments.',
+    tagline: 'Advanced alkalizing blend to support healthy metabolic pH balance.',
+    description: 'CUP Powder is a pharmaceutical-grade alkalizing formula designed to buffer cellular acidity and support metabolic pH balance. Restoring an optimal alkaline environment helps normalize cellular metabolism and supports overall recovery.',
     benefits: [
-      'Liver enzyme (ALT/AST) normalisation after chemo',
-      'Accelerates clearance of chemo-related toxins',
-      'Restores appetite and reduces nausea',
-      'Rich in chlorophyll — alkalises and cleanses blood',
-      'Soothing on the gut lining — reduces colitis risk',
+      'Supports optimal metabolic pH buffering',
+      'Alkalizes the cellular microenvironment naturally',
+      'Aids kidney function and metabolic detoxification',
+      'Pharmaceutical-grade purity for maximum safety and absorption',
     ],
-    ingredients: 'Azadirachta indica (Neem) leaf 40%, Moringa oleifera leaf 35%, Taraxacum officinale (Dandelion root) 25%',
-    dosage: 'Steep 1 sachet in 200ml hot water for 5 minutes. Drink once daily, preferably in the morning.',
-    size: '30 sachets / 30-day supply',
+    ingredients: 'Purified Sodium Bicarbonate, Potassium Citrate, and alkaline mineral buffers.',
+    dosage: '½ teaspoon dissolved in a glass of water daily on an empty stomach, or as directed by your doctor.',
+    size: '250g tub / 50-day supply',
     inStock: true,
   },
   {
     id: 4,
-    name: 'AshwaShield Adaptogen',
+    name: 'Cap Withangen (30Cap)',
     category: 'Stress & Recovery',
-    price: 1299,
-    originalPrice: 1699,
+    price: 799,
+    originalPrice: 1099,
     rating: 4.7,
     reviews: 89,
     images: [
@@ -124,305 +117,56 @@ export const products = [
       '/products/product4.3.jpg',
     ],
     color: '#8b5cf6',
+    icon: '🌱',
     badge: null,
-    tagline: 'Combat cancer-related anxiety, fatigue & brain fog.',
-    description:
-      'AshwaShield Adaptogen combines KSM-66® Ashwagandha — the most extensively studied root extract in clinical trials — with Brahmi (Bacopa monnieri) to address the triad of cancer-related psychological burden: anxiety, cognitive decline ("chemo brain"), and chronic fatigue. This adaptogenic duo modulates the HPA axis, reduces cortisol, and supports neurogenesis for clearer thinking and better sleep.',
+    tagline: 'Standardized Ashwagandha adaptogen for stress defense and sleep support.',
+    description: 'Cap Withangen features high-potency Withania Somnifera (Ashwagandha) extract standardized for maximum withanolide content. It targets the HPA axis to normalize cortisol levels, reduce anxiety, and improve sleep quality during recovery.',
     benefits: [
-      'Clinically reduces cortisol levels by up to 28%',
-      'Improves sleep quality and reduces insomnia',
-      'Enhances cognitive function — memory & focus',
-      'Alleviates chemo-induced anxiety and depression',
-      'Non-habit forming — safe for long-term use',
+      'Modulates cortisol levels to combat stress',
+      'Improves sleep latency and overall sleep quality',
+      'Enhances stamina and reduces physical fatigue',
+      'Supports cognitive function, memory, and focus',
     ],
-    ingredients: 'Ashwagandha root extract KSM-66® 600mg, Bacopa monnieri extract (45% bacosides) 300mg, Shankhpushpi 100mg',
-    dosage: '1 capsule twice daily. Take evening dose 1 hour before sleep for best results.',
-    size: '60 capsules / 30-day supply',
-    inStock: true,
-  },
-  {
-    id: 5,
-    name: 'OncoClear Formula',
-    category: 'Anti-Tumor',
-    price: 2499,
-    originalPrice: 3199,
-    rating: 4.9,
-    reviews: 142,
-    images: [
-      '/products/product5.1.jpg',
-      '/products/product5.2.jpg',
-      '/products/product5.3.jpg',
-    ],
-    color: '#0f3460',
-    badge: 'Premium',
-    tagline: 'Our flagship multi-herb protocol for comprehensive cancer support.',
-    description:
-      'OncoClear Formula is our most advanced multi-herb protocol, combining 12 clinically researched medicinal plants that target multiple cancer pathways simultaneously. This synergistic blend has been formulated by integrative oncology herbalists to work safely alongside chemotherapy and radiotherapy, enhancing treatment outcomes while minimising side effects.',
-    benefits: [
-      'Targets multiple cancer pathways simultaneously',
-      'Synergistic blend of 12 research-backed herbs',
-      'Safe to use alongside chemo and radiotherapy',
-      'Supports apoptosis (programmed cancer cell death)',
-      'Comprehensive antioxidant and immune protection',
-    ],
-    ingredients: 'Proprietary blend of Curcumin, Ashwagandha, Tulsi, Giloy, Neem, Moringa, Punarnava, Shatavari, Amalaki, Brahmi, Shankhpushpi, Boswellia — 1500mg total per serving',
-    dosage: '3 capsules twice daily after meals, or as directed by your herbalist.',
-    size: '90 capsules / 30-day supply',
-    inStock: true,
-  },
-  {
-    id: 6,
-    name: 'Organic MCT Oil',
-    category: 'Nutrition',
-    price: 849,
-    originalPrice: 1099,
-    rating: 4.5,
-    reviews: 63,
-    images: [
-      '/products/product6.1.jpg',
-      '/products/product6.2.jpg',
-      '/products/product6.3.jpg',
-      '/products/product6.4.jpg',
-    ],
-    color: '#d97706',
-    badge: null,
-    tagline: 'Organic MCT fuel for energy, metabolism & cancer-related weight management.',
-    description:
-      'Organic MCT Oil delivers Medium Chain Triglycerides — a rapidly absorbed, clean energy source derived from organic coconut. Unlike long-chain fats, MCTs are metabolised directly by the liver, providing instant cellular fuel without relying on glucose. Specially formulated for cancer patients experiencing cachexia (treatment-related weight loss) and fatigue, this oil supports ketogenic metabolism, preserves lean muscle mass, and provides sustained energy throughout the day.',
-    benefits: [
-      'Rapid energy source — bypasses normal fat digestion',
-      'Supports ketogenic metabolism during cancer treatment',
-      'Reduces cancer-related cachexia and weight loss',
-      'Preserves lean muscle mass during chemotherapy',
-      'Tasteless and odourless — easy to add to food or drinks',
-    ],
-    ingredients: 'Organic Medium Chain Triglycerides (C8 Caprylic Acid 60%, C10 Capric Acid 40%) derived from organic coconut oil. 250ml per bottle.',
-    dosage: '1 tablespoon (15ml) once or twice daily. Mix into smoothies, salads, or take directly. Start with a smaller dose and gradually increase.',
-    size: '250ml bottle / 30-day supply',
-    inStock: true,
-  },
-  {
-    id: 7,
-    name: 'Phytox Chlorella',
-    category: 'Detox',
-    price: 1199,
-    originalPrice: 1599,
-    rating: 4.7,
-    reviews: 87,
-    images: [
-      '/products/product7.1.jpg',
-      '/products/product7.3.jpg',
-      '/products/product7.4.jpg',
-    ],
-    color: '#059669',
-    badge: 'New',
-    tagline: 'Chlorella-powered deep detox for heavy metal chelation & immune revival.',
-    description:
-      'Phytox is a premium Chlorella pyrenoidosa extract developed exclusively by Cancer Herbalist for patients undergoing chemotherapy and radiation therapy. Each capsule delivers 400mg of broken cell-wall Chlorella — one of nature\'s most potent chelating agents — along with a dense nutritional profile of plant-based protein, chlorophyll, beta-glucans, and B-vitamins. Phytox binds to heavy metals and chemo metabolites, facilitating their safe excretion while simultaneously nourishing depleted cells.',
-    benefits: [
-      'Binds and removes heavy metals (mercury, lead, cadmium)',
-      'Accelerates clearance of chemotherapy metabolites',
-      'Rich in chlorophyll — alkalises blood and supports liver',
-      'Contains 60% plant-based protein for muscle preservation',
-      'Beta-glucans stimulate NK cell and macrophage activity',
-    ],
-    ingredients: 'Chlorella pyrenoidosa extract (broken cell wall) 400mg, Chlorophyll complex 20mg, Beta-glucan 15mg. Vegetarian capsule shell.',
-    dosage: '2 capsules twice daily after meals with a full glass of water, or as directed by your herbalist.',
-    size: '50 capsules / 25-day supply',
-    inStock: true,
-  },
-  {
-    id: 8,
-    name: 'Frankincense Essential Oil',
-    category: 'Essential Oils',
-    price: 699,
-    originalPrice: 999,
-    rating: 4.8,
-    reviews: 74,
-    images: [
-      '/products/product8.0.jpg',
-
-      '/products/product8.1.jpg',
-
-      '/products/product8.4.jpg',
-      // '/products/product8.3.jpg',
-      // '/products/product8.2.jpg',
-    ],
-    color: '#b45309',
-    badge: null,
-    tagline: '100% pure Boswellia Frerana oil for therapeutic aromatherapy & topical healing.',
-    description:
-      'Frankincense Essential Oil is extracted from the resin of the Boswellia Frerana tree — a sacred botanical revered for millennia for its profound healing properties. This 100% pure, natural, therapeutic-grade oil is rich in boswellic acids, which are potent anti-inflammatory and anti-tumor compounds extensively studied in oncology research. FSSAI certified and manufactured by Vibes India, Bengaluru, this oil is ideal for diffusion aromatherapy to reduce anxiety, topical application (diluted) for pain relief, and as an adjunct to holistic cancer care protocols.',
-    benefits: [
-      'Rich in boswellic acids — potent anti-inflammatory compounds',
-      'Aromatherapy reduces cancer-related anxiety and insomnia',
-      'Studied for anti-tumor properties (inhibits 5-LOX pathway)',
-      'Topical pain relief for radiation-induced skin irritation',
-      'Calming woody aroma promotes emotional well-being',
-    ],
-    ingredients: '100% pure Boswellia Frerana (Frankincense) essential oil. Cold-pressed, undiluted, therapeutic grade. FSSAI Lic No: 1122332000580.',
-    dosage: 'Aromatherapy: Add 3–5 drops to a diffuser. Topical: Dilute 2–3 drops in a carrier oil (coconut/jojoba) and apply to affected area. Do not ingest.',
-    size: '200ml bottle',
-    inStock: true,
-  },
-  {
-    id: 9,
-    name: 'MCT Powder',
-    category: 'Nutrition',
-    price: 999,
-    originalPrice: 1399,
-    rating: 4.6,
-    reviews: 58,
-    images: [
-      '/products/product9.1.jpg',
-      '/products/product9.2.jpg',
-      '/products/product9.3.jpg',
-    ],
-    color: '#16a34a',
-    badge: null,
-    tagline: 'Convenient MCT powder for instant ketone energy & cancer-related weight support.',
-    description:
-      'MCT Powder by Cancer Herbalist delivers Medium Chain Triglycerides in a convenient, easily mixable powder form — perfect for patients who find liquid MCT oil difficult to tolerate. Derived from premium coconut and palm sources, this powder dissolves instantly in water, smoothies, or food, providing rapid ketone energy that bypasses glucose metabolism. Formulated specifically for cancer patients experiencing cachexia, treatment fatigue, and appetite loss, it supports healthy caloric intake and preserves lean body mass throughout chemotherapy and radiation therapy.',
-    benefits: [
-      'Convenient powder form — mixes instantly into any drink or food',
-      'Rapid ketone energy without relying on glucose metabolism',
-      'Supports healthy weight maintenance during cancer treatment',
-      'Gentle on the stomach — better tolerated than liquid MCT oil',
-      'Preserves lean muscle mass and prevents cachexia',
-    ],
-    ingredients: 'Medium Chain Triglycerides (from coconut & palm oil) 70%, Acacia fibre (carrier) 28%, Sunflower lecithin 2%. 200g per jar.',
-    dosage: '1 scoop (approx. 7g) mixed into water, smoothie, coffee, or food, once or twice daily. Start with half a scoop and increase gradually.',
-    size: '200g jar / 30-day supply',
-    inStock: true,
-  },
-  {
-    id: 10,
-    name: 'OXY Forte',
-    category: 'Immunity',
-    price: 1099,
-    originalPrice: 1499,
-    rating: 4.6,
-    reviews: 52,
-    images: [
-      '/products/product10.jpg',
-      '/products/product10.1.jpg',
-      '/products/product10.2.jpg',
-    ],
-    color: '#e11d48',
-    badge: null,
-    tagline: 'Multi-action herbal capsules for cellular oxygenation & antioxidant defence.',
-    description:
-      'OXY Forte is a multi-action herbal capsule formulation by Vibes India, FSSAI certified, designed to enhance cellular oxygenation and fortify the body\'s antioxidant defence systems during cancer treatment. The unique blend of multi-colored capsules contains a synergistic combination of herbal extracts that work to improve oxygen delivery to tissues, neutralise free radicals generated during chemotherapy, and support mitochondrial energy production — helping patients feel more energised and resilient throughout their treatment journey.',
-    benefits: [
-      'Enhances cellular oxygenation and tissue perfusion',
-      'Multi-herb antioxidant defence against free radical damage',
-      'Supports mitochondrial energy production during treatment',
-      'Reduces oxidative stress from chemotherapy and radiation',
-      'FSSAI certified — manufactured to pharmaceutical standards',
-    ],
-    ingredients: 'Proprietary multi-herb blend including antioxidant-rich botanical extracts. FSSAI certified. Manufactured by Vibes India, Bengaluru.',
-    dosage: '1 capsule of each colour twice daily after meals, or as directed by your herbalist.',
+    ingredients: 'Withania Somnifera (Ashwagandha KSM-66®) extract standardized to 5% withanolides 500mg.',
+    dosage: '1 capsule twice daily, preferably with warm milk or water after meals.',
     size: '30 capsules / 15-day supply',
     inStock: true,
   },
   {
-    id: 11,
-    name: 'Sodium Bicarbonate',
-    category: 'Alkaline Therapy',
-    price: 499,
-    originalPrice: 699,
-    rating: 4.5,
-    reviews: 45,
+    id: 5,
+    name: 'Cap AC95 (30Cap)',
+    category: 'Anti-Tumor',
+    price: 2999,
+    originalPrice: 3999,
+    rating: 4.9,
+    reviews: 142,
     images: [
-      '/products/product11.0.jpg',
-      '/products/product11.jpg',
-      '/products/product11.1.jpg',
-      '/products/product11.2.jpg',
+      '/products/product2.1.png',
+      '/products/product2.2.jpg',
+      '/products/product2.3.jpg',
     ],
-    color: '#7c3aed',
-    badge: null,
-    tagline: 'Pharmaceutical-grade alkalising powder for pH balance & metabolic support.',
-    description:
-      'Sodium Bicarbonate by Dr Herbalist (Cancer Herbalist) is a pharmaceutical-grade alkalising powder formulated to support the body\'s natural acid-base balance. Cancer cells thrive in acidic microenvironments, and maintaining an alkaline pH can create conditions less favourable for tumor proliferation. This 100g tub provides pure, food-grade sodium bicarbonate that can be dissolved in water for daily alkaline therapy — a complementary approach used alongside conventional cancer treatment to support metabolic health and reduce treatment-related acidity.',
+    color: '#0f3460',
+    icon: '💊',
+    badge: 'Premium',
+    tagline: 'Ultra-pure Active Curcumin 95% for targeted anti-inflammatory defense.',
+    description: 'Cap AC95 delivers pharmaceutical-grade Active Curcumin standardized to 95% curcuminoids, enhanced with black pepper extract to maximize cellular absorption. It acts as a powerful anti-inflammatory and supports healthy cell proliferation pathways.',
     benefits: [
-      'Alkalises body pH — creates unfavourable conditions for cancer cells',
-      'Reduces treatment-related metabolic acidosis',
-      'Supports kidney function and bicarbonate buffering',
-      'Relieves chemotherapy-induced nausea and acid reflux',
-      'Pharmaceutical-grade purity — no additives or fillers',
+      'Targets NF-kB and critical inflammatory pathways',
+      'Provides powerful cellular antioxidant defense',
+      'Supports healthy tissue regeneration and recovery',
+      'BioPerine-enhanced for 2000% higher cellular absorption',
     ],
-    ingredients: '100% Sodium Bicarbonate (NaHCO₃), pharmaceutical/food grade. 100g per tub.',
-    dosage: 'Dissolve ½ teaspoon (approx. 2.5g) in a glass of water, once daily on an empty stomach. Do not exceed recommended dose. Consult your oncologist before use.',
-    size: '100g tub / 40-day supply',
+    ingredients: 'Curcuma Longa extract (95% curcuminoids) 500mg, BioPerine® (Piper Nigrum extract) 5mg.',
+    dosage: '1 capsule twice daily with meals.',
+    size: '30 capsules / 15-day supply',
     inStock: true,
   },
   {
-    id: 12,
-    name: 'MethiPower',
-    category: 'Nutrition',
-    price: 599,
-    originalPrice: 799,
-    rating: 4.5,
-    reviews: 41,
-    images: [
-      '/products/product12.0.jpg',
-      // '/products/product12.jpg',
-      '/products/product12.1.jpg',
-      '/products/product12.2.jpg',
-    ],
-    color: '#ca8a04',
-    badge: null,
-    tagline: 'Fenugreek power for blood sugar control, appetite & anti-inflammatory support.',
-    description:
-      'MethiPower is a 100% pure Trigonella Foenum-Graecum (Fenugreek) powder — one of Ayurveda\'s most versatile botanicals, now formulated as a dietary supplement for cancer patients. Fenugreek is rich in galactomannan fibre, saponins, and 4-hydroxyisoleucine, compounds clinically shown to regulate blood glucose, stimulate appetite, and reduce systemic inflammation. Ideal for patients experiencing chemotherapy-induced appetite loss, insulin resistance, or metabolic disruption, MethiPower can be mixed into warm water or food for easy daily consumption.',
-    benefits: [
-      'Regulates blood sugar — clinically proven glycaemic control',
-      'Stimulates appetite in chemotherapy-induced anorexia',
-      'Rich in soluble fibre — supports digestive health',
-      'Anti-inflammatory saponins reduce systemic inflammation',
-      'Contains iron, magnesium & B-vitamins for energy support',
-    ],
-    ingredients: '100% Trigonella Foenum-Graecum (Fenugreek seed) powder. 100g per jar. No additives, preservatives, or fillers.',
-    dosage: '1–2 teaspoons mixed in warm water or food, once or twice daily. Can also be added to smoothies or yoghurt.',
-    size: '100g jar / 30-day supply',
-    inStock: true,
-  },
-  {
-    id: 13,
-    name: 'Fulvican',
-    category: 'Stress & Recovery',
-    price: 599,
-    originalPrice: 738,
-    rating: 4.8,
-    reviews: 65,
-    images: [
-      '/products/product13.jpg',
-      '/products/product13.1.jpg',
-      '/products/product13.2.jpg',
-    ],
-    color: '#854d0e',
-    badge: null,
-    tagline: 'Premium Shilajit extract for cellular energy, recovery, & revitalization.',
-    description:
-      'Fulvican is a potent dietary supplement formulated by Cancer Herbalist, featuring 400mg of premium Asphaltum punjabianum (Shilajit) extract. Revered in Ayurveda as a profound rejuvenator, Shilajit is naturally rich in fulvic acid and trace minerals. It works at a cellular level to enhance mitochondrial energy production, combat severe fatigue, and support the body\'s natural recovery processes. Ideal for patients experiencing post-treatment exhaustion or general debility, Fulvican helps restore vitality and resilience.',
-    benefits: [
-      'Boosts mitochondrial function and cellular energy production',
-      'Rich source of fulvic acid and over 80 trace minerals',
-      'Combats severe fatigue and treatment-related exhaustion',
-      'Enhances nutrient absorption at the cellular level',
-      'Supports deep tissue recovery and revitalization',
-    ],
-    ingredients: 'Each capsule contains: Asphaltum punjabianum (Shilajit) extract - 400 mg. Standardised to contain high levels of fulvic acid. FSSAI certified.',
-    dosage: '1–2 capsules per day with water or milk, preferably after meals, or as directed by your healthcare provider.',
-    size: '60 capsules / 30-day supply',
-    inStock: true,
-  },
-  {
-    id: 14,
-    name: 'Livocin',
+    id: 6,
+    name: 'Cap Livocin (30Cap)',
     category: 'Detox',
-    price: 899,
-    originalPrice: 1199,
+    price: 2199,
+    originalPrice: 2799,
     rating: 4.7,
     reviews: 58,
     images: [
@@ -430,29 +174,227 @@ export const products = [
       '/products/product14.1.jpg',
       '/products/product14.2.jpg',
     ],
-    color: '#0d9488',
+    color: '#d97706',
+    icon: '🫒',
     badge: null,
-    tagline: 'Hepatoprotective formulation for liver detox & immune function.',
-    description:
-      'Livocin is a potent hepatoprotective formulation by Cancer Herbalist, featuring 350mg of Andrographis paniculata and 50mg of Tribulus terrestris per capsule. Designed specifically for intensive liver support during and after cancer treatments, this unique blend aids in detoxifying the liver from chemotherapy residues and heavy metals. With added CAQO for enhanced bioavailability, Livocin not only protects liver cells but also stimulates the immune system, improving overall resilience and vitality.',
+    tagline: 'Potent hepatoprotective formula for liver detox and digestive care.',
+    description: 'Cap Livocin is formulated with hepatoprotective botanicals like Andrographis Paniculata and Tribulus Terrestris. It aids in clearing toxic metabolites, supporting liver enzyme normalization, and promoting healthy digestion during therapy.',
     benefits: [
-      'Provides powerful hepatoprotective action to shield liver cells',
-      'Aids in the detoxification of chemotherapy residues',
-      'Stimulates and supports robust immune function',
-      'Enhanced with CAQO for superior bioavailability',
-      'Synergistic blend of Andrographis and Tribulus terrestris',
+      'Supports liver enzyme (ALT/AST) normalization',
+      'Aids clearance of clinical chemical residues and toxins',
+      'Promotes healthy digestion, appetite, and gut lining',
+      'Protects liver cells from oxidative stress and free radicals',
     ],
-    ingredients: 'Each capsule contains: Andrographis paniculata extract 350mg, Tribulus terrestris extract 50mg, CAQO. FSSAI certified. Manufactured by VIBES INDIA.',
-    dosage: '1 capsule daily, or as directed by your healthcare provider.',
+    ingredients: 'Andrographis Paniculata extract 350mg, Tribulus Terrestris extract 50mg, CAQO bio-enhancer.',
+    dosage: '1 capsule twice daily after meals.',
+    size: '30 capsules / 15-day supply',
+    inStock: true,
+  },
+  {
+    id: 7,
+    name: 'Cap Fulvican (30Cap)',
+    category: 'Stress & Recovery',
+    price: 799,
+    originalPrice: 999,
+    rating: 4.8,
+    reviews: 65,
+    images: [
+      '/products/product13.jpg',
+      '/products/product13.1.jpg',
+      '/products/product13.2.jpg',
+    ],
+    color: '#059669',
+    icon: '🟢',
+    badge: 'New',
+    tagline: 'Premium purified Shilajit extract rich in Fulvic Acid for cellular energy.',
+    description: 'Cap Fulvican features purified Asphaltum Punjabianum (Shilajit) extract rich in fulvic acid and essential trace minerals. It works at the mitochondrial level to rejuvenate energy production, enhance nutrient uptake, and speed up tissue recovery.',
+    benefits: [
+      'Boosts mitochondrial ATP energy production',
+      'Rich source of fulvic acid and over 80 trace minerals',
+      'Improves overall cellular nutrient and mineral absorption',
+      'Alleviates deep exhaustion and promotes physical recovery',
+    ],
+    ingredients: 'Purified Asphaltum Punjabianum (Shilajit) extract 400mg (high fulvic acid content).',
+    dosage: '1 capsule daily in the morning with warm water or milk, or as directed.',
     size: '30 capsules / 30-day supply',
     inStock: true,
   },
   {
-    id: 15,
-    name: 'K27 Comprehensive Care',
-    category: 'Anti-Tumor',
-    price: 1299,
+    id: 8,
+    name: 'Frank Oil 100ml',
+    category: 'Essential Oils',
+    price: 1599,
+    originalPrice: 1999,
+    rating: 4.8,
+    reviews: 74,
+    images: [
+      '/products/product8.jpg',
+      '/products/product8.1.jpg',
+      '/products/product8.4.jpg',
+    ],
+    color: '#b45309',
+    icon: '🫙',
+    badge: null,
+    tagline: '100% pure Boswellia Frerana oil for therapeutic aromatherapy and massage.',
+    description: 'Frank Oil is a premium, therapeutic-grade Frankincense (Boswellia Frerana) essential oil. High in natural boswellic acids, it is ideal for soothing aromatherapy, stress relief, and topical application (diluted) to ease discomfort and inflammation.',
+    benefits: [
+      'Rich in active anti-inflammatory boswellic acids',
+      'Promotes relaxation and reduces nervous tension or anxiety',
+      'Soothes skin and supports tissue repair when diluted topically',
+      '100% pure steam-distilled essential oil, free of synthetic additives',
+    ],
+    ingredients: '100% Pure Boswellia Frerana (Frankincense) essential oil. FSSAI certified.',
+    dosage: 'Aromatherapy: Add 3–5 drops to a diffuser. Topical: Dilute with a carrier oil (e.g. coconut oil) and massage gently.',
+    size: '100ml bottle',
+    inStock: true,
+  },
+  {
+    id: 9,
+    name: 'Tab Cyanolina (60Tab)',
+    category: 'Nutrition',
+    price: 599,
+    originalPrice: 799,
+    rating: 4.6,
+    reviews: 47,
+    images: [
+      '/products/product16.1.jpg',
+      '/products/product16.jpg',
+      '/products/product16.2.jpg',
+    ],
+    color: '#16a34a',
+    icon: '🥥',
+    badge: null,
+    tagline: 'Blue Spirulina extract rich in Phycocyanin for antioxidant support.',
+    description: 'Tab Cyanolina provides premium Spirulina tablets standardized for high Phycocyanin content. This blue superfood offers exceptional antioxidant defense, aids cell renewal, and supplies essential amino acids and trace minerals.',
+    benefits: [
+      'Rich in Phycocyanin, a powerful blue antioxidant compound',
+      'Supports red blood cell production and oxygen transport',
+      'Supplies essential plant-based proteins, amino acids, and B-vitamins',
+      'Promotes natural cellular detoxification and immune defense',
+    ],
+    ingredients: 'Purified Spirulina Platensis extract 500mg. FSSAI certified.',
+    dosage: '2 tablets daily with water, preferably in the morning.',
+    size: '60 tablets / 30-day supply',
+    inStock: true,
+  },
+  {
+    id: 10,
+    name: 'Tab Phytox (60Tab)',
+    category: 'Detox',
+    price: 999,
+    originalPrice: 1299,
+    rating: 4.7,
+    reviews: 87,
+    images: [
+      '/products/product7.1.jpg',
+      '/products/product7.3.jpg',
+      '/products/product7.4.jpg',
+    ],
+    color: '#e11d48',
+    icon: '💊',
+    badge: null,
+    tagline: 'Broken cell-wall Chlorella for heavy metal chelation & deep detox.',
+    description: 'Tab Phytox features organic broken cell-wall Chlorella Pyrenoidosa. It is engineered to naturally bind and safely eliminate heavy metals, toxins, and drug metabolites from the body while restoring essential trace nutrition.',
+    benefits: [
+      'Binds heavy metals and environmental toxins for safe excretion',
+      'Supports natural liver and kidney detoxification pathways',
+      'Rich in natural chlorophyll, beta-glucans, and protein',
+      'Provides comprehensive cellular nutrient replenishment and energy',
+    ],
+    ingredients: 'Chlorella Pyrenoidosa (broken cell wall) 400mg, chlorophyll buffers.',
+    dosage: '2 tablets twice daily after meals with a full glass of water.',
+    size: '60 tablets / 15-day supply',
+    inStock: true,
+  },
+  {
+    id: 11,
+    name: 'Quinoil',
+    category: 'Nutrition',
+    price: 1199,
     originalPrice: 1599,
+    rating: 4.5,
+    reviews: 63,
+    images: [
+      '/products/product6.1.jpg',
+      '/products/product6.2.jpg',
+      '/products/product6.3.jpg',
+    ],
+    color: '#7c3aed',
+    icon: '⚗️',
+    badge: null,
+    tagline: 'Premium bioactive lipid complex for cellular energy and weight support.',
+    description: 'Quinoil is a premium organic lipid blend formulated to provide a concentrated, easily metabolized energy source. Formulated for recovery support, it helps preserve muscle mass and supports ketogenesis without causing blood sugar spikes.',
+    benefits: [
+      'Provides clean, rapid cellular energy bypassing glucose pathway',
+      'Supports ketogenic metabolism during intensive clinical recovery',
+      'Helps prevent muscle wasting and treatment-related cachexia',
+      'Mild, neutral taste—easy to mix with food, salads, or smoothies',
+    ],
+    ingredients: 'Medium Chain Triglycerides (C8/C10 lipids) derived from organic coconut oil.',
+    dosage: '1 tablespoon (15ml) daily mixed into food, salad dressings, or smoothies.',
+    size: '250ml bottle',
+    inStock: true,
+  },
+  {
+    id: 12,
+    name: 'Anacose Powder',
+    category: 'Nutrition',
+    price: 1599,
+    originalPrice: 1999,
+    rating: 4.5,
+    reviews: 41,
+    images: [
+      '/products/product12.0.jpg',
+      '/products/product12.1.jpg',
+      '/products/product12.2.jpg',
+    ],
+    color: '#ca8a04',
+    icon: '🌾',
+    badge: null,
+    tagline: 'Nutrient-dense herbal powder for digestive and appetite restoration.',
+    description: 'Anacose Powder is a proprietary dietary supplement designed to stimulate appetite, improve digestion, and reduce treatment-related nausea. Its blend of traditional herbs helps the body absorb vital nutrients efficiently during recovery.',
+    benefits: [
+      'Restores appetite and reduces treatment-induced nausea',
+      'Improves overall gastrointestinal health and gut lining stability',
+      'Supports nutrient absorption and systemic energy balance',
+      'Rich in natural fibers, minerals, and digestive enzymes',
+    ],
+    ingredients: 'Trigonella Foenum-Graecum (Fenugreek) extract, Zingiber Officinale (Ginger) extract, Elettaria Cardamomum.',
+    dosage: '1 scoop (5g) mixed in warm water twice daily before meals.',
+    size: '150g jar / 30-day supply',
+    inStock: true,
+  },
+  {
+    id: 13,
+    name: 'Methicon',
+    category: 'Nutrition',
+    price: 999,
+    originalPrice: 1299,
+    rating: 4.5,
+    reviews: 38,
+    images: [],
+    color: '#854d0e',
+    icon: '🌾',
+    badge: null,
+    tagline: 'Purified Methi extract for glycemic regulation and cellular defense.',
+    description: 'Methicon is a purified, standardised extract made from Trigonella foenum-graecum (Methi) designed to effectively lower blood sugar levels, limiting the glucose-rich environment that fuels cancer growth, multiplication, and spread. Standardised to Glucomannan, this bioactive glycoside acts on key metabolic organs to stabilise glucose levels, giving the body a stronger, healthier platform to fight cancer without conventional metabolic side effects.',
+    benefits: [
+      'Lowers blood sugar levels to restrict abnormal cellular growth and replication',
+      'Inhibits glucose pathways that fuel cancer cell multiplication and spread',
+      'Standardised to Glucomannan for organ-level glycemic and metabolic stability',
+      'Supports healthy insulin sensitivity and immune health without side effects',
+    ],
+    ingredients: 'Purified standardised extract of Trigonella foenum-graecum (Methi) (standardised to Glucomannan).',
+    dosage: '1 capsule twice daily after meals with water.',
+    size: '30 capsules / 15-day supply',
+    inStock: true,
+  },
+  {
+    id: 14,
+    name: 'Cap K27 (30Cap)',
+    category: 'Anti-Tumor',
+    price: 2699,
+    originalPrice: 3499,
     rating: 4.9,
     reviews: 82,
     images: [
@@ -460,52 +402,157 @@ export const products = [
       '/products/product15.1.jpg',
       '/products/product15.2.jpg',
     ],
-    color: '#6b21a8',
+    color: '#0d9488',
+    icon: '🌿',
     badge: 'Premium',
-    tagline: 'Flagship synergistic formulation for comprehensive multi-pathway support.',
-    description:
-      'K27 is the flagship comprehensive formulation developed by Cancer Herbalist. It is a powerful, synergistic blend of premium botanicals, meticulously designed to provide multi-pathway support against tumor progression. Enhanced with our proprietary CAQO delivery system for superior bioavailability, K27 works synergistically to modulate the immune response, inhibit angiogenesis, and support cellular apoptosis. Available in capsule, liquid extract, and powder forms, it represents the pinnacle of integrated herbal oncology care.',
+    tagline: 'Flagship multi-pathway botanical defense capsule.',
+    description: 'Cap K27 is a flagship formulation delivering a synergistic blend of anti-tumor botanicals designed to inhibit abnormal angiogenesis, stimulate cellular apoptosis, and support immune cell surveillance. Enhanced with the bio-active CAQO complex.',
     benefits: [
-      'Comprehensive multi-pathway support against tumor progression',
-      'Enhanced with CAQO delivery system for maximum bioavailability',
-      'Modulates immune response and supports natural killer (NK) cell activity',
-      'Contains potent anti-angiogenic and pro-apoptotic botanical compounds',
-      'Available in versatile formats (capsule, liquid, powder) for patient compliance',
+      'Comprehensive multi-pathway tumor defense and cellular protection',
+      'Inhibits angiogenesis (blood supply formation to abnormal cells)',
+      'Promotes normal healthy cell apoptosis and cycle regulation',
+      'Enhanced with CAQO complex for maximum cellular bioavailability',
     ],
-    ingredients: 'Proprietary blend of synergistic anti-tumor botanicals including active CAQO complex. FSSAI certified.',
-    dosage: 'Capsules: 1-2 daily. Liquid/Powder: As strictly directed by your oncology herbalist. Do not exceed recommended dosage.',
-    size: '60 capsules (also available as 100ml liquid or 50g powder)',
+    ingredients: 'Proprietary K27 botanical complex (Curcumin, Boswellia, Ashwagandha), CAQO absorption enhancer.',
+    dosage: '1-2 capsules daily as strictly directed by your oncology herbal specialist.',
+    size: '30 capsules / 30-day supply',
+    inStock: true,
+  },
+  {
+    id: 15,
+    name: 'Cap Oxy95 (30Cap)',
+    category: 'Immunity',
+    price: 3299,
+    originalPrice: 4199,
+    rating: 4.6,
+    reviews: 52,
+    images: [
+      '/products/product3.1.jpg',
+      '/products/product3.2.jpg',
+      '/products/product3.3.jpg',
+    ],
+    color: '#6b21a8',
+    icon: '🔮',
+    badge: 'Premium',
+    tagline: 'Oxygenation support formula for cellular energy and immune strength.',
+    description: 'Cap Oxy95 is designed to support healthy cellular respiration and oxygenation. By promoting optimal oxygen delivery at the tissue level, it enhances cellular mitochondrial efficiency, boosts immune response, and fights extreme fatigue.',
+    benefits: [
+      'Supports optimal tissue oxygenation and respiration efficiency',
+      'Enhances mitochondrial energy production and ATP synthesis',
+      'Combats severe chronic treatment fatigue and weakness',
+      'Boosts overall immune cellular activity and resistance',
+    ],
+    ingredients: 'Oxygen-coordinating organic herbal extracts, Cordyceps Sinensis extract.',
+    dosage: '1 capsule twice daily after meals.',
+    size: '30 capsules / 15-day supply',
     inStock: true,
   },
   {
     id: 16,
-    name: 'Cyanolina',
-    category: 'Nutrition',
-    price: 699,
-    originalPrice: 899,
+    name: 'Cap OxyForte (30Cap)',
+    category: 'Immunity',
+    price: 3999,
+    originalPrice: 4999,
     rating: 4.6,
-    reviews: 47,
+    reviews: 54,
     images: [
-
-      '/products/product16.1.jpg',
-      '/products/product16.jpg',
-      '/products/product16.2.jpg',
+      '/products/product10.jpg',
+      '/products/product10.1.jpg',
+      '/products/product10.2.jpg',
     ],
     color: '#0284c7',
-    badge: null,
-    tagline: 'Premium blue spirulina tablets for antioxidant & immune support.',
-    description:
-      'Cyanolina is a premium nutritional supplement developed by Cancer Herbalist, providing 500mg of highly purified Spirulina per tablet. Specially selected for its high Phycocyanin (blue spirulina) content, Cyanolina delivers exceptional antioxidant properties that help neutralize free radicals generated during intensive therapies. This dense superfood is also rich in essential amino acids, B-vitamins, and trace minerals, offering comprehensive nutritional support to boost immune function and maintain vitality throughout the healing journey.',
+    icon: '🌊',
+    badge: 'Premium',
+    tagline: 'Maximum strength cellular oxygenation and defense formula.',
+    description: 'Cap OxyForte is our maximum-strength cellular oxygenation formulation. Engineered for patients requiring advanced support, it works synergistically to elevate cellular energy, optimize blood oxygen transport, and defend cells against oxidative stress.',
     benefits: [
-      'Rich in Phycocyanin, providing powerful antioxidant protection',
-      'Helps neutralize free radicals associated with cancer treatments',
-      'Boosts immune system function and overall vitality',
-      'Dense source of bioavailable plant protein and essential amino acids',
-      'Provides crucial B-vitamins and trace minerals for cellular health',
+      'Advanced cellular oxygenation and tissue perfusion support',
+      'Protects cells from intensive therapeutic oxidative stress',
+      'Supports red blood cell function and systemic oxygen delivery',
+      'Strengthens immune cell modulation and defense mechanisms',
     ],
-    ingredients: 'Each tablet contains: Extract of Spirulina - 500mg. High Phycocyanin content. FSSAI certified. Manufactured by VIBES INDIA.',
-    dosage: '1–2 tablets daily with water, or as directed by your healthcare provider.',
-    size: '60 blue tablets / 30-day supply',
+    ingredients: 'Concentrated organic oxygenators, proprietary botanical cell-defense blend.',
+    dosage: '1 capsule twice daily after meals.',
+    size: '30 capsules / 15-day supply',
+    inStock: true,
+  },
+  {
+    id: 17,
+    name: 'Cap PSP (30Cap)',
+    category: 'Immunity',
+    price: 1399,
+    originalPrice: 1799,
+    rating: 4.7,
+    reviews: 64,
+    images: [],
+    color: '#ec4899',
+    icon: '🌸',
+    badge: null,
+    tagline: 'Polysaccharide-Peptide formulation for deep immune system modulation.',
+    description: 'Cap PSP features purified Polysaccharide-Peptide (PSP) extracts derived from Coriolus Versicolor (Turkey Tail mushroom). Widely researched in oncology, PSP is a potent immunomodulator that supports T-cell and NK-cell counts during clinical therapies.',
+    benefits: [
+      'Modulates and strengthens the immune response',
+      'Supports T-lymphocyte and Natural Killer (NK) cell populations',
+      'Helps mitigate severe side effects of conventional treatments',
+      'FSSAI certified, highly researched botanical immune support',
+    ],
+    ingredients: 'Coriolus Versicolor (Turkey Tail) extract standardized to 40% polysaccharides 500mg.',
+    dosage: '1 capsule twice daily after meals with water.',
+    size: '30 capsules / 15-day supply',
+    inStock: true,
+  },
+  {
+    id: 18,
+    name: '3C (30Cap)',
+    category: 'Anti-Tumor',
+    price: 1799,
+    originalPrice: 2299,
+    rating: 4.8,
+    reviews: 79,
+    images: [
+      '/products/product5.1.jpg',
+      '/products/product5.2.jpg',
+      '/products/product5.3.jpg',
+    ],
+    color: '#f43f5e',
+    icon: '⚡',
+    badge: null,
+    tagline: 'Triple-action botanical complex targeting abnormal cell pathways.',
+    description: '3C is a triple-action formulation combining three of the most researched anti-tumor herbs in integrative herbal medicine. It works synergistically to inhibit abnormal cell signaling, support healthy cell cycle regulation, and reduce chronic inflammation.',
+    benefits: [
+      'Synergistic triple-herb anti-tumor pathway support',
+      'Aids in healthy cell cycle regulation and cellular protection',
+      'Helps suppress major systemic inflammatory markers (TNF-alpha, IL-6)',
+      'Works safely alongside conventional treatment protocols to enhance outcomes',
+    ],
+    ingredients: 'Curcuma Longa extract (standardized curcuminoids 95%), Green Tea Extract (EGCG 50%), Boswellia Serrata extract.',
+    dosage: '1 capsule twice daily after meals.',
+    size: '30 capsules / 15-day supply',
+    inStock: true,
+  },
+  {
+    id: 19,
+    name: 'Tab BLOO',
+    category: 'Anti-Tumor',
+    price: 3740,
+    originalPrice: 4690,
+    rating: 4.9,
+    reviews: 110,
+    images: [],
+    color: '#3b82f6',
+    icon: '💎',
+    badge: 'Premium',
+    tagline: 'Specialized bio-active formulation for comprehensive oncology support.',
+    description: 'Tab BLOO is a premium, high-potency tablet formulation developed by Cancer Herbalist for advanced complementary support. Combining rare botanical extracts and active phyto-nutrients, it promotes healthy cell signaling, cellular detoxification, and robust immune defenses.',
+    benefits: [
+      'Advanced bio-active cellular defense and signaling formula',
+      'Promotes healthy cellular signaling and programmed cell death (apoptosis)',
+      'Encourages deep tissue detoxification and metabolic clearance',
+      'Supports systemic defense, patient recovery, and general vitality',
+    ],
+    ingredients: 'Proprietary oncology-support phyto-nutrient complex, rare organic botanical extracts, bio-enhancers.',
+    dosage: '1 tablet daily after breakfast, or as recommended by your healthcare specialist.',
+    size: '30 tablets / 30-day supply',
     inStock: true,
   },
 ];
@@ -703,11 +750,16 @@ function EnquiryModal({ product, onClose }) {
               background: 'rgba(255,255,255,0.15)',
               border: '2px solid rgba(255,255,255,0.3)',
               overflow: 'hidden', flexShrink: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <img
-                src={product.images[0]} alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', boxSizing: 'border-box' }}
-              />
+              {product.images?.[0] ? (
+                <img
+                  src={product.images[0]} alt={product.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', boxSizing: 'border-box' }}
+                />
+              ) : (
+                <span style={{ fontSize: '32px' }}>{product.icon}</span>
+              )}
             </div>
             <div>
               <p style={{
@@ -921,6 +973,84 @@ export default function ProductDetail() {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
 
+  useEffect(() => {
+    if (!product) return;
+
+    // 1. Update Title
+    const pageTitle = `${product.name} | Integrative Cancer Support | Cancer Herbalist Store`;
+    document.title = pageTitle;
+
+    // 2. Update Meta Description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', product.description);
+
+    // 3. Update OG Tags
+    const updateOGTag = (property, content) => {
+      let tag = document.querySelector(`meta[property="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('property', property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    updateOGTag('og:title', pageTitle);
+    updateOGTag('og:description', product.description);
+    updateOGTag('og:url', window.location.href);
+    if (product.images && product.images.length > 0) {
+      updateOGTag('og:image', `${window.location.origin}${product.images[0]}`);
+    }
+
+    // 4. Inject Product Schema Markup
+    const existingScript = document.getElementById('seo-schema-markup');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    const schemaData = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      'name': product.name,
+      'image': product.images && product.images.length > 0 ? `${window.location.origin}${product.images[0]}` : '',
+      'description': product.description,
+      'category': product.category,
+      'offers': {
+        '@type': 'Offer',
+        'priceCurrency': 'INR',
+        'price': product.price,
+        'itemCondition': 'https://schema.org/NewCondition',
+        'availability': product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        'url': window.location.href,
+        'priceValidUntil': '2027-12-31'
+      },
+      'aggregateRating': {
+        '@type': 'AggregateRating',
+        'ratingValue': product.rating,
+        'reviewCount': product.reviews
+      }
+    };
+
+    const script = document.createElement('script');
+    script.id = 'seo-schema-markup';
+    script.type = 'application/ld+json';
+    script.innerHTML = JSON.stringify(schemaData);
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      const scriptToRemove = document.getElementById('seo-schema-markup');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [product]);
+
   if (!product) {
     return (
       <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
@@ -933,6 +1063,7 @@ export default function ProductDetail() {
 
   const discount = Math.round((1 - product.price / product.originalPrice) * 100);
   const savings = product.originalPrice - product.price;
+
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: 'Poppins, sans-serif' }}>
@@ -971,7 +1102,7 @@ export default function ProductDetail() {
 
             {/* Thumbnails (vertical on desktop, horizontal on mobile) */}
             <div className="pd-thumbs">
-              {product.images.map((img, i) => (
+              {product.images && product.images.map((img, i) => (
                 <motion.div
                   key={i}
                   whileHover={{ scale: 1.05 }}
@@ -1002,6 +1133,10 @@ export default function ProductDetail() {
               className="pd-main-img"
               style={{
                 position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: '#fff',
               }}
             >
               {product.badge && (
@@ -1015,11 +1150,24 @@ export default function ProductDetail() {
                 </span>
               )}
 
-              <img
-                src={product.images[activeImg]}
-                alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', padding: '12px', boxSizing: 'border-box' }}
-              />
+              {product.images && product.images.length > 0 ? (
+                <img
+                  src={product.images[activeImg]}
+                  alt={product.name}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', padding: '12px', boxSizing: 'border-box' }}
+                />
+              ) : (
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  background: `linear-gradient(135deg, ${product.color}15, ${product.color}35)`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <span style={{ fontSize: '96px', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.1))' }}>{product.icon}</span>
+                </div>
+              )}
             </motion.div>
           </div>
 
@@ -1125,25 +1273,44 @@ export default function ProductDetail() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
 
               {/* ── Order Now & Wishlist ── */}
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   id="orderNowBtn"
-                  onClick={() => navigate('/checkout', { state: { product, qty: 1 } })}
+                  onClick={() => navigate('/checkout', { state: { product, qty: 1, paymentMethod: 'cod' } })}
                   style={{
-                    flex: 1, padding: '16px',
-                    background: PRIMARY,
+                    flex: '1 1 140px', padding: '16px',
+                    background: '#f8fafc',
+                    color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
+                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: '8px', fontFamily: 'inherit',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <FaShoppingBag /> Order COD
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  id="payOnlineBtn"
+                  onClick={() => navigate('/checkout', { state: { product, qty: 1, paymentMethod: 'online' } })}
+                  style={{
+                    flex: '2 1 180px', padding: '16px',
+                    background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
                     color: '#fff', border: 'none', borderRadius: '12px',
                     fontWeight: 700, fontSize: '15px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: '8px', fontFamily: 'inherit',
-                    boxShadow: `0 4px 14px ${PRIMARY}40`,
+                    boxShadow: `0 4px 14px ${ACCENT}40`,
                     transition: 'background 0.2s',
                   }}
                 >
-                  <FaShoppingBag /> Order Now
+                  💳 Pay Online (UPI)
                 </motion.button>
+
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -1288,9 +1455,21 @@ export default function ProductDetail() {
                   boxShadow: '0 2px 10px rgba(0,0,0,0.06)', transition: 'all 0.25s',
                 }}
               >
-                <div style={{ aspectRatio: '3 / 4', overflow: 'hidden', position: 'relative' }}>
-                  <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-
+                <div style={{ aspectRatio: '3 / 4', overflow: 'hidden', position: 'relative', background: '#f8fafc' }}>
+                  {p.images?.[0] ? (
+                    <img src={p.images[0]} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      background: `linear-gradient(135deg, ${p.color}18, ${p.color}38)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <span style={{ fontSize: '48px' }}>{p.icon}</span>
+                    </div>
+                  )}
                 </div>
                 <div style={{ padding: '12px 14px 14px' }}>
                   <p style={{ color: '#94a3b8', fontSize: '11px', margin: '0 0 4px', textTransform: 'uppercase', fontWeight: 600 }}>{p.category}</p>

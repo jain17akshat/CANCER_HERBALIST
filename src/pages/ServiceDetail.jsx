@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -461,6 +461,94 @@ export default function ServiceDetail() {
   const service = servicesData[id];
   const [openFaq, setOpenFaq] = useState(null);
 
+  useEffect(() => {
+    if (!service) return;
+
+    // 1. Update Title
+    const pageTitle = `${service.title} | ${service.subtitle} | Cancer Herbalist`;
+    document.title = pageTitle;
+
+    // 2. Update Meta Description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', service.overview);
+
+    // 3. Update OG Tags
+    const updateOGTag = (property, content) => {
+      let tag = document.querySelector(`meta[property="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('property', property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    updateOGTag('og:title', pageTitle);
+    updateOGTag('og:description', service.overview);
+    updateOGTag('og:url', window.location.href);
+    updateOGTag('og:image', service.heroImage);
+
+    // 4. Inject MedicalWebPage and FAQPage Structured Data
+    const existingScript = document.getElementById('seo-schema-markup');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    const faqSchemaQuestions = service.faqs.map(faq => ({
+      '@type': 'Question',
+      'name': faq.q,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': faq.a
+      }
+    }));
+
+    const schemaData = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'MedicalWebPage',
+          '@id': window.location.href,
+          'url': window.location.href,
+          'name': service.title,
+          'description': service.overview,
+          'about': {
+            '@type': 'MedicalCondition',
+            'name': service.title.replace(' Support Program', ''),
+            'possibleTreatment': {
+              '@type': 'MedicalTherapy',
+              'name': 'Integrative Herbal Nutritional Support'
+            }
+          }
+        },
+        {
+          '@type': 'FAQPage',
+          '@id': `${window.location.href}#faq`,
+          'mainEntity': faqSchemaQuestions
+        }
+      ]
+    };
+
+    const script = document.createElement('script');
+    script.id = 'seo-schema-markup';
+    script.type = 'application/ld+json';
+    script.innerHTML = JSON.stringify(schemaData);
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      const scriptToRemove = document.getElementById('seo-schema-markup');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [service, id]);
+
   if (!service) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '20px' }}>
@@ -469,6 +557,7 @@ export default function ServiceDetail() {
       </div>
     );
   }
+
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);

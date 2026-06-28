@@ -7,6 +7,7 @@ import {
   FaWhatsapp, FaLock, FaBox,
 } from 'react-icons/fa';
 import { useOrderSubmit } from '../hooks/useOrderSubmit';
+import { useRazorpay }   from '../hooks/useRazorpay';
 
 const ACCENT  = '#38bed5';
 const PRIMARY = '#1a6e52';
@@ -42,7 +43,14 @@ function Field({ label, required, children }) {
 export default function Checkout() {
   const { state }  = useLocation();   // { product, qty } passed from ProductDetail
   const navigate   = useNavigate();
-  const { submitOrder, status, error, reset } = useOrderSubmit();
+  const { submitOrder, status, error, reset }         = useOrderSubmit();
+  const { initializePayment, rzpStatus, rzpError }    = useRazorpay();
+
+  /* derived helpers */
+  const isSuccess     = status === 'success' || rzpStatus === 'success';
+  const isProcessing  = status === 'submitting' ||
+    rzpStatus === 'creating' || rzpStatus === 'paying' || rzpStatus === 'verifying';
+  const displayError  = error || rzpError;
 
   /* redirect if no product context */
   useEffect(() => {
@@ -51,6 +59,7 @@ export default function Checkout() {
 
   const product = state?.product || {};
   const [qty, setQty] = useState(state?.qty || 1);
+  const [paymentMethod, setPaymentMethod] = useState(state?.paymentMethod || 'cod');
 
   const [form, setForm] = useState({
     customerName: '',
@@ -89,34 +98,59 @@ export default function Checkout() {
     if (err) { setFormError(err); return; }
     setFormError('');
 
-    try {
-      const result = await submitOrder({
-        customerName:   form.customerName.trim(),
-        phone:          form.phone.trim(),
-        email:          form.email.trim(),
-        address:        form.address.trim(),
-        city:           form.city.trim(),
-        state:          form.state.trim(),
-        pincode:        form.pincode.trim(),
-        productName:    product.name,
-        quantity:       qty,
-        unitPrice:      product.price,
-        orderAmount:    total,
-        productId:      product.id,
+    if (paymentMethod === 'online') {
+      /* ── Razorpay flow ── */
+      await initializePayment({
+        amount:       total,
+        productName:  product.name,
+        productId:    product.id,
+        customerName: form.customerName.trim(),
+        phone:        form.phone.trim(),
+        email:        form.email.trim(),
+        address:      form.address.trim(),
+        city:         form.city.trim(),
+        state:        form.state.trim(),
+        pincode:      form.pincode.trim(),
+        quantity:     qty,
+        unitPrice:    product.price,
+        orderAmount:  total,
+        onSuccess: (data) => setOrderId(data.orderId || ''),
       });
-      setOrderId(result?.orderId || '');
-    } catch (_) {
-      // error state handled by hook
+    } else {
+      /* ── COD flow ── */
+      try {
+        const result = await submitOrder({
+          customerName:   form.customerName.trim(),
+          phone:          form.phone.trim(),
+          email:          form.email.trim(),
+          address:        form.address.trim(),
+          city:           form.city.trim(),
+          state:          form.state.trim(),
+          pincode:        form.pincode.trim(),
+          productName:    product.name,
+          quantity:       qty,
+          unitPrice:      product.price,
+          orderAmount:    total,
+          productId:      product.id,
+          paymentMethod:  'COD / Bank Transfer',
+        });
+        setOrderId(result?.orderId || '');
+      } catch (_) {
+        // error handled by useOrderSubmit
+      }
     }
   };
 
   /* ── WhatsApp fallback ───────────────────────────────────────────── */
   const waText = encodeURIComponent(
     `🌿 *New Order — Cancer Herbalist*\n\n` +
-    `Product: ${product.name}\nQty: ${qty}\nAmount: ₹${total.toLocaleString('en-IN')}\n\n` +
+    `Product: ${product.name}\nQty: ${qty}\nAmount: ₹${total.toLocaleString('en-IN')}\n` +
+    `Payment Method: ${paymentMethod === 'online' ? 'Paid Online via UPI' : 'COD / Bank Transfer'}\n` +
+    (orderId ? `Order ID: ${orderId}\n` : '') + `\n` +
     `Name: ${form.customerName || '—'}\nPhone: ${form.phone || '—'}\n` +
     `Email: ${form.email || '—'}\n` +
-    `Address: ${form.address}, ${form.city}, ${form.state} - ${form.pincode}`
+    `Address: ${form.address}, ${form.city}, ${form.state} - ${form.pincode}` +
+    (paymentMethod === 'online' ? `\n\n(I am attaching my payment screenshot below)` : '')
   );
 
   /* ─────────────────────────────────────────────────────────────────── */
@@ -173,7 +207,7 @@ export default function Checkout() {
 
             {/* ── SUCCESS state ── */}
             <AnimatePresence>
-              {status === 'success' && (
+              {isSuccess && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -197,10 +231,64 @@ export default function Checkout() {
                   <p style={{ color: '#64748b', lineHeight: 1.8, marginBottom: '8px' }}>
                     Your order <strong style={{ color: PRIMARY }}>{orderId}</strong> has been recorded.
                   </p>
-                  <p style={{ color: '#64748b', lineHeight: 1.8, marginBottom: '28px' }}>
-                    A confirmation will be sent to <strong>{form.email}</strong>.<br />
-                    Our team will contact you at <strong>{form.phone}</strong> within 24 hours.
-                  </p>
+
+                  {paymentMethod === 'online' ? (
+                    <div style={{
+                      background: '#f8fafc', borderRadius: '16px',
+                      padding: '24px', margin: '20px auto 28px', maxWidth: '420px',
+                      border: '1.5px dashed #cbd5e1', textAlign: 'center'
+                    }}>
+                      <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
+                        Scan QR or Tap to Pay via UPI App
+                      </h3>
+                      <p style={{ fontSize: '12.5px', color: '#475569', marginBottom: '16px' }}>
+                        Amount to Pay: <strong style={{ color: PRIMARY, fontSize: '15px' }}>₹{total.toLocaleString('en-IN')}</strong>
+                      </p>
+
+                      {/* QR Code for Desktop */}
+                      <div style={{
+                        background: '#fff', padding: '12px', borderRadius: '12px',
+                        display: 'inline-block', border: '1px solid #e2e8f0', marginBottom: '16px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                      }}>
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
+                            `upi://pay?pa=${import.meta.env.VITE_UPI_ID || '8884588835@okbizaxis'}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`
+                          )}`}
+                          alt="UPI Payment QR Code"
+                          style={{ width: '180px', height: '180px', display: 'block' }}
+                        />
+                      </div>
+
+                      {/* Pay via UPI App button */}
+                      <div>
+                        <a
+                          href={`upi://pay?pa=${import.meta.env.VITE_UPI_ID || '8884588835@okbizaxis'}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                            background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`, color: '#fff',
+                            padding: '12px 24px', borderRadius: '10px',
+                            textDecoration: 'none', fontWeight: 700, fontSize: '14.5px',
+                            width: '100%', boxSizing: 'border-box',
+                            boxShadow: `0 4px 12px ${ACCENT}40`
+                          }}
+                        >
+                          📱 Pay via UPI Payment App
+                        </a>
+                      </div>
+
+                      <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '12px', lineHeight: 1.5 }}>
+                        Supports GPay, PhonePe, Paytm, BHIM & other banking apps.<br />
+                        <span style={{ color: PRIMARY, fontWeight: 600 }}>Please share the payment receipt screenshot on WhatsApp after paying.</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <p style={{ color: '#64748b', lineHeight: 1.8, marginBottom: '28px' }}>
+                      A confirmation will be sent to <strong>{form.email}</strong>.<br />
+                      Our team will contact you at <strong>{form.phone}</strong> within 24 hours to confirm COD/bank transfer.
+                    </p>
+                  )}
+
                   <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                     <a
                       href={`https://wa.me/918884588835?text=${waText}`}
@@ -212,7 +300,7 @@ export default function Checkout() {
                         textDecoration: 'none', fontWeight: 700, fontSize: '14px',
                       }}
                     >
-                      <FaWhatsapp /> WhatsApp Us
+                      <FaWhatsapp /> {paymentMethod === 'online' ? 'Confirm Payment on WhatsApp' : 'WhatsApp Us'}
                     </a>
                     <button
                       onClick={() => navigate('/store')}
@@ -231,7 +319,7 @@ export default function Checkout() {
             </AnimatePresence>
 
             {/* ── FORM ── */}
-            {status !== 'success' && (
+            {!isSuccess && (
               <form onSubmit={handleSubmit} className="checkout-form"
                 style={{
                   background: '#fff', borderRadius: '20px',
@@ -310,8 +398,44 @@ export default function Checkout() {
                   </Field>
                 </div>
 
+                <Field label="Payment Method" required>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '4px', marginBottom: '8px' }}>
+                    <label style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '12px', border: `1.5px solid ${paymentMethod === 'cod' ? PRIMARY : '#e2e8f0'}`,
+                      borderRadius: '10px', background: paymentMethod === 'cod' ? `${PRIMARY}08` : '#f8fafc',
+                      cursor: 'pointer', transition: 'all 0.2s', fontSize: '13.5px', fontWeight: 600,
+                      color: paymentMethod === 'cod' ? PRIMARY : '#475569'
+                    }}>
+                      <input
+                        type="radio" name="paymentMethod" value="cod"
+                        checked={paymentMethod === 'cod'}
+                        onChange={() => setPaymentMethod('cod')}
+                        style={{ accentColor: PRIMARY }}
+                      />
+                      COD / Bank Transfer
+                    </label>
+
+                    <label style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '12px', border: `1.5px solid ${paymentMethod === 'online' ? PRIMARY : '#e2e8f0'}`,
+                      borderRadius: '10px', background: paymentMethod === 'online' ? `${PRIMARY}08` : '#f8fafc',
+                      cursor: 'pointer', transition: 'all 0.2s', fontSize: '13.5px', fontWeight: 600,
+                      color: paymentMethod === 'online' ? PRIMARY : '#475569'
+                    }}>
+                      <input
+                        type="radio" name="paymentMethod" value="online"
+                        checked={paymentMethod === 'online'}
+                        onChange={() => setPaymentMethod('online')}
+                        style={{ accentColor: PRIMARY }}
+                      />
+                      Pay Online (UPI App)
+                    </label>
+                  </div>
+                </Field>
+
                 {/* Error banner */}
-                {(formError || (status === 'error' && error)) && (
+                {(formError || displayError) && (
                   <motion.div
                     initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
                     style={{
@@ -322,7 +446,7 @@ export default function Checkout() {
                     }}
                   >
                     <FaExclamationTriangle />
-                    <span>{formError || error}</span>
+                    <span>{formError || displayError}</span>
                   </motion.div>
                 )}
 
@@ -330,28 +454,39 @@ export default function Checkout() {
                 <button
                   type="submit"
                   id="placeOrderBtn"
-                  disabled={status === 'submitting'}
+                  disabled={isProcessing}
                   style={{
                     width: '100%', padding: '15px',
-                    background: status === 'submitting' ? '#94a3b8' : PRIMARY,
+                    background: isProcessing ? '#94a3b8'
+                      : paymentMethod === 'online'
+                        ? `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`
+                        : PRIMARY,
                     color: '#fff', border: 'none', borderRadius: '12px',
-                    fontWeight: 700, fontSize: '15px', cursor: status === 'submitting' ? 'not-allowed' : 'pointer',
+                    fontWeight: 700, fontSize: '15px', cursor: isProcessing ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
                     fontFamily: 'inherit', transition: 'background 0.2s, box-shadow 0.2s',
-                    boxShadow: status === 'submitting' ? 'none' : `0 4px 14px ${PRIMARY}40`,
+                    boxShadow: isProcessing ? 'none' : `0 4px 14px ${PRIMARY}40`,
                   }}
-                  onMouseEnter={(e) => { if (status !== 'submitting') e.currentTarget.style.background = '#14533d'; }}
-                  onMouseLeave={(e) => { if (status !== 'submitting') e.currentTarget.style.background = PRIMARY; }}
                 >
-                  {status === 'submitting'
-                    ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Placing Order…</>
-                    : <><FaLock style={{ fontSize: '13px' }} /> Place Order — ₹{total.toLocaleString('en-IN')}</>
-                  }
+                  {isProcessing ? (
+                    <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} />
+                      {rzpStatus === 'creating'   && 'Preparing Payment…'}
+                      {rzpStatus === 'paying'     && 'Waiting for Payment…'}
+                      {rzpStatus === 'verifying'  && 'Verifying Payment…'}
+                      {status    === 'submitting' && 'Placing Order…'}
+                    </>
+                  ) : paymentMethod === 'online' ? (
+                    <><FaLock style={{ fontSize: '13px' }} /> Pay ₹{total.toLocaleString('en-IN')} via Razorpay</>
+                  ) : (
+                    <><FaLock style={{ fontSize: '13px' }} /> Place Order — ₹{total.toLocaleString('en-IN')}</>
+                  )}
                 </button>
 
-                <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '12px', marginTop: '12px' }}>
+<p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '12px', marginTop: '12px' }}>
                   <FaShieldAlt style={{ marginRight: '4px' }} />
-                  Your data is secure. No payment is collected online — COD / bank transfer on confirmation.
+                  {paymentMethod === 'online'
+                    ? '🔒 Payment is processed securely by Razorpay. Your card/UPI details are never shared with us.'
+                    : 'Your data is secure. No payment collected online — COD / bank transfer on confirmation.'}
                 </p>
 
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -379,12 +514,26 @@ export default function Checkout() {
                 <div style={{
                   width: '64px', height: '64px', borderRadius: '10px',
                   overflow: 'hidden', flexShrink: 0, border: '1px solid #e2e8f0',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <img
-                    src={product.images?.[0]}
-                    alt={product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
+                  {product.images?.[0] ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      background: `linear-gradient(135deg, ${product.color}18, ${product.color}38)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <span style={{ fontSize: '28px' }}>{product.icon}</span>
+                    </div>
+                  )}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontWeight: 700, color: '#0f172a', fontSize: '13.5px', margin: '0 0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

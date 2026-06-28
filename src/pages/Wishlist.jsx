@@ -66,8 +66,22 @@ export default function Wishlist() {
                 }}
               >
                 {/* Image Section */}
-                <div style={{ position: 'relative', height: '240px', background: '#f8fafc', padding: '20px', display: 'flex', justifyContent: 'center' }}>
-                  <img src={product.images ? product.images[0] : product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                <div style={{ position: 'relative', height: '240px', background: '#f8fafc', padding: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  {product.images?.[0] ? (
+                    <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      background: `linear-gradient(135deg, ${product.color}18, ${product.color}38)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '12px',
+                    }}>
+                      <span style={{ fontSize: '64px' }}>{product.icon}</span>
+                    </div>
+                  )}
                   
                   {/* Remove from wishlist */}
                   <button

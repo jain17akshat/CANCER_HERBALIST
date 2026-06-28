@@ -148,6 +148,82 @@ export default function BlogDetail() {
   const { id } = useParams();
   const blog = blogData[parseInt(id)];
 
+  React.useEffect(() => {
+    if (!blog) return;
+
+    // 1. Update Title
+    const pageTitle = `${blog.title} | Cancer Herbalist Blog`;
+    document.title = pageTitle;
+
+    // 2. Update Meta Description
+    const excerpt = blog.content[0]?.body ? blog.content[0].body.substring(0, 155) + '...' : '';
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', excerpt);
+
+    // 3. Update OG Tags
+    const updateOGTag = (property, content) => {
+      let tag = document.querySelector(`meta[property="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('property', property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    updateOGTag('og:title', pageTitle);
+    updateOGTag('og:description', excerpt);
+    updateOGTag('og:url', window.location.href);
+    updateOGTag('og:image', blog.image);
+    updateOGTag('og:type', 'article');
+
+    // 4. Inject BlogPosting Schema Markup
+    const existingScript = document.getElementById('seo-schema-markup');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    const schemaData = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      'headline': blog.title,
+      'image': blog.image,
+      'datePublished': blog.date,
+      'author': {
+        '@type': 'Person',
+        'name': 'Prof. Ramesh Babu'
+      },
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'Cancer Herbalist',
+        'logo': {
+          '@type': 'ImageObject',
+          'url': 'https://www.cancerherbalist.com/logo.png'
+        }
+      },
+      'description': excerpt
+    };
+
+    const script = document.createElement('script');
+    script.id = 'seo-schema-markup';
+    script.type = 'application/ld+json';
+    script.innerHTML = JSON.stringify(schemaData);
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      const scriptToRemove = document.getElementById('seo-schema-markup');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [blog]);
+
   if (!blog) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '20px' }}>
@@ -156,6 +232,7 @@ export default function BlogDetail() {
       </div>
     );
   }
+
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
