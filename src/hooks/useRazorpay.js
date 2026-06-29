@@ -15,7 +15,7 @@ import { useState, useCallback } from 'react';
 // ── Point this to your backend URL ─────────────────────────────────────────
 // During development: http://localhost:5000
 // After deploying to Vercel: https://your-vercel-app.vercel.app
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
 
 /* Dynamically loads Razorpay checkout.js (only once) */
 function loadRazorpayScript() {
@@ -83,6 +83,14 @@ export function useRazorpay() {
           contact: orderData.phone,
         },
         theme: { color: '#1a6e52' },
+        method: {
+          netbanking: false,
+          card: true,
+          wallet: false,
+          upi: true,
+          emi: false,
+          paylater: false,
+        },
         modal: {
           ondismiss: () => {
             setRzpStatus('idle'); // user closed popup without paying

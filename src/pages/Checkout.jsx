@@ -73,11 +73,15 @@ export default function Checkout() {
   const [formError, setFormError] = useState('');
   const [orderId, setOrderId] = useState('');
 
+
+
   const total = (product.price || 0) * qty;
 
   /* ── field change ────────────────────────────────────────────────── */
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+
 
   /* ── validation ─────────────────────────────────────────────────── */
   const validate = () => {
@@ -88,6 +92,7 @@ export default function Checkout() {
     if (!form.city.trim()) return 'Please enter your city.';
     if (!form.state.trim()) return 'Please enter your state.';
     if (!/^\d{6}$/.test(form.pincode.trim())) return 'Enter a valid 6-digit pincode.';
+
     return null;
   };
 
@@ -114,6 +119,7 @@ export default function Checkout() {
         quantity:     qty,
         unitPrice:    product.price,
         orderAmount:  total,
+
         onSuccess: (data) => setOrderId(data.orderId || ''),
       });
     } else {
@@ -433,6 +439,27 @@ export default function Checkout() {
                     </label>
                   </div>
                 </Field>
+
+                {paymentMethod === 'online' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    transition={{ duration: 0.2 }}
+                    style={{
+                      border: '1.5px solid #e2e8f0',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      background: '#f8fafc',
+                      marginBottom: '20px',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <p style={{ fontSize: '12.5px', color: '#475569', margin: 0, lineHeight: 1.5, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '18px' }}>💳</span>
+                      You will be redirected to the secure Razorpay screen to complete your payment using Card, UPI Apps, or UPI QR Code.
+                    </p>
+                  </motion.div>
+                )}
 
                 {/* Error banner */}
                 {(formError || displayError) && (
