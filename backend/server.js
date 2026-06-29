@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5001;
 
 /* ── Middleware ─────────────────────────────────────────────── */
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+  origin: process.env.FRONTEND_URL || 'https://cancer-herbalist-s1bz.vercel.app',
   methods: ['GET', 'POST'],
   credentials: true,
 }));
