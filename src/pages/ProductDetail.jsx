@@ -5,9 +5,10 @@ import {
   FaStar, FaShieldAlt, FaLeaf, FaCheck, FaArrowLeft,
   FaWhatsapp, FaPhoneAlt, FaShoppingBag, FaTruck,
   FaUndo, FaAward, FaChevronDown, FaChevronUp,
-  FaTimes, FaPaperPlane, FaSpinner, FaCheckCircle, FaHeart, FaRegHeart
+  FaTimes, FaPaperPlane, FaSpinner, FaCheckCircle, FaHeart, FaRegHeart, FaShoppingCart
 } from 'react-icons/fa';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
 
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
@@ -972,6 +973,7 @@ export default function ProductDetail() {
   const [activeImg, setActiveImg] = useState(0);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (!product) return;
@@ -1273,23 +1275,40 @@ export default function ProductDetail() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
 
               {/* Primary Actions */}
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => addToCart(product, 1)}
+                  style={{
+                    flex: 1, padding: '16px 12px',
+                    background: '#f8fafc',
+                    color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
+                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    gap: '8px', fontFamily: 'inherit',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <FaShoppingCart style={{ fontSize: '16px' }} /> Add to Cart
+                </motion.button>
+
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => navigate('/checkout', { state: { product, qty: 1 } })}
                   style={{
-                    flex: 1, padding: '16px',
+                    flex: 1, padding: '16px 12px',
                     background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
                     color: '#fff', border: 'none', borderRadius: '12px',
-                    fontWeight: 700, fontSize: '16px', cursor: 'pointer',
+                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '10px', fontFamily: 'inherit',
+                    gap: '8px', fontFamily: 'inherit',
                     boxShadow: `0 8px 20px ${ACCENT}40`,
                     transition: 'all 0.2s',
                   }}
                 >
-                  <FaShoppingBag style={{ fontSize: '18px' }} /> Buy Now
+                  <FaShoppingBag style={{ fontSize: '16px' }} /> Buy Now
                 </motion.button>
 
                 <motion.button

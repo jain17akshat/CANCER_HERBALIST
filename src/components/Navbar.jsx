@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaPhone, FaChevronDown, FaLeaf, FaHeart } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPhone, FaChevronDown, FaLeaf, FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCart } from '../context/CartContext';
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
@@ -33,7 +34,8 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
-  
+  const { cartCount, setIsCartOpen } = useCart();
+
   // We'd use useWishlist here, but to avoid an error if context isn't available everywhere we can just show the icon.
   // We will import it at the top.
 
@@ -194,6 +196,32 @@ export default function Navbar() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setIsCartOpen(true)}
+              style={{
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '40px', height: '40px', borderRadius: '50%', background: '#f8fafc',
+                color: PRIMARY, transition: 'background 0.2s', position: 'relative'
+              }}
+              className="ch-cart-icon"
+              title="Your Cart"
+            >
+              <FaShoppingBag style={{ fontSize: '18px' }} />
+              {cartCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: '-4px', right: '-4px',
+                  background: '#ef4444', color: '#fff', fontSize: '10px',
+                  fontWeight: 700, borderRadius: '50%', width: '18px', height: '18px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  border: '2px solid #fff'
+                }}>
+                  {cartCount}
+                </span>
+              )}
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/wishlist')}
               style={{
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -332,6 +360,31 @@ export default function Navbar() {
                 <FaHeart style={{ fontSize: '14px' }} />
                 My Wishlist
               </Link>
+
+              <button
+                onClick={() => { setMenuOpen(false); setIsCartOpen(true); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: PRIMARY,
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  fontSize: '15px',
+                  marginTop: '6px',
+                  padding: '10px 14px',
+                  background: '#f1f5f9',
+                  borderRadius: '10px',
+                  border: 'none',
+                  width: '100%',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                <FaShoppingBag style={{ fontSize: '14px' }} />
+                My Cart {cartCount > 0 && <span style={{ background: '#ef4444', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '50px' }}>{cartCount}</span>}
+              </button>
 
               <motion.a
                 href="tel:+918884588835"

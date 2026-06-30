@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaHeart, FaTrash, FaShoppingCart, FaArrowLeft, FaLeaf } from 'react-icons/fa';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
 import { products } from './ProductDetail'; // Importing products from ProductDetail or Store
 
 const ACCENT = '#38bed5';
@@ -11,6 +12,7 @@ const PRIMARY = '#1a6e52';
 export default function Wishlist() {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   const wishlistProducts = products.filter(p => wishlist.includes(p.id));
 
@@ -123,7 +125,7 @@ export default function Wishlist() {
                   {/* Actions */}
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <button
-                      onClick={() => navigate(`/checkout`, { state: { product, qty: 1 } })}
+                      onClick={() => addToCart(product, 1)}
                       style={{
                         flex: 1, padding: '12px',
                         background: '#0f172a', color: '#fff', border: 'none',

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaLeaf, FaSearch, FaTimes, FaShoppingBag, FaStar, FaShieldAlt, FaCheck, FaHeart, FaRegHeart } from 'react-icons/fa';
+import { FaLeaf, FaSearch, FaTimes, FaShoppingBag, FaStar, FaShieldAlt, FaCheck, FaHeart, FaRegHeart, FaShoppingCart } from 'react-icons/fa';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
 import { products } from './ProductDetail';
 
 const ACCENT = '#38bed5';
@@ -30,6 +31,7 @@ function ProductPlaceholder({ color, icon }) {
 export default function Store() {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
 
@@ -212,12 +214,26 @@ export default function Store() {
                   </span>
                 </div>
 
-                <button
-                  className="store-card-btn"
-                  onClick={e => { e.stopPropagation(); navigate(`/store/${product.id}`); }}
-                >
-                  <FaShoppingBag style={{ fontSize: '11px' }} /> Buy Now
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={e => { e.stopPropagation(); navigate(`/store/${product.id}`); }}
+                    style={{
+                      flex: 1, padding: '8px', background: '#f8fafc',
+                      border: `1px solid ${PRIMARY}`, color: PRIMARY,
+                      borderRadius: '8px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                  >
+                    Details
+                  </button>
+                  <button
+                    className="store-card-btn"
+                    style={{ flex: 1 }}
+                    onClick={e => { e.stopPropagation(); addToCart(product, 1); }}
+                  >
+                    <FaShoppingCart style={{ fontSize: '11px' }} /> Add
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}

@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import { useOrderSubmit } from '../hooks/useOrderSubmit';
 import { useRazorpay }   from '../hooks/useRazorpay';
+import { useCart } from '../context/CartContext';
 
 const ACCENT  = '#38bed5';
 const PRIMARY = '#1a6e52';
@@ -41,10 +42,11 @@ function Field({ label, required, children }) {
 
 /* ── main component ───────────────────────────────────────────────────── */
 export default function Checkout() {
-  const { state }  = useLocation();   // { product, qty } passed from ProductDetail
+  const { state }  = useLocation();   // { product, qty } passed from ProductDetail if direct buy
   const navigate   = useNavigate();
   const { submitOrder, status, error, reset }         = useOrderSubmit();
   const { initializePayment, rzpStatus, rzpError }    = useRazorpay();
+  const { cart, cartTotal, clearCart } = useCart();
 
   /* derived helpers */
   const isSuccess     = status === 'success' || rzpStatus === 'success';
@@ -52,13 +54,21 @@ export default function Checkout() {
     rzpStatus === 'creating' || rzpStatus === 'paying' || rzpStatus === 'verifying';
   const displayError  = error || rzpError;
 
+  /* State for direct Buy Now vs Cart */
+  const isDirectBuy = !!state?.product;
+  const [directQty, setDirectQty] = useState(state?.qty || 1);
+
+  const checkoutItems = isDirectBuy 
+    ? [{ product: state.product, qty: directQty }]
+    : cart;
+
+  const total = isDirectBuy ? (state.product.price * directQty) : cartTotal;
+
   /* redirect if no product context */
   useEffect(() => {
-    if (!state?.product) navigate('/store', { replace: true });
-  }, [state, navigate]);
+    if (!state?.product && cart.length === 0) navigate('/store', { replace: true });
+  }, [state, navigate, cart.length]);
 
-  const product = state?.product || {};
-  const [qty, setQty] = useState(state?.qty || 1);
   const [paymentMethod, setPaymentMethod] = useState(state?.paymentMethod || 'cod');
 
   const [form, setForm] = useState({
@@ -73,15 +83,9 @@ export default function Checkout() {
   const [formError, setFormError] = useState('');
   const [orderId, setOrderId] = useState('');
 
-
-
-  const total = (product.price || 0) * qty;
-
   /* ── field change ────────────────────────────────────────────────── */
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-
-
 
   /* ── validation ─────────────────────────────────────────────────── */
   const validate = () => {
@@ -103,12 +107,21 @@ export default function Checkout() {
     if (err) { setFormError(err); return; }
     setFormError('');
 
+    const apiProductName = checkoutItems.map(i => `${i.product.name} (x${i.qty})`).join(', ');
+    const apiProductId = checkoutItems.map(i => i.product.id).join(',');
+    const apiQuantity = checkoutItems.reduce((acc, i) => acc + i.qty, 0);
+
+    const handleSuccess = (data) => {
+      setOrderId(data?.orderId || '');
+      if (!isDirectBuy) clearCart();
+    };
+
     if (paymentMethod === 'online') {
       /* ── Razorpay flow ── */
       await initializePayment({
         amount:       total,
-        productName:  product.name,
-        productId:    product.id,
+        productName:  apiProductName,
+        productId:    apiProductId,
         customerName: form.customerName.trim(),
         phone:        form.phone.trim(),
         email:        form.email.trim(),
@@ -116,11 +129,10 @@ export default function Checkout() {
         city:         form.city.trim(),
         state:        form.state.trim(),
         pincode:      form.pincode.trim(),
-        quantity:     qty,
-        unitPrice:    product.price,
+        quantity:     apiQuantity,
+        unitPrice:    total, // use total for mixed carts
         orderAmount:  total,
-
-        onSuccess: (data) => setOrderId(data.orderId || ''),
+        onSuccess:    handleSuccess,
       });
     } else {
       /* ── COD flow ── */
@@ -133,14 +145,14 @@ export default function Checkout() {
           city:           form.city.trim(),
           state:          form.state.trim(),
           pincode:        form.pincode.trim(),
-          productName:    product.name,
-          quantity:       qty,
-          unitPrice:      product.price,
+          productName:    apiProductName,
+          quantity:       apiQuantity,
+          unitPrice:      total,
           orderAmount:    total,
-          productId:      product.id,
+          productId:      apiProductId,
           paymentMethod:  'COD / Bank Transfer',
         });
-        setOrderId(result?.orderId || '');
+        handleSuccess(result);
       } catch (_) {
         // error handled by useOrderSubmit
       }
@@ -148,9 +160,10 @@ export default function Checkout() {
   };
 
   /* ── WhatsApp fallback ───────────────────────────────────────────── */
+  const waItemsText = checkoutItems.map(i => `- ${i.product.name} (x${i.qty})`).join('\n');
   const waText = encodeURIComponent(
     `🌿 *New Order — Cancer Herbalist*\n\n` +
-    `Product: ${product.name}\nQty: ${qty}\nAmount: ₹${total.toLocaleString('en-IN')}\n` +
+    `Items:\n${waItemsText}\nTotal Amount: ₹${total.toLocaleString('en-IN')}\n` +
     `Payment Method: ${paymentMethod === 'online' ? 'Paid Online via UPI' : 'COD / Bank Transfer'}\n` +
     (orderId ? `Order ID: ${orderId}\n` : '') + `\n` +
     `Name: ${form.customerName || '—'}\nPhone: ${form.phone || '—'}\n` +
@@ -200,16 +213,17 @@ export default function Checkout() {
           {/* ── LEFT: Form ── */}
           <div>
             {/* Back link */}
-            <Link
-              to={`/store/${product.id}`}
+            <button
+              onClick={() => navigate(-1)}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '6px',
                 color: PRIMARY, fontWeight: 600, fontSize: '13px',
                 textDecoration: 'none', marginBottom: '24px',
+                background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit'
               }}
             >
-              <FaArrowLeft fontSize="11px" /> Back to product
-            </Link>
+              <FaArrowLeft fontSize="11px" /> Go Back
+            </button>
 
             {/* ── SUCCESS state ── */}
             <AnimatePresence>
@@ -509,7 +523,7 @@ export default function Checkout() {
                   )}
                 </button>
 
-<p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '12px', marginTop: '12px' }}>
+                <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '12px', marginTop: '12px' }}>
                   <FaShieldAlt style={{ marginRight: '4px' }} />
                   {paymentMethod === 'online'
                     ? '🔒 Payment is processed securely by Razorpay. Your card/UPI details are never shared with us.'
@@ -532,84 +546,87 @@ export default function Checkout() {
                 Order Summary
               </h3>
 
-              {/* Product card */}
-              <div style={{
-                display: 'flex', gap: '14px', alignItems: 'center',
-                background: '#f8fafc', borderRadius: '12px', padding: '14px',
-                marginBottom: '20px',
-              }}>
-                <div style={{
-                  width: '64px', height: '64px', borderRadius: '10px',
-                  overflow: 'hidden', flexShrink: 0, border: '1px solid #e2e8f0',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {product.images?.[0] ? (
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px', maxHeight: '300px', overflowY: 'auto' }}>
+                {checkoutItems.map((item, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex', gap: '14px', alignItems: 'center',
+                    background: '#f8fafc', borderRadius: '12px', padding: '10px',
+                  }}>
                     <div style={{
-                      width: '100%',
-                      height: '100%',
-                      background: `linear-gradient(135deg, ${product.color}18, ${product.color}38)`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      width: '56px', height: '56px', borderRadius: '10px',
+                      overflow: 'hidden', flexShrink: 0, border: '1px solid #e2e8f0',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <span style={{ fontSize: '28px' }}>{product.icon}</span>
+                      {item.product.images?.[0] ? (
+                        <img
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '100%', height: '100%',
+                          background: `linear-gradient(135deg, ${item.product.color}18, ${item.product.color}38)`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <span style={{ fontSize: '24px' }}>{item.product.icon}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontWeight: 700, color: '#0f172a', fontSize: '13.5px', margin: '0 0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {product.name}
-                  </p>
-                  <p style={{ color: '#64748b', fontSize: '12px', margin: 0 }}>{product.size}</p>
-                </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontWeight: 700, color: '#0f172a', fontSize: '13px', margin: '0 0 2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {item.product.name}
+                      </p>
+                      <p style={{ color: '#64748b', fontSize: '11px', margin: 0 }}>₹{item.product.price?.toLocaleString('en-IN')} x {item.qty}</p>
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '13.5px', color: '#0f172a' }}>
+                      ₹{(item.product.price * item.qty).toLocaleString('en-IN')}
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Qty stepper */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Quantity</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setQty(q => Math.max(1, q - 1))}
-                    style={{
-                      width: '30px', height: '30px', borderRadius: '8px',
-                      border: '1.5px solid #e2e8f0', background: '#f8fafc',
-                      cursor: 'pointer', fontWeight: 700, fontSize: '16px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}
-                  >−</button>
-                  <span style={{ fontWeight: 800, fontSize: '15px', color: '#0f172a', minWidth: '20px', textAlign: 'center' }}>{qty}</span>
-                  <button
-                    type="button"
-                    onClick={() => setQty(q => q + 1)}
-                    style={{
-                      width: '30px', height: '30px', borderRadius: '8px',
-                      border: '1.5px solid #e2e8f0', background: '#f8fafc',
-                      cursor: 'pointer', fontWeight: 700, fontSize: '16px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}
-                  >+</button>
+              {/* Qty stepper (Only for direct buy) */}
+              {isDirectBuy && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Quantity</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setDirectQty(q => Math.max(1, q - 1))}
+                      style={{
+                        width: '30px', height: '30px', borderRadius: '8px',
+                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
+                        cursor: 'pointer', fontWeight: 700, fontSize: '16px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >−</button>
+                    <span style={{ fontWeight: 800, fontSize: '15px', color: '#0f172a', minWidth: '20px', textAlign: 'center' }}>{directQty}</span>
+                    <button
+                      type="button"
+                      onClick={() => setDirectQty(q => q + 1)}
+                      style={{
+                        width: '30px', height: '30px', borderRadius: '8px',
+                        border: '1.5px solid #e2e8f0', background: '#f8fafc',
+                        cursor: 'pointer', fontWeight: 700, fontSize: '16px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >+</button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Price breakdown */}
               <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
-                {[
-                  { label: `Unit Price`, value: `₹${product.price?.toLocaleString('en-IN')}` },
-                  { label: `Quantity`, value: `× ${qty}` },
-                  { label: `Shipping`, value: `FREE` },
-                ].map(row => (
-                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                    <span style={{ color: '#64748b', fontSize: '13px' }}>{row.label}</span>
-                    <span style={{ fontWeight: 600, color: '#334155', fontSize: '13px' }}>{row.value}</span>
-                  </div>
-                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#64748b', fontSize: '13px' }}>Subtotal</span>
+                  <span style={{ fontWeight: 600, color: '#334155', fontSize: '13px' }}>₹{total.toLocaleString('en-IN')}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#64748b', fontSize: '13px' }}>Shipping</span>
+                  <span style={{ fontWeight: 600, color: '#22c55e', fontSize: '13px' }}>FREE</span>
+                </div>
+                
                 <div style={{
                   display: 'flex', justifyContent: 'space-between',
                   borderTop: '2px solid #e2e8f0', paddingTop: '12px', marginTop: '4px',

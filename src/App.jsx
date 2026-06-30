@@ -30,6 +30,8 @@ import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import { WishlistProvider } from './context/WishlistContext';
+import { CartProvider } from './context/CartContext';
+import CartDrawer from './components/CartDrawer';
 import SEO from './components/SEO';
 
 function ScrollToTop() {
@@ -52,58 +54,60 @@ function App() {
   }, []);
 
   return (
-    <WishlistProvider>
-      <Router>
-        <ScrollToTop />
-        <SEO />
-        <div
-          className="App"
-          style={{
-            minHeight: '100vh',
+    <CartProvider>
+      <WishlistProvider>
+        <Router>
+          <ScrollToTop />
+          <SEO />
+          <div
+            className="App"
+            style={{
+              minHeight: '100vh',
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              overflowX: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <Navbar />
 
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            overflowX: 'hidden',
-            position: 'relative',
-          }}
-        >
-          <Navbar />
+            <main style={{ flex: 1 }}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Navigate to="/care-programs" replace />} />
+                <Route path="/treatment-methods" element={<TreatmentMethods />} />
+                <Route path="/care-programs" element={<CarePrograms />} />
+                <Route path="/doctors" element={<Doctors />} />
+                <Route path="/testimonials" element={<Testimonials />} />
+                <Route path="/testimonials/:id" element={<StoryDetail />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:id" element={<BlogDetail />} />
+                <Route path="/services/:id" element={<ServiceDetail />} />
+                <Route path="/patient-education" element={<PatientEducation />} />
+                <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
+                <Route path="/store" element={<Store />} />
+                <Route path="/store/:id" element={<ProductDetail />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
 
-          <main style={{ flex: 1 }}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Navigate to="/care-programs" replace />} />
-              <Route path="/treatment-methods" element={<TreatmentMethods />} />
-              <Route path="/care-programs" element={<CarePrograms />} />
-              <Route path="/doctors" element={<Doctors />} />
-              <Route path="/testimonials" element={<Testimonials />} />
-              <Route path="/testimonials/:id" element={<StoryDetail />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:id" element={<BlogDetail />} />
-              <Route path="/services/:id" element={<ServiceDetail />} />
-              <Route path="/patient-education" element={<PatientEducation />} />
-              <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
-              <Route path="/store" element={<Store />} />
-              <Route path="/store/:id" element={<ProductDetail />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/refund-policy" element={<RefundPolicy />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-
-          <Footer />
-          <WhatsAppButton />
-          <Chatbot />
-          <StickyMobileBar />
-        </div>
-      </Router>
-    </WishlistProvider>
+            <Footer />
+            <WhatsAppButton />
+            <Chatbot />
+            <CartDrawer />
+            <StickyMobileBar />
+          </div>
+        </Router>
+      </WishlistProvider>
+    </CartProvider>
   );
 }
 
