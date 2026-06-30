@@ -10,7 +10,7 @@ const router  = express.Router();
  */
 router.post('/validate-vpa', async (req, res) => {
   const { vpa } = req.body;
-  console.log(`[validate-vpa] Incoming Request -> VPA: "${vpa}", Key ID: "${process.env.RAZORPAY_KEY_ID || 'NOT SET'}"`);
+  console.log(`[validate-vpa] Incoming request for VPA: "${vpa}"`);
 
   try {
     if (!vpa || !vpa.includes('@')) {

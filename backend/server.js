@@ -1,7 +1,9 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-const express = require('express');
-const cors = require('cors');
+const express   = require('express');
+const cors      = require('cors');
+const helmet    = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const createOrderRoute    = require('./routes/createOrder');
 const verifyPaymentRoute  = require('./routes/verifyPayment');
@@ -10,13 +12,45 @@ const validateVpaRoute    = require('./routes/validateVpa');
 const app  = express();
 const PORT = process.env.PORT || 5001;
 
-/* ── Middleware ─────────────────────────────────────────────── */
+/* ── Security headers ──────────────────────────────────────── */
+app.use(helmet());
+
+/* ── CORS ───────────────────────────────────────────────────── */
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'https://cancer-herbalist-s1bz.vercel.app',
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://cancer-herbalist-s1bz.vercel.app',
+  origin: (origin, callback) => {
+    // Allow server-to-server requests (no origin) and whitelisted origins
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin "${origin}" not allowed`));
+  },
   methods: ['GET', 'POST'],
   credentials: true,
 }));
-app.use(express.json());
+
+/* ── Rate limiting ──────────────────────────────────────────── */
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 60,                  // max 60 requests per window per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please try again later.' },
+});
+
+// Tighter limit on order creation to prevent Razorpay quota abuse
+const orderLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many order requests. Please wait before trying again.' },
+});
+
+/* ── Body parser ────────────────────────────────────────────── */
+app.use(express.json({ limit: '10kb' })); // Prevent large payload DoS
 
 /* ── Health check ───────────────────────────────────────────── */
 app.get('/api/health', (_req, res) =>
@@ -24,33 +58,26 @@ app.get('/api/health', (_req, res) =>
 );
 
 /* ── Routes ─────────────────────────────────────────────────── */
+app.use('/api', apiLimiter);
+app.use('/api/create-order', orderLimiter);
 app.use('/api', createOrderRoute);
 app.use('/api', verifyPaymentRoute);
 app.use('/api', validateVpaRoute);
 
 /* ── Start ──────────────────────────────────────────────────── */
 app.listen(PORT, () => {
-  console.log(`\n✅  Cancer Herbalist API → http://localhost:${PORT}`);
-  
-  // Print all loaded routes for debugging
-  console.log('📡 Registered endpoints:');
-  app._router.stack.forEach(middleware => {
-    if (middleware.route) {
-      console.log(`   - ${Object.keys(middleware.route.methods).join(', ').toUpperCase()} ${middleware.route.path}`);
-    } else if (middleware.name === 'router') {
-      middleware.handle.stack.forEach(handler => {
-        if (handler.route) {
-          const path = handler.route.path;
-          const methods = Object.keys(handler.route.methods).join(', ').toUpperCase();
-          console.log(`   - ${methods} /api${path}`);
-        }
-      });
-    }
-  });
-  console.log(''); // newline
+  console.log(`\n✅  Cancer Herbalist API running on port ${PORT}`);
 
-  if (!process.env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID === 'YOUR_RAZORPAY_KEY_ID') {
-    console.warn('⚠️   RAZORPAY_KEY_ID is not set in backend/.env');
+  // Validate all critical env vars at startup
+  const required = ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'FRONTEND_URL'];
+  const missing  = required.filter(k => !process.env[k]);
+  if (missing.length) {
+    console.error('\n❌  Missing required env vars:', missing.join(', '));
+    console.error('   Set these in backend/.env or in your Vercel project settings.\n');
+  }
+
+  if (process.env.RAZORPAY_KEY_ID?.startsWith('rzp_test_')) {
+    console.warn('⚠️   Running with RAZORPAY TEST keys — do NOT use in production.');
   }
 });
 
