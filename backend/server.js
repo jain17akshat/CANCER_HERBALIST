@@ -53,6 +53,10 @@ const orderLimiter = rateLimit({
 app.use(express.json({ limit: '10kb' })); // Prevent large payload DoS
 
 /* ── Health check ───────────────────────────────────────────── */
+app.get('/', (_req, res) =>
+  res.send('Cancer Herbalist Backend API is running successfully. 🌿')
+);
+
 app.get('/api/health', (_req, res) =>
   res.json({ status: 'ok', service: 'Cancer Herbalist Payment API' })
 );
