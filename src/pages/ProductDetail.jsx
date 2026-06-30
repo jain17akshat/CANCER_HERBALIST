@@ -1270,45 +1270,26 @@ export default function ProductDetail() {
             </div>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
 
-              {/* ── Order Now & Wishlist ── */}
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              {/* Primary Actions */}
+              <div style={{ display: 'flex', gap: '12px' }}>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  id="orderNowBtn"
-                  onClick={() => navigate('/checkout', { state: { product, qty: 1, paymentMethod: 'cod' } })}
+                  onClick={() => navigate('/checkout', { state: { product, qty: 1 } })}
                   style={{
-                    flex: '1 1 140px', padding: '16px',
-                    background: '#f8fafc',
-                    color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
-                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                    flex: 1, padding: '16px',
+                    background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
+                    color: '#fff', border: 'none', borderRadius: '12px',
+                    fontWeight: 700, fontSize: '16px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '8px', fontFamily: 'inherit',
+                    gap: '10px', fontFamily: 'inherit',
+                    boxShadow: `0 8px 20px ${ACCENT}40`,
                     transition: 'all 0.2s',
                   }}
                 >
-                  <FaShoppingBag /> Order COD
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  id="payOnlineBtn"
-                  onClick={() => navigate('/checkout', { state: { product, qty: 1, paymentMethod: 'online' } })}
-                  style={{
-                    flex: '2 1 180px', padding: '16px',
-                    background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
-                    color: '#fff', border: 'none', borderRadius: '12px',
-                    fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '8px', fontFamily: 'inherit',
-                    boxShadow: `0 4px 14px ${ACCENT}40`,
-                    transition: 'background 0.2s',
-                  }}
-                >
-                  💳 Pay Online (UPI)
+                  <FaShoppingBag style={{ fontSize: '18px' }} /> Buy Now
                 </motion.button>
 
                 <motion.button
@@ -1319,7 +1300,7 @@ export default function ProductDetail() {
                     width: '56px', background: '#fff', border: '2px solid #e2e8f0',
                     borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', color: isInWishlist(product.id) ? '#ef4444' : '#64748b',
-                    fontSize: '20px', transition: 'all 0.2s'
+                    fontSize: '22px', transition: 'all 0.2s'
                   }}
                   title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
@@ -1327,25 +1308,25 @@ export default function ProductDetail() {
                 </motion.button>
               </div>
 
-              {/* ── Enquiry ── */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setEnquiryOpen(true)}
-                style={{
-                  width: '100%', padding: '15px',
-                  background: '#f8fafc',
-                  color: PRIMARY, border: `2px solid ${PRIMARY}`, borderRadius: '12px',
-                  fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: '8px', fontFamily: 'inherit',
-                  transition: 'background 0.2s',
-                }}
-              >
-                Send Product Enquiry
-              </motion.button>
-
+              {/* Secondary Actions */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setEnquiryOpen(true)}
+                  style={{
+                    padding: '14px',
+                    background: '#f8fafc',
+                    color: PRIMARY, border: `1.5px solid ${PRIMARY}`, borderRadius: '12px',
+                    fontWeight: 600, fontSize: '14px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: 'inherit',
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  Enquire
+                </motion.button>
+
                 <motion.a
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -1364,18 +1345,6 @@ export default function ProductDetail() {
                 >
                   <FaWhatsapp style={{ fontSize: '16px' }} /> WhatsApp
                 </motion.a>
-                <a
-                  href="tel:8884588835"
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '8px', color: '#475569', fontWeight: 600, fontSize: '14px',
-                    textDecoration: 'none', padding: '14px',
-                    background: '#f1f5f9', borderRadius: '12px',
-                    transition: 'background 0.2s',
-                  }}
-                >
-                  <FaPhoneAlt style={{ fontSize: '14px' }} /> Call Us
-                </a>
               </div>
             </div>
 

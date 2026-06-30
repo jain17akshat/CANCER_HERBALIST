@@ -216,7 +216,7 @@ export default function Store() {
                   className="store-card-btn"
                   onClick={e => { e.stopPropagation(); navigate(`/store/${product.id}`); }}
                 >
-                  <FaShoppingBag style={{ fontSize: '11px' }} /> Enquire
+                  <FaShoppingBag style={{ fontSize: '11px' }} /> Buy Now
                 </button>
               </div>
             </motion.div>
