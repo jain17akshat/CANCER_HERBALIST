@@ -21,6 +21,9 @@ router.post('/create-order', async (req, res) => {
     if (!amount || Number(amount) <= 0) {
       return res.status(400).json({ error: 'Invalid order amount.' });
     }
+    if (Number(amount) > 200000) {
+      return res.status(400).json({ error: 'Order amount exceeds the maximum allowed limit.' });
+    }
 
     const options = {
       amount:   Math.round(Number(amount) * 100), // paise

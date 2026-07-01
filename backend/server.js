@@ -20,6 +20,9 @@ app.use(helmet());
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'https://cancer-herbalist-s1bz.vercel.app',
+  // Local development
+  'http://localhost:3000',
+  'http://localhost:5173',
 ].filter(Boolean);
 
 app.use(cors({

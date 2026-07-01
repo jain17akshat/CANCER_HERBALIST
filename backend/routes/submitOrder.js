@@ -1,6 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const { createShiprocketOrder } = require('./shiprocket');
+const { validateOrderAmount }   = require('./priceList');
 
 /**
  * POST /api/submit-order
@@ -34,6 +35,30 @@ router.post('/submit-order', async (req, res) => {
         success: false,
         error: 'Missing required order fields.',
       });
+    }
+
+    // Phone: exactly 10 digits
+    if (!/^\d{10}$/.test(String(phone).trim())) {
+      return res.status(400).json({ success: false, error: 'Invalid phone number. Must be 10 digits.' });
+    }
+    // Pincode: exactly 6 digits (if provided)
+    if (pincode && !/^\d{6}$/.test(String(pincode).trim())) {
+      return res.status(400).json({ success: false, error: 'Invalid pincode. Must be 6 digits.' });
+    }
+    // Email: basic format check (if provided)
+    if (email && !/\S+@\S+\.\S+/.test(String(email).trim())) {
+      return res.status(400).json({ success: false, error: 'Invalid email address.' });
+    }
+    // customerName: no script tags
+    if (/<[^>]*>/.test(customerName)) {
+      return res.status(400).json({ success: false, error: 'Invalid characters in name.' });
+    }
+
+    /* ── 1b. Server-side price validation (prevents price tampering) ── */
+    const priceCheck = validateOrderAmount(productId, quantity, orderAmount);
+    if (!priceCheck.valid) {
+      console.warn(`[submit-order] Price validation failed: ${priceCheck.reason}`);
+      return res.status(400).json({ success: false, error: 'Invalid order details. Please refresh and try again.' });
     }
 
     /* ── 2. Build internal order record ───────────────────────────── */

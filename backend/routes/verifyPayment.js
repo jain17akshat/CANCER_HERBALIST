@@ -1,7 +1,15 @@
 const express = require('express');
 const crypto  = require('crypto'); // built-in — no install needed
 const router  = express.Router();
+const Razorpay = require('razorpay');
 const { createShiprocketOrder } = require('./shiprocket');
+const { validateOrderAmount }   = require('./priceList');
+
+/* Razorpay SDK — for fetching order amount post-payment */
+const razorpay = new Razorpay({
+  key_id:     process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 /**
  * POST /api/verify-payment
@@ -25,7 +33,12 @@ router.post('/verify-payment', async (req, res) => {
       quantity, unitPrice, orderAmount,
     } = req.body;
 
-    /* ── 1. Verify Razorpay signature ─────────────────────────── */
+    /* ── 1. Guard: all payment fields must be present ──────────── */
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ success: false, error: 'Missing payment verification fields.' });
+    }
+
+    /* ── 1a. Verify Razorpay HMAC signature ─────────────────────── */
     const body             = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSig      = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -34,6 +47,21 @@ router.post('/verify-payment', async (req, res) => {
 
     if (expectedSig !== razorpay_signature) {
       return res.status(400).json({ success: false, error: 'Payment verification failed — signature mismatch.' });
+    }
+
+    /* ── 1b. Re-fetch order from Razorpay to confirm actual amount ─ */
+    const rzOrder = await razorpay.orders.fetch(razorpay_order_id);
+    const actualPaidAmountINR = rzOrder.amount / 100; // Razorpay stores in paise
+    if (Math.abs(actualPaidAmountINR - Number(orderAmount)) > 1) {
+      console.warn(`[verify-payment] Amount mismatch: Razorpay=₹${actualPaidAmountINR}, client=₹${orderAmount}`);
+      return res.status(400).json({ success: false, error: 'Payment amount mismatch. Please contact support.' });
+    }
+
+    /* ── 1c. Server-side price validation (prevents price tampering) */
+    const priceCheck = validateOrderAmount(productId, quantity, orderAmount);
+    if (!priceCheck.valid) {
+      console.warn(`[verify-payment] Price validation failed: ${priceCheck.reason}`);
+      return res.status(400).json({ success: false, error: 'Invalid order details. Please contact support.' });
     }
 
     /* ── 2. Build internal order reference ─────────────────────── */
