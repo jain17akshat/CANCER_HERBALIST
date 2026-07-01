@@ -79,39 +79,55 @@ router.post('/verify-payment', async (req, res) => {
       orderDate,
     };
 
-    /* ── 3. Record to Google Sheets (via Apps Script) ──────────── */
+    /* ── 3. Execute integrations in parallel (necessary for Vercel serverless environment) ── */
+    const promises = [];
+
+    // Google Sheets
     if (process.env.APPS_SCRIPT_URL) {
-      try {
-        const url = new URL(process.env.APPS_SCRIPT_URL);
-        Object.entries(orderRow).forEach(([k, v]) => url.searchParams.append(k, String(v ?? '')));
-        // fire-and-forget
-        fetch(url.toString()).catch(() => {});
-      } catch (e) {
-        console.warn('[verify] Sheets error:', e.message);
-      }
+      const sheetsPromise = (async () => {
+        try {
+          const url = new URL(process.env.APPS_SCRIPT_URL);
+          Object.entries(orderRow).forEach(([k, v]) => url.searchParams.append(k, String(v ?? '')));
+          const res = await fetch(url.toString());
+          if (!res.ok) console.warn('[verify] Sheets returned status:', res.status);
+        } catch (e) {
+          console.warn('[verify] Sheets error:', e.message);
+        }
+      })();
+      promises.push(sheetsPromise);
     }
 
-    /* ── 4. Create Shiprocket order ────────────────────────────── */
+    // Shiprocket
     if (process.env.SHIPROCKET_EMAIL && process.env.SHIPROCKET_PASSWORD) {
-      try {
-        const srData = await createShiprocketOrder(orderRow);
-        console.log(`[verify-payment] Shiprocket order created: ${srData.order_id || srData.id}`);
-      } catch (srErr) {
-        // Non-fatal — payment is already verified; log and continue
-        console.error('[verify-payment] Shiprocket error:', srErr.message);
-      }
+      const shiprocketPromise = (async () => {
+        try {
+          const srData = await createShiprocketOrder(orderRow);
+          console.log(`[verify-payment] Shiprocket order created: ${srData.order_id || srData.id}`);
+        } catch (srErr) {
+          console.error('[verify-payment] Shiprocket error:', srErr.message);
+        }
+      })();
+      promises.push(shiprocketPromise);
     } else {
       console.warn('[verify-payment] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
     }
 
-    /* ── 5. Push to Zoho CRM (fire-and-forget) ──────────────────── */
+    // Zoho CRM
     if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_REFRESH_TOKEN) {
-      pushOrderToZoho(orderRow).catch(err =>
-        console.error('[verify-payment] Zoho CRM error:', err.message)
-      );
+      const zohoPromise = (async () => {
+        try {
+          await pushOrderToZoho(orderRow);
+        } catch (err) {
+          console.error('[verify-payment] Zoho CRM error:', err.message);
+        }
+      })();
+      promises.push(zohoPromise);
     }
 
-    /* ── 6. Respond success ─────────────────────────────────────── */
+    // Wait for all integrations to finish before sending response (prevent serverless termination)
+    await Promise.all(promises);
+
+    /* ── 4. Respond success ─────────────────────────────────────── */
     res.json({ success: true, orderId, paymentId: razorpay_payment_id });
 
   } catch (err) {

@@ -11,6 +11,7 @@ const validateVpaRoute    = require('./routes/validateVpa');
 const submitOrderRoute    = require('./routes/submitOrder');
 
 const app  = express();
+app.set('trust proxy', 1); // Trust Vercel's proxy for accurate rate limiting and to prevent ValidationErrors
 const PORT = process.env.PORT || 5001;
 
 /* ── Security headers ──────────────────────────────────────── */
