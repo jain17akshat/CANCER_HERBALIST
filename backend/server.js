@@ -93,6 +93,13 @@ app.listen(PORT, () => {
     console.log('✅  Shiprocket credentials found.');
   }
 
+  const zohoMissing = !process.env.ZOHO_CLIENT_ID || !process.env.ZOHO_REFRESH_TOKEN;
+  if (zohoMissing) {
+    console.warn('⚠️   ZOHO_CLIENT_ID / ZOHO_REFRESH_TOKEN not set — orders will NOT be pushed to Zoho CRM.');
+  } else {
+    console.log('✅  Zoho CRM credentials found.');
+  }
+
   if (process.env.RAZORPAY_KEY_ID?.startsWith('rzp_test_')) {
     console.warn('⚠️   Running with RAZORPAY TEST keys — do NOT use in production.');
   }

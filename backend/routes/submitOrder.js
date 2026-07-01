@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const { createShiprocketOrder } = require('./shiprocket');
 const { validateOrderAmount }   = require('./priceList');
+const { pushOrderToZoho }       = require('./zoho');
 
 /**
  * POST /api/submit-order
@@ -104,7 +105,14 @@ router.post('/submit-order', async (req, res) => {
       console.warn('[submit-order] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
     }
 
-    /* ── 5. Respond ───────────────────────────────────────────────── */
+    /* ── 5. Push to Zoho CRM (fire-and-forget) ───────────────────────── */
+    if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_REFRESH_TOKEN) {
+      pushOrderToZoho(orderRow).catch(err =>
+        console.error('[submit-order] Zoho CRM error:', err.message)
+      );
+    }
+
+    /* ── 6. Respond ───────────────────────────────────────────────── */
     res.json({
       success: true,
       orderId,

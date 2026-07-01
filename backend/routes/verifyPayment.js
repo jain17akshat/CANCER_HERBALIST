@@ -4,6 +4,7 @@ const router  = express.Router();
 const Razorpay = require('razorpay');
 const { createShiprocketOrder } = require('./shiprocket');
 const { validateOrderAmount }   = require('./priceList');
+const { pushOrderToZoho }       = require('./zoho');
 
 /* Razorpay SDK — for fetching order amount post-payment */
 const razorpay = new Razorpay({
@@ -103,7 +104,14 @@ router.post('/verify-payment', async (req, res) => {
       console.warn('[verify-payment] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
     }
 
-    /* ── 5. Respond success ─────────────────────────────────────── */
+    /* ── 5. Push to Zoho CRM (fire-and-forget) ──────────────────── */
+    if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_REFRESH_TOKEN) {
+      pushOrderToZoho(orderRow).catch(err =>
+        console.error('[verify-payment] Zoho CRM error:', err.message)
+      );
+    }
+
+    /* ── 6. Respond success ─────────────────────────────────────── */
     res.json({ success: true, orderId, paymentId: razorpay_payment_id });
 
   } catch (err) {
