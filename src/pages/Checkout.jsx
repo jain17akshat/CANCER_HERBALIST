@@ -273,7 +273,7 @@ export default function Checkout() {
                       }}>
                         <img
                           src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                            `upi://pay?pa=${import.meta.env.VITE_UPI_ID || '8884588835@okbizaxis'}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`
+                            `upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`
                           )}`}
                           alt="UPI Payment QR Code"
                           style={{ width: '180px', height: '180px', display: 'block' }}
@@ -283,7 +283,7 @@ export default function Checkout() {
                       {/* Pay via UPI App button */}
                       <div>
                         <a
-                          href={`upi://pay?pa=${import.meta.env.VITE_UPI_ID || '8884588835@okbizaxis'}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`}
+                          href={`upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`}
                           style={{
                             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                             background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`, color: '#fff',
