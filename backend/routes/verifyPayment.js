@@ -1,12 +1,13 @@
 const express = require('express');
 const crypto  = require('crypto'); // built-in — no install needed
 const router  = express.Router();
+const { createShiprocketOrder } = require('./shiprocket');
 
 /**
  * POST /api/verify-payment
  *
- * Verifies Razorpay signature, then records order to Google Sheets
- * and triggers Make.com webhook (if configured).
+ * Verifies Razorpay signature, records order to Google Sheets,
+ * and creates a Shiprocket shipment automatically.
  *
  * Body: { razorpay_order_id, razorpay_payment_id, razorpay_signature,
  *         customerName, phone, email, address, city, state, pincode,
@@ -61,17 +62,17 @@ router.post('/verify-payment', async (req, res) => {
       }
     }
 
-    /* ── 4. Trigger Make.com webhook ───────────────────────────── */
-    if (process.env.MAKE_WEBHOOK_URL) {
+    /* ── 4. Create Shiprocket order ────────────────────────────── */
+    if (process.env.SHIPROCKET_EMAIL && process.env.SHIPROCKET_PASSWORD) {
       try {
-        fetch(process.env.MAKE_WEBHOOK_URL, {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(orderRow),
-        }).catch(() => {});
-      } catch (e) {
-        console.warn('[verify] Make.com error:', e.message);
+        const srData = await createShiprocketOrder(orderRow);
+        console.log(`[verify-payment] Shiprocket order created: ${srData.order_id || srData.id}`);
+      } catch (srErr) {
+        // Non-fatal — payment is already verified; log and continue
+        console.error('[verify-payment] Shiprocket error:', srErr.message);
       }
+    } else {
+      console.warn('[verify-payment] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
     }
 
     /* ── 5. Respond success ─────────────────────────────────────── */

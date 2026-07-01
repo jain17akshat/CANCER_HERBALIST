@@ -1,9 +1,8 @@
 /**
  * useOrderSubmit.js
  *
- * Submits order data to a Google Apps Script Web App which writes to Google Sheets.
- * The Apps Script URL is read from env first, with a hardcoded fallback to prevent
- * "endpoint not set" errors when env vars fail to load (e.g. first deploys, phone testing).
+ * Submits COD / Bank Transfer orders to the backend API,
+ * which records them to Google Sheets AND creates a Shiprocket shipment.
  *
  * Returns { submitOrder, status, error, reset }
  *   status: 'idle' | 'submitting' | 'success' | 'error'
@@ -11,10 +10,8 @@
 
 import { useState, useCallback } from 'react';
 
-// Env var is preferred; hardcoded fallback ensures orders always work
-const APPS_SCRIPT_URL =
-  import.meta.env.VITE_APPS_SCRIPT_URL ||
-  'https://script.google.com/macros/s/AKfycbyDj0frsEleto9rUpfDz3OFiywKMCXa7WyWqP5C9O6yvdsI054xvcfEMur_y6cBm8iK/exec';
+const rawBackendUrl = import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app';
+const BACKEND_URL   = rawBackendUrl.replace(/\/+$/, '');
 
 export function useOrderSubmit() {
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
@@ -27,41 +24,28 @@ export function useOrderSubmit() {
 
   /**
    * @param {Object} orderData  - All order fields
-   * @returns {Promise<{orderId: string}>}
+   * @returns {Promise<{orderId: string, shiprocketOrderId: string|null}>}
    */
   const submitOrder = useCallback(async (orderData) => {
-    if (!APPS_SCRIPT_URL) {
-      console.error('[useOrderSubmit] VITE_APPS_SCRIPT_URL is not set in .env');
-      setStatus('error');
-      setError('Configuration error: order endpoint not set.');
-      return;
-    }
-
     setStatus('submitting');
     setError(null);
 
-    // Generate a client-side order ID as a fallback reference
-    const orderId = `CH-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-
-    const payload = {
-      ...orderData,
-      orderId,
-      orderDate: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-    };
-
     try {
-      // Apps Script redirects POST → GET, so doPost never fires.
-      // Reliable approach: send as GET with URL query parameters.
-      const url = new URL(APPS_SCRIPT_URL);
-      Object.entries(payload).forEach(([k, v]) =>
-        url.searchParams.append(k, String(v))
-      );
+      const res = await fetch(`${BACKEND_URL}/api/submit-order`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(orderData),
+      });
 
-      await fetch(url.toString(), { mode: 'no-cors' });
+      const data = await res.json();
 
-      // no-cors gives an opaque response — reaching here means success
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to place order. Please try again.');
+      }
+
       setStatus('success');
-      return { orderId };
+      return { orderId: data.orderId, shiprocketOrderId: data.shiprocketOrderId };
+
     } catch (err) {
       console.error('[useOrderSubmit]', err);
       setStatus('error');

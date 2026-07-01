@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const createOrderRoute    = require('./routes/createOrder');
 const verifyPaymentRoute  = require('./routes/verifyPayment');
 const validateVpaRoute    = require('./routes/validateVpa');
+const submitOrderRoute    = require('./routes/submitOrder');
 
 const app  = express();
 const PORT = process.env.PORT || 5001;
@@ -64,9 +65,11 @@ app.get('/api/health', (_req, res) =>
 /* ── Routes ─────────────────────────────────────────────────── */
 app.use('/api', apiLimiter);
 app.use('/api/create-order', orderLimiter);
+app.use('/api/submit-order', orderLimiter);
 app.use('/api', createOrderRoute);
 app.use('/api', verifyPaymentRoute);
 app.use('/api', validateVpaRoute);
+app.use('/api', submitOrderRoute);
 
 /* ── Start ──────────────────────────────────────────────────── */
 app.listen(PORT, () => {
@@ -78,6 +81,13 @@ app.listen(PORT, () => {
   if (missing.length) {
     console.error('\n❌  Missing required env vars:', missing.join(', '));
     console.error('   Set these in backend/.env or in your Vercel project settings.\n');
+  }
+
+  const shiprocketMissing = !process.env.SHIPROCKET_EMAIL || !process.env.SHIPROCKET_PASSWORD;
+  if (shiprocketMissing) {
+    console.warn('⚠️   SHIPROCKET_EMAIL / SHIPROCKET_PASSWORD not set — orders will NOT be pushed to Shiprocket.');
+  } else {
+    console.log('✅  Shiprocket credentials found.');
   }
 
   if (process.env.RAZORPAY_KEY_ID?.startsWith('rzp_test_')) {
