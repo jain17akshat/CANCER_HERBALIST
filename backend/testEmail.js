@@ -1,36 +1,26 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 require('dotenv').config();
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Step 1: Verify connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.log('❌ Connection failed:', error.message);
-  } else {
-    console.log('✅ SMTP connection OK — sending test email...');
+console.log('🔑 RESEND_API_KEY:', process.env.RESEND_API_KEY ? `***${process.env.RESEND_API_KEY.slice(-4)}` : 'NOT SET');
 
-    // Step 2: Send test email
-    transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: process.env.GMAIL_USER, // sends to yourself
-      subject: '✅ Nodemailer Test',
-      text: 'If you received this, Nodemailer is working correctly!',
-      html: '<h2>✅ Nodemailer is working!</h2><p>Your email setup is configured correctly.</p>',
-    }, (err, info) => {
-      if (err) {
-        console.log('❌ Send failed:', err.message);
-      } else {
-        console.log('✅ Email sent successfully!');
-        console.log('   Message ID:', info.messageId);
-        console.log('   Check inbox of:', process.env.GMAIL_USER);
-      }
+(async () => {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'onboarding@resend.dev',         // use this until you verify your domain
+      to: ['cancerherbalist@gmail.com'],      // your inbox to receive test
+      subject: '✅ Resend Email Test',
+      html: '<h2>✅ Email is working!</h2><p>Resend is configured correctly for your Cancer Herbalist backend.</p>',
     });
+
+    if (error) {
+      console.log('❌ Send failed:', error);
+    } else {
+      console.log('✅ Email sent successfully! ID:', data.id);
+      console.log('   Check inbox of: cancerherbalist@gmail.com');
+    }
+  } catch (err) {
+    console.log('❌ Error:', err.message);
   }
-});
+})();
