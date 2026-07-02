@@ -240,8 +240,15 @@ function buildAdminEmailHtml(order) {
  * @param {Object} order  - The full order record from submitOrder / verifyPayment
  */
 async function sendOrderConfirmationEmails(order) {
+  console.log(`[emailService] Starting email for order ${order.orderId}, customer email: ${order.email || 'NOT PROVIDED'}`);
+
   const transporter = createTransporter();
-  if (!transporter) return;
+  if (!transporter) {
+    console.warn('[emailService] Transporter is null — GMAIL_USER or GMAIL_APP_PASSWORD missing in env.');
+    return;
+  }
+
+  console.log(`[emailService] Transporter ready. Sending to customer: ${order.email}, admin: ${process.env.ADMIN_EMAIL}`);
 
   const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
   const fromAddr   = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
