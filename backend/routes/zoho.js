@@ -81,12 +81,39 @@ async function findContactByPhone(phone, token) {
 }
 
 /**
+ * Searches for an existing Contact by email address.
+ * Returns the contact ID if found, or null.
+ */
+async function findContactByEmail(email, token) {
+  if (!email) return null;
+  const res = await fetch(
+    `${ZOHO_API_BASE}/Contacts/search?criteria=(Email:equals:${encodeURIComponent(email)})`,
+    {
+      headers: {
+        Authorization: `Zoho-oauthtoken ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (res.status === 204) return null;
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  return data.data?.[0]?.id || null;
+}
+
+/**
  * Creates or updates a Zoho Contact from an order.
  * Returns the contact ID.
  */
 async function upsertContact(orderRow, token) {
-  // First check if contact already exists by phone
-  const existingId = await findContactByPhone(String(orderRow.phone), token);
+  // Search by phone first, then fallback to email
+  let existingId = await findContactByPhone(String(orderRow.phone), token);
+  if (!existingId && orderRow.email) {
+    existingId = await findContactByEmail(String(orderRow.email), token);
+    if (existingId) console.log(`[Zoho] Contact found by email for order ${orderRow.orderId}`);
+  }
 
   const [firstName, ...rest] = String(orderRow.customerName || '').trim().split(' ');
   const lastName = rest.join(' ') || '-';
@@ -117,7 +144,7 @@ async function upsertContact(orderRow, token) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(`Zoho Contact update failed: ${JSON.stringify(data)}`);
-    console.log(`[Zoho] Contact updated: ${existingId}`);
+    console.log(`[Zoho] Contact updated: ${existingId} for order ${orderRow.orderId}`);
     return existingId;
   } else {
     // Create new contact

@@ -262,6 +262,7 @@ async function sendOrderConfirmationEmails(order) {
         from:    fromAddr,
         to:      order.email,
         subject: `✅ Order Confirmed — ${order.orderId} | Cancer Herbalist`,
+        text:    `Thank you, ${order.customerName}!\nYour order ${order.orderId} for ${order.productName} (Amount: ₹${order.orderAmount}) has been successfully placed.\n\nPayment Method: ${order.paymentMethod}\nShipping Address: ${order.address}, ${order.city}, ${order.state} - ${order.pincode}\n\nOur team will contact you shortly.`,
         html:    buildCustomerEmailHtml(order),
       }).catch(err => console.error('[emailService] Customer email failed:', err.message))
     );
@@ -273,6 +274,7 @@ async function sendOrderConfirmationEmails(order) {
       from:    fromAddr,
       to:      adminEmail,
       subject: `🛒 New Order: ${order.orderId} — ${order.customerName} (₹${order.orderAmount})`,
+      text:    `New Order Received: ${order.orderId}\nCustomer: ${order.customerName}\nPhone: ${order.phone}\nProduct: ${order.productName}\nAmount: ₹${order.orderAmount}\nPayment: ${order.paymentMethod}`,
       html:    buildAdminEmailHtml(order),
     }).catch(err => console.error('[emailService] Admin email failed:', err.message))
   );
