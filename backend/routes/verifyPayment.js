@@ -2,9 +2,10 @@ const express = require('express');
 const crypto  = require('crypto'); // built-in — no install needed
 const router  = express.Router();
 const Razorpay = require('razorpay');
-const { createShiprocketOrder } = require('./shiprocket');
-const { validateOrderAmount }   = require('./priceList');
-const { pushOrderToZoho }       = require('./zoho');
+const { createShiprocketOrder }         = require('./shiprocket');
+const { validateOrderAmount }           = require('./priceList');
+const { pushOrderToZoho }               = require('./zoho');
+const { sendOrderConfirmationEmails }   = require('./emailService');
 
 /* Razorpay SDK — for fetching order amount post-payment */
 const razorpay = new Razorpay({
@@ -123,6 +124,9 @@ router.post('/verify-payment', async (req, res) => {
       })();
       promises.push(zohoPromise);
     }
+
+    // Email confirmation (customer + admin)
+    promises.push(sendOrderConfirmationEmails(orderRow));
 
     // Wait for all integrations to finish before sending response (prevent serverless termination)
     await Promise.all(promises);

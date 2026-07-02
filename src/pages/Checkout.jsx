@@ -54,6 +54,13 @@ export default function Checkout() {
     rzpStatus === 'creating' || rzpStatus === 'paying' || rzpStatus === 'verifying';
   const displayError  = error || rzpError;
 
+  /* Scroll to top when order succeeds so mobile users see the confirmation */
+  useEffect(() => {
+    if (isSuccess) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isSuccess]);
+
   /* State for direct Buy Now vs Cart */
   const isDirectBuy = !!state?.product;
   const [directQty, setDirectQty] = useState(state?.qty || 1);
@@ -201,36 +208,17 @@ export default function Checkout() {
       </section>
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 16px 80px' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0,1fr) 340px',
-          gap: '28px',
-          alignItems: 'start',
-        }}
-          className="checkout-grid"
-        >
 
-          {/* ── LEFT: Form ── */}
-          <div>
-            {/* Back link */}
-            <button
-              onClick={() => navigate(-1)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-                color: PRIMARY, fontWeight: 600, fontSize: '13px',
-                textDecoration: 'none', marginBottom: '24px',
-                background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit'
-              }}
+        {/* ── FULL-WIDTH SUCCESS STATE ── */}
+        <AnimatePresence>
+          {isSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{ maxWidth: '600px', margin: '0 auto' }}
             >
-              <FaArrowLeft fontSize="11px" /> Go Back
-            </button>
-
-            {/* ── SUCCESS state ── */}
-            <AnimatePresence>
-              {isSuccess && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+              <div
                   style={{
                     background: '#fff', borderRadius: '20px',
                     boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
@@ -334,9 +322,36 @@ export default function Checkout() {
                       Continue Shopping
                     </button>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── TWO-COLUMN GRID (only when not success) ── */}
+        {!isSuccess && (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0,1fr) 340px',
+          gap: '28px',
+          alignItems: 'start',
+        }}
+          className="checkout-grid"
+        >
+
+          {/* ── LEFT: Form ── */}
+          <div>
+            {/* Back link */}
+            <button
+              onClick={() => navigate(-1)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                color: PRIMARY, fontWeight: 600, fontSize: '13px',
+                textDecoration: 'none', marginBottom: '24px',
+                background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit'
+              }}
+            >
+              <FaArrowLeft fontSize="11px" /> Go Back
+            </button>
 
             {/* ── FORM ── */}
             {!isSuccess && (
@@ -654,6 +669,7 @@ export default function Checkout() {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Responsive grid */}

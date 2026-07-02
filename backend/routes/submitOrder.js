@@ -1,8 +1,9 @@
 const express = require('express');
 const router  = express.Router();
-const { createShiprocketOrder } = require('./shiprocket');
-const { validateOrderAmount }   = require('./priceList');
-const { pushOrderToZoho }       = require('./zoho');
+const { createShiprocketOrder }         = require('./shiprocket');
+const { validateOrderAmount }           = require('./priceList');
+const { pushOrderToZoho }               = require('./zoho');
+const { sendOrderConfirmationEmails }   = require('./emailService');
 
 /**
  * POST /api/submit-order
@@ -124,6 +125,9 @@ router.post('/submit-order', async (req, res) => {
       })();
       promises.push(zohoPromise);
     }
+
+    // Email confirmation (customer + admin)
+    promises.push(sendOrderConfirmationEmails(orderRow));
 
     // Wait for all integrations to finish before sending response (prevent serverless termination)
     await Promise.all(promises);
