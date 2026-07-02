@@ -1,19 +1,18 @@
 /**
  * emailService.js
  *
- * Shared Nodemailer service for sending order confirmation emails.
+ * Gmail SMTP service for sending order confirmation emails.
  * Sends two emails on every order:
  *   1. Customer receipt with order summary
  *   2. Admin notification to the clinic inbox
  *
  * Setup: Set GMAIL_USER and GMAIL_APP_PASSWORD in backend/.env
- * (Use a Gmail App Password — NOT your regular password)
- * Get one at: Google Account → Security → 2-Step Verification → App Passwords
+ * Sender: drherbalistindia@gmail.com (App Password required)
  */
 
 const nodemailer = require('nodemailer');
 
-/* ── Lazy-create transporter (only when env vars are present) ── */
+/* ── Lazy-create Gmail transporter ── */
 function createTransporter() {
   const user = process.env.GMAIL_USER;
   const pass = process.env.GMAIL_APP_PASSWORD;
@@ -24,7 +23,9 @@ function createTransporter() {
   }
 
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: { user, pass },
   });
 }
@@ -240,7 +241,7 @@ function buildAdminEmailHtml(order) {
  */
 async function sendOrderConfirmationEmails(order) {
   const transporter = createTransporter();
-  if (!transporter) return; // env vars not set — skip gracefully
+  if (!transporter) return;
 
   const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
   const fromAddr   = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;

@@ -1,26 +1,32 @@
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+console.log('📧 GMAIL_USER:', process.env.GMAIL_USER);
+console.log('🔑 GMAIL_APP_PASSWORD:', process.env.GMAIL_APP_PASSWORD ? `***${process.env.GMAIL_APP_PASSWORD.slice(-4)} (len: ${process.env.GMAIL_APP_PASSWORD.length})` : 'NOT SET');
 
-console.log('🔑 RESEND_API_KEY:', process.env.RESEND_API_KEY ? `***${process.env.RESEND_API_KEY.slice(-4)}` : 'NOT SET');
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
-(async () => {
-  try {
-    const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',         // use this until you verify your domain
-      to: ['drherbalistindia@gmail.com'],      // must match your Resend account email in test mode
-      subject: '✅ Resend Email Test',
-      html: '<h2>✅ Email is working!</h2><p>Resend is configured correctly for your Cancer Herbalist backend.</p>',
+transporter.verify((error) => {
+  if (error) {
+    console.log('❌ Connection failed:', error.message);
+  } else {
+    console.log('✅ Gmail SMTP connected — sending test email...');
+    transporter.sendMail({
+      from: `"Cancer Herbalist" <${process.env.GMAIL_USER}>`,
+      to: process.env.GMAIL_USER,
+      subject: '✅ Gmail SMTP Test',
+      html: '<h2>✅ Gmail SMTP is working!</h2>',
+    }, (err, info) => {
+      if (err) console.log('❌ Send failed:', err.message);
+      else console.log('✅ Email sent! ID:', info.messageId);
     });
-
-    if (error) {
-      console.log('❌ Send failed:', error);
-    } else {
-      console.log('✅ Email sent successfully! ID:', data.id);
-      console.log('   Check inbox of: cancerherbalist@gmail.com');
-    }
-  } catch (err) {
-    console.log('❌ Error:', err.message);
   }
-})();
+});
