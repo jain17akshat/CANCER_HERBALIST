@@ -9,7 +9,7 @@ console.log('🔑 RESEND_API_KEY:', process.env.RESEND_API_KEY ? `***${process.e
   try {
     const { data, error } = await resend.emails.send({
       from: 'onboarding@resend.dev',         // use this until you verify your domain
-      to: ['cancerherbalist@gmail.com'],      // your inbox to receive test
+      to: ['drherbalistindia@gmail.com'],      // must match your Resend account email in test mode
       subject: '✅ Resend Email Test',
       html: '<h2>✅ Email is working!</h2><p>Resend is configured correctly for your Cancer Herbalist backend.</p>',
     });
