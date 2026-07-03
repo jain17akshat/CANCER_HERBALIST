@@ -71,10 +71,10 @@ export default function Checkout() {
 
   const total = isDirectBuy ? (state.product.price * directQty) : cartTotal;
 
-  /* redirect if no product context */
+  /* redirect if no product context — but NOT after a successful order (cart was just cleared) */
   useEffect(() => {
-    if (!state?.product && cart.length === 0) navigate('/store', { replace: true });
-  }, [state, navigate, cart.length]);
+    if (!state?.product && cart.length === 0 && !isSuccess) navigate('/store', { replace: true });
+  }, [state, navigate, cart.length, isSuccess]);
 
   const [paymentMethod, setPaymentMethod] = useState(state?.paymentMethod || 'cod');
 
