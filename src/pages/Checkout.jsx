@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  FaLeaf, FaShieldAlt, FaTruck, FaCheckCircle,
+  FaLeaf, FaShieldAlt, FaTruck,
   FaExclamationTriangle, FaSpinner, FaArrowLeft,
-  FaWhatsapp, FaLock, FaBox,
+  FaLock, FaBox,
 } from 'react-icons/fa';
 import { useOrderSubmit } from '../hooks/useOrderSubmit';
 import { useRazorpay }   from '../hooks/useRazorpay';
@@ -185,18 +185,6 @@ export default function Checkout() {
     }
   };
 
-  /* ── WhatsApp fallback ───────────────────────────────────────────── */
-  const waItemsText = checkoutItems.map(i => `- ${i.product.name} (x${i.qty})`).join('\n');
-  const waText = encodeURIComponent(
-    `🌿 *New Order — Cancer Herbalist*\n\n` +
-    `Items:\n${waItemsText}\nTotal Amount: ₹${total.toLocaleString('en-IN')}\n` +
-    `Payment Method: ${paymentMethod === 'online' ? 'Paid Online via UPI' : 'COD / Bank Transfer'}\n` +
-    (orderId ? `Order ID: ${orderId}\n` : '') + `\n` +
-    `Name: ${form.customerName || '—'}\nPhone: ${form.phone || '—'}\n` +
-    `Email: ${form.email || '—'}\n` +
-    `Address: ${form.address}, ${form.city}, ${form.state} - ${form.pincode}` +
-    (paymentMethod === 'online' ? `\n\n(I am attaching my payment screenshot below)` : '')
-  );
 
   /* ─────────────────────────────────────────────────────────────────── */
   return (
@@ -228,126 +216,7 @@ export default function Checkout() {
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 16px 80px' }}>
 
-        {/* ── FULL-WIDTH SUCCESS STATE ── */}
-        <AnimatePresence>
-          {isSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              style={{ maxWidth: '600px', margin: '0 auto' }}
-            >
-              <div
-                  style={{
-                    background: '#fff', borderRadius: '20px',
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                    padding: '48px 32px', textAlign: 'center',
-                  }}
-                >
-                  <div style={{
-                    width: '80px', height: '80px', borderRadius: '50%',
-                    background: `${ACCENT}18`, border: `3px solid ${ACCENT}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '0 auto 24px', fontSize: '36px', color: ACCENT,
-                  }}>
-                    <FaCheckCircle />
-                  </div>
-                  <h2 style={{ fontFamily: 'Playfair Display, serif', color: '#0f172a', marginBottom: '12px' }}>
-                    Order Placed Successfully! 🎉
-                  </h2>
-                  <p style={{ color: '#64748b', lineHeight: 1.8, marginBottom: '8px' }}>
-                    Your order <strong style={{ color: PRIMARY }}>{orderId}</strong> has been recorded.
-                  </p>
-
-                  {paymentMethod === 'online' ? (
-                    <div style={{
-                      background: '#f8fafc', borderRadius: '16px',
-                      padding: '24px', margin: '20px auto 28px', maxWidth: '420px',
-                      border: '1.5px dashed #cbd5e1', textAlign: 'center'
-                    }}>
-                      <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
-                        Scan QR or Tap to Pay via UPI App
-                      </h3>
-                      <p style={{ fontSize: '12.5px', color: '#475569', marginBottom: '16px' }}>
-                        Amount to Pay: <strong style={{ color: PRIMARY, fontSize: '15px' }}>₹{total.toLocaleString('en-IN')}</strong>
-                      </p>
-
-                      {/* QR Code for Desktop */}
-                      <div style={{
-                        background: '#fff', padding: '12px', borderRadius: '12px',
-                        display: 'inline-block', border: '1px solid #e2e8f0', marginBottom: '16px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                      }}>
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
-                            `upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`
-                          )}`}
-                          alt="UPI Payment QR Code"
-                          style={{ width: '180px', height: '180px', display: 'block' }}
-                        />
-                      </div>
-
-                      {/* Pay via UPI App button */}
-                      <div>
-                        <a
-                          href={`upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`}
-                          style={{
-                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                            background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`, color: '#fff',
-                            padding: '12px 24px', borderRadius: '10px',
-                            textDecoration: 'none', fontWeight: 700, fontSize: '14.5px',
-                            width: '100%', boxSizing: 'border-box',
-                            boxShadow: `0 4px 12px ${ACCENT}40`
-                          }}
-                        >
-                          📱 Pay via UPI Payment App
-                        </a>
-                      </div>
-
-                      <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '12px', lineHeight: 1.5 }}>
-                        Supports GPay, PhonePe, Paytm, BHIM & other banking apps.<br />
-                        <span style={{ color: PRIMARY, fontWeight: 600 }}>Please share the payment receipt screenshot on WhatsApp after paying.</span>
-                      </p>
-                    </div>
-                  ) : (
-                    <p style={{ color: '#64748b', lineHeight: 1.8, marginBottom: '28px' }}>
-                      A confirmation will be sent to <strong>{form.email}</strong>.<br />
-                      Our team will contact you at <strong>{form.phone}</strong> within 24 hours to confirm COD/bank transfer.
-                    </p>
-                  )}
-
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <a
-                      href={`https://wa.me/918884588835?text=${waText}`}
-                      target="_blank" rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '8px',
-                        background: '#25d366', color: '#fff',
-                        padding: '12px 24px', borderRadius: '12px',
-                        textDecoration: 'none', fontWeight: 700, fontSize: '14px',
-                      }}
-                    >
-                      <FaWhatsapp /> {paymentMethod === 'online' ? 'Confirm Payment on WhatsApp' : 'WhatsApp Us'}
-                    </a>
-                    <button
-                      onClick={() => navigate('/store')}
-                      style={{
-                        padding: '12px 24px', borderRadius: '12px',
-                        border: `2px solid ${PRIMARY}`, background: 'transparent',
-                        color: PRIMARY, fontWeight: 700, fontSize: '14px',
-                        cursor: 'pointer', fontFamily: 'inherit',
-                      }}
-                    >
-                      Continue Shopping
-                    </button>
-                  </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* ── TWO-COLUMN GRID (only when not success) ── */}
-        {!isSuccess && (
+        {/* ── TWO-COLUMN GRID ── */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'minmax(0,1fr) 340px',
@@ -688,7 +557,6 @@ export default function Checkout() {
             </div>
           </div>
         </div>
-        )}
       </div>
 
       {/* Responsive grid */}

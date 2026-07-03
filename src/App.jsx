@@ -20,6 +20,7 @@ import TCellsVsNKCells from './pages/TCellsVsNKCells';
 import Store from './pages/Store';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
 import Wishlist from './pages/Wishlist';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
@@ -90,6 +91,7 @@ function App() {
                 <Route path="/store" element={<Store />} />
                 <Route path="/store/:id" element={<ProductDetail />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/order-success" element={<OrderSuccess />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
