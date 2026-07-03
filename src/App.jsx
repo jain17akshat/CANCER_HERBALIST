@@ -26,6 +26,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import RefundPolicy from './pages/RefundPolicy';
 import NotFound from './pages/NotFound';
+import AdminDashboard from './pages/AdminDashboard';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
@@ -97,6 +98,7 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>

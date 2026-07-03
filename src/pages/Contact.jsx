@@ -1,23 +1,11 @@
-import React, { useState, useRef } from 'react';
-import emailjs from '@emailjs/browser';
+import React, { useState } from 'react';
 import {
   FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp,
   FaClock, FaCalendarAlt, FaCheckCircle, FaSpinner,
   FaLeaf, FaUserMd, FaChevronRight
 } from 'react-icons/fa';
 
-
-const EMAILJS_SERVICE_ID =
-  import.meta.env.VITE_EMAILJS_SERVICE_ID;
-
-const EMAILJS_ADMIN_TEMPLATE_ID =
-  import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID;
-
-const EMAILJS_PATIENT_TEMPLATE_ID =
-  import.meta.env.VITE_EMAILJS_PATIENT_TEMPLATE_ID;
-
-const EMAILJS_PUBLIC_KEY =
-  import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 
 const ACCENT = '#38bed5';
 
@@ -95,11 +83,11 @@ const labelStyle = {
 };
 
 export default function Contact() {
-  const formRef = useRef();
-
   const [step, setStep] = useState(1); // 1=form, 2=slot, 3=success
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [bookedSlots, setBookedSlots] = useState([]); // slots already taken for selected day
+  const [slotsLoading, setSlotsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '',
@@ -110,8 +98,18 @@ export default function Contact() {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleDaySelect = (day) =>
+  const handleDaySelect = async (day) => {
     setFormData({ ...formData, selectedDay: day, selectedSlot: '' });
+    // Fetch already-booked slots for this date
+    setSlotsLoading(true);
+    setBookedSlots([]);
+    try {
+      const res  = await fetch(`${BACKEND_URL}/api/available-slots?date=${encodeURIComponent(day.full)}`);
+      const data = await res.json();
+      if (data.success) setBookedSlots(data.bookedSlots || []);
+    } catch { /* silently ignore — slots will just all appear available */ }
+    finally { setSlotsLoading(false); }
+  };
 
   const handleSlotSelect = (slot) =>
     setFormData({ ...formData, selectedSlot: slot });
@@ -127,7 +125,7 @@ export default function Contact() {
     setStep(2);
   };
 
-  // Step 2 → Send emails
+  // Step 2 → Send emails via backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.selectedDay || !formData.selectedSlot) {
@@ -137,45 +135,35 @@ export default function Contact() {
     setError('');
     setSending(true);
 
-    const templateParams = {
-      // Fields used in EmailJS template
-      patient_name: formData.name,
-      patient_phone: formData.phone,
-      patient_email: formData.email,
-      treatment_type: formData.treatment,
-      cancer_stage: formData.stage || 'Not specified',
-      appointment_day: formData.selectedDay.full,
-      appointment_slot: formData.selectedSlot,
-      patient_message: formData.message || 'No additional message.',
-      clinic_email: 'cancerherbalist@gmail.com',
-      // reply_to is used so clinic can reply directly to patient
-      reply_to: formData.email,
-    };
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/book-appointment`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:            formData.name,
+          phone:           formData.phone,
+          email:           formData.email,
+          treatment:       formData.treatment,
+          stage:           formData.stage || '',
+          message:         formData.message || '',
+          appointmentDay:  formData.selectedDay.full,
+          appointmentSlot: formData.selectedSlot,
+        }),
+      });
 
-  try {
-  // Send email to clinic
-  await emailjs.send(
-    EMAILJS_SERVICE_ID,
-    EMAILJS_ADMIN_TEMPLATE_ID,
-    templateParams,
-    EMAILJS_PUBLIC_KEY
-  );
+      const data = await res.json();
 
-  // Send confirmation email to patient
-  await emailjs.send(
-    EMAILJS_SERVICE_ID,
-    EMAILJS_PATIENT_TEMPLATE_ID,
-    templateParams,
-    EMAILJS_PUBLIC_KEY
-  );
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to send confirmation.');
+      }
 
-  setSending(false);
-  setStep(3);
-} catch (err) {
-  setSending(false);
-  setError('Failed to send. Please try WhatsApp or call us directly.');
-  console.error('EmailJS error:', err);
-}
+      setSending(false);
+      setStep(3);
+    } catch (err) {
+      setSending(false);
+      setError(err.message || 'Failed to send. Please try WhatsApp or call us directly.');
+      console.error('[Contact] Appointment booking error:', err);
+    }
   };
 
   const reset = () => {
@@ -324,14 +312,34 @@ export default function Contact() {
                 {/* Time Slot Picker */}
                 {formData.selectedDay && (
                   <>
-                    <label style={labelStyle}>Select Time Slot for {formData.selectedDay.label} *</label>
+                    <label style={labelStyle}>
+                      Select Time Slot for {formData.selectedDay.label} *
+                      {slotsLoading && <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: 400, marginLeft: '8px' }}>Loading availability…</span>}
+                    </label>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(80px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
                       {TIME_SLOTS.map((slot) => {
                         const selected = formData.selectedSlot === slot;
+                        const isBooked = bookedSlots.includes(slot);
                         return (
-                          <button key={slot} type="button" onClick={() => handleSlotSelect(slot)}
-                            style={{ padding: '10px 4px', borderRadius: '10px', border: `2px solid ${selected ? ACCENT : '#e2e8f0'}`, background: selected ? ACCENT : '#f8fafc', color: selected ? '#fff' : '#475569', fontWeight: 600, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
+                          <button
+                            key={slot}
+                            type="button"
+                            disabled={isBooked}
+                            onClick={() => !isBooked && handleSlotSelect(slot)}
+                            title={isBooked ? 'This slot is already booked' : slot}
+                            style={{
+                              padding: '10px 4px', borderRadius: '10px',
+                              border: `2px solid ${isBooked ? '#e2e8f0' : selected ? ACCENT : '#e2e8f0'}`,
+                              background: isBooked ? '#f1f5f9' : selected ? ACCENT : '#f8fafc',
+                              color:  isBooked ? '#cbd5e1' : selected ? '#fff' : '#475569',
+                              fontWeight: 600, fontSize: '11px',
+                              cursor: isBooked ? 'not-allowed' : 'pointer',
+                              transition: 'all 0.2s',
+                              textDecoration: isBooked ? 'line-through' : 'none',
+                            }}
+                          >
                             {slot}
+                            {isBooked && <div style={{ fontSize: '9px', fontWeight: 700, color: '#ef4444', textDecoration: 'none', marginTop: '2px' }}>BOOKED</div>}
                           </button>
                         );
                       })}

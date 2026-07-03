@@ -14,6 +14,7 @@ const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY;
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 
 // ── Shared product data (must match Store.jsx) ─────────────────────────────
 export const products = [
@@ -969,11 +970,32 @@ function EnquiryModal({ product, onClose }) {
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find(p => p.id === Number(id));
+  const [product, setProduct] = useState(() => products.find(p => p.id === Number(id)));
   const [activeImg, setActiveImg] = useState(0);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
+
+  useEffect(() => {
+    const checkDynamic = async () => {
+      const foundStatic = products.find(p => p.id === Number(id));
+      if (foundStatic) {
+        setProduct(foundStatic);
+        return;
+      }
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
+        const data = await res.json();
+        if (data.success && data.products) {
+          const found = data.products.find(p => p.id === Number(id));
+          if (found) setProduct(found);
+        }
+      } catch (e) {
+        console.warn('Failed to load dynamic product:', e);
+      }
+    };
+    checkDynamic();
+  }, [id]);
 
   useEffect(() => {
     if (!product) return;

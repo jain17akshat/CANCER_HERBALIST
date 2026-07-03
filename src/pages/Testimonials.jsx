@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaPlay, FaTimes, FaVideo, FaCheckCircle, FaStar, FaQuoteLeft, FaBookmark, FaRegChartBar, FaNotesMedical, FaRegClock, FaRibbon, FaFlask, FaUsers, FaGlobe, FaCalendarAlt, FaStethoscope, FaHourglassHalf } from 'react-icons/fa';
 
 const ACCENT = '#38bed5';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+
 
 const videos = [
   {
@@ -97,6 +99,28 @@ export default function Testimonials() {
   const [activeVideo, setActiveVideo] = useState(null);
   const [activeTab, setActiveTab] = useState('breast');
   const activeCaseStudy = caseStudies.find(study => study.id === activeTab);
+  const [allReviews, setAllReviews] = useState(reviewsList);
+
+  React.useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/dynamic-testimonials`);
+        const data = await res.json();
+        if (data.success && data.testimonials?.length > 0) {
+          const merged = [...reviewsList];
+          data.testimonials.forEach(dt => {
+            if (!merged.some(r => r.name === dt.name && r.text === dt.text)) {
+              merged.push(dt);
+            }
+          });
+          setAllReviews(merged);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch dynamic testimonials:', err);
+      }
+    };
+    fetchTestimonials();
+  }, []);
 
   return (
     <>
@@ -234,9 +258,9 @@ export default function Testimonials() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))', gap: '24px' }}>
-            {reviewsList.map((review, i) => (
+            {allReviews.map((review, i) => (
               <motion.div
-                key={review.name}
+                key={review.name + i}
                 data-aos="fade-up"
                 data-aos-delay={i * 80}
                 whileHover={{ y: -4 }}

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { FaArrowLeft, FaClock, FaUser, FaCalendarAlt, FaLeaf } from 'react-icons/fa';
 
 const ACCENT = '#38bed5';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 
 const blogData = {
   1: {
@@ -146,7 +147,40 @@ body: `Precision oncology represents one of the most exciting developments in mo
 
 export default function BlogDetail() {
   const { id } = useParams();
-  const blog = blogData[parseInt(id)];
+  const [blog, setBlog] = React.useState(() => blogData[parseInt(id)]);
+
+  React.useEffect(() => {
+    const checkDynamic = async () => {
+      const foundStatic = blogData[parseInt(id)];
+      if (foundStatic) {
+        setBlog(foundStatic);
+        return;
+      }
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/dynamic-blogs`);
+        const data = await res.json();
+        if (data.success && data.blogs) {
+          const found = data.blogs.find(b => b.id === parseInt(id));
+          if (found) {
+            setBlog({
+              title: found.title,
+              image: found.image,
+              category: found.category,
+              author: found.author,
+              readTime: found.readTime,
+              date: found.date,
+              content: Array.isArray(found.content)
+                ? found.content
+                : [{ heading: 'Content', body: found.content || found.excerpt }]
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to load dynamic blog details:', e);
+      }
+    };
+    checkDynamic();
+  }, [id]);
 
   React.useEffect(() => {
     if (!blog) return;

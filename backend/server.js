@@ -9,10 +9,13 @@ const createOrderRoute    = require('./routes/createOrder');
 const verifyPaymentRoute  = require('./routes/verifyPayment');
 const validateVpaRoute    = require('./routes/validateVpa');
 const submitOrderRoute    = require('./routes/submitOrder');
+const bookAppointmentRoute = require('./routes/bookAppointment');
+const dynamicContentRoute  = require('./routes/dynamicContent');
 
 const app  = express();
 app.set('trust proxy', 1); // Trust Vercel's proxy for accurate rate limiting and to prevent ValidationErrors
 const PORT = process.env.PORT || 5001;
+
 
 /* ── Security headers ──────────────────────────────────────── */
 app.use(helmet());
@@ -74,6 +77,8 @@ app.use('/api', createOrderRoute);
 app.use('/api', verifyPaymentRoute);
 app.use('/api', validateVpaRoute);
 app.use('/api', submitOrderRoute);
+app.use('/api', bookAppointmentRoute);
+app.use('/api', dynamicContentRoute);
 
 /* ── Start ──────────────────────────────────────────────────── */
 app.listen(PORT, () => {
@@ -107,3 +112,4 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+// Force nodemon reload: 2026-07-03

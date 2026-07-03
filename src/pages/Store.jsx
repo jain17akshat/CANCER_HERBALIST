@@ -8,6 +8,7 @@ import { products } from './ProductDetail';
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 
 const categories = ['All', 'Immunity', 'Anti-Tumor', 'Detox', 'Stress & Recovery', 'Nutrition', 'Essential Oils', 'Alkaline Therapy'];
 
@@ -34,8 +35,28 @@ export default function Store() {
   const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState('All');
   const [search, setSearch] = useState('');
+  const [allProducts, setAllProducts] = useState(products);
 
-  const filtered = products.filter(p => {
+  React.useEffect(() => {
+    const fetchDynamic = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
+        const data = await res.json();
+        if (data.success && data.products?.length > 0) {
+          const merged = [...products];
+          data.products.forEach(dp => {
+            if (!merged.some(p => p.id === dp.id)) merged.push(dp);
+          });
+          setAllProducts(merged);
+        }
+      } catch (err) {
+        console.warn('Error fetching dynamic products:', err);
+      }
+    };
+    fetchDynamic();
+  }, []);
+
+  const filtered = allProducts.filter(p => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.description.toLowerCase().includes(search.toLowerCase());

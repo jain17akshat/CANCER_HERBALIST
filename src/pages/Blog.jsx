@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaClock, FaUser } from 'react-icons/fa';
 
 const ACCENT = '#38bed5';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 
 const blogs = [
   {
@@ -42,8 +43,28 @@ excerpt: "Recognizing early warning signs of cancer—such as unexplained weight
 export default function Blog() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const [allBlogs, setAllBlogs] = useState(blogs);
 
-  const filtered = blogs.filter(
+  React.useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/dynamic-blogs`);
+        const data = await res.json();
+        if (data.success && data.blogs?.length > 0) {
+          const merged = [...blogs];
+          data.blogs.forEach(db => {
+            if (!merged.some(b => b.id === db.id)) merged.push(db);
+          });
+          setAllBlogs(merged);
+        }
+      } catch (err) {
+        console.warn('Failed to load dynamic blogs:', err);
+      }
+    };
+    fetchBlogs();
+  }, []);
+
+  const filtered = allBlogs.filter(
     (b) =>
       b.title.toLowerCase().includes(search.toLowerCase()) ||
       b.category.toLowerCase().includes(search.toLowerCase()) ||

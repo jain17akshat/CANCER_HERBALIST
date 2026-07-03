@@ -67,6 +67,16 @@ export default function Navbar() {
     setMobileOpenDropdown(null);
   }, [location.pathname]);
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    setIsAdmin(localStorage.getItem('ch_admin_authed') === 'true');
+  }, [location.pathname]);
+
+  const visibleLinks = isAdmin
+    ? [...navLinks, { label: 'Admin 🛡️', href: '/admin' }]
+    : navLinks;
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
@@ -120,7 +130,7 @@ export default function Navbar() {
 
           {/* ── Desktop Nav ── */}
           <nav className="ch-desktop-nav" ref={dropdownRef}>
-            {navLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <div key={link.label} className="ch-nav-item">
                 {link.children ? (
                   <>
@@ -270,7 +280,7 @@ export default function Navbar() {
             className="ch-mobile-menu"
           >
             <div style={{ padding: '12px 20px 20px' }}>
-              {navLinks.map((link, i) => (
+              {visibleLinks.map((link, i) => (
                 <motion.div
                   key={link.label}
                   initial={{ opacity: 0, x: -16 }}
