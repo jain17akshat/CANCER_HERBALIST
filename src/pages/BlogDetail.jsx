@@ -151,15 +151,12 @@ export default function BlogDetail() {
 
   React.useEffect(() => {
     const checkDynamic = async () => {
-      const foundStatic = blogData[parseInt(id)];
-      if (foundStatic) {
-        setBlog(foundStatic);
-        return;
-      }
+      let apiSucceeded = false;
       try {
         const res = await fetch(`${BACKEND_URL}/api/dynamic-blogs`);
         const data = await res.json();
         if (data.success && data.blogs) {
+          apiSucceeded = true;
           const found = data.blogs.find(b => b.id === parseInt(id));
           if (found) {
             setBlog({
@@ -173,10 +170,19 @@ export default function BlogDetail() {
                 ? found.content
                 : [{ heading: 'Content', body: found.content || found.excerpt }]
             });
+          } else {
+            setBlog(null);
           }
         }
       } catch (e) {
         console.warn('Failed to load dynamic blog details:', e);
+      }
+
+      if (!apiSucceeded) {
+        const foundStatic = blogData[parseInt(id)];
+        if (foundStatic) {
+          setBlog(foundStatic);
+        }
       }
     };
     checkDynamic();

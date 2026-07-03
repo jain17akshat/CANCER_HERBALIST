@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "title": "A Remarkable Prostate Cancer Journey: When Symptoms Were Not Obvious",
+    "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=80",
+    "category": "Nutrition",
+    "author": "By Prof. Ramesh",
+    "readTime": "8 min read",
+    "date": "February 21, 2026",
+    "excerpt": "A 74-year-old man's prostate cancer diagnosis was delayed due to atypical symptoms. Learn how elevated PSA levels led to diagnosis and explore the role of supportive nutrition in his cancer care journey.",
+    "content": "A 74-year-old man's prostate cancer diagnosis was delayed due to atypical symptoms. Supportive nutrition and herbal therapies played an essential role alongside his conventional treatment plan."
+  },
+  {
+    "id": 2,
+    "title": "The Rise of Precision Oncology: How Personalized Cancer Treatment Is Changing Lives",
+    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
+    "category": "Cancer Research",
+    "author": "By Prof. Ramesh",
+    "readTime": "8 min read",
+    "date": "March 10, 2026",
+    "excerpt": "Discover how genetic testing, artificial intelligence, targeted therapies, and immunotherapy are transforming cancer treatment through personalized care and improved patient outcomes.",
+    "content": "Discover how genetic testing, artificial intelligence, targeted therapies, and immunotherapy are transforming cancer treatment through personalized care and improved patient outcomes."
+  },
+  {
+    "id": 3,
+    "title": "10 Early Warning Signs of Cancer That Should Never Be Ignored",
+    "image": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
+    "category": "Cancer Awareness",
+    "author": "By Prof. Ramesh",
+    "readTime": "8 min read",
+    "date": "February 28, 2026",
+    "excerpt": "Recognizing early warning signs of cancer—such as unexplained weight loss, persistent fatigue, unusual lumps, or chronic pain—can lead to timely diagnosis and significantly better treatment outcomes.",
+    "content": "Recognizing early warning signs of cancer—such as unexplained weight loss, persistent fatigue, unusual lumps, or chronic pain—can lead to timely diagnosis and significantly better treatment outcomes."
+  },
+  {
+    "id": 100,
+    "title": "Testing",
+    "image": "https://unsplash.com/photos/soccer-players-legs-with-ball-on-green-turf-1RJ1D-jmEeQ",
+    "category": "Nutrition",
+    "author": "By Prof. Ramesh",
+    "readTime": "5 min read",
+    "date": "July 3, 2026",
+    "excerpt": "TESTING SUCESSFULL",
+    "content": "SUCESSFULL"
+  }
+]

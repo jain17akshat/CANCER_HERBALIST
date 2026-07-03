@@ -50,12 +50,8 @@ export default function Blog() {
       try {
         const res = await fetch(`${BACKEND_URL}/api/dynamic-blogs`);
         const data = await res.json();
-        if (data.success && data.blogs?.length > 0) {
-          const merged = [...blogs];
-          data.blogs.forEach(db => {
-            if (!merged.some(b => b.id === db.id)) merged.push(db);
-          });
-          setAllBlogs(merged);
+        if (data.success && data.blogs) {
+          setAllBlogs(data.blogs);
         }
       } catch (err) {
         console.warn('Failed to load dynamic blogs:', err);

@@ -40,6 +40,11 @@ export default function AdminDashboard() {
   const [dynBlogs, setDynBlogs] = useState([]);
   const [dynTestimonials, setDynTestimonials] = useState([]);
 
+  // Editing states
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingBlog, setEditingBlog] = useState(null);
+  const [editingTestimonial, setEditingTestimonial] = useState(null);
+
   // Form states
   const [productForm, setProductForm] = useState({
     name: '', category: 'Immunity', price: '', originalPrice: '',
@@ -194,15 +199,96 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    setFormStatus('sending');
+    setFormError('');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/dynamic-products/${editingProduct.id}?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...productForm,
+          benefits: productForm.benefits ? productForm.benefits.split(',').map(b => b.trim()) : []
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update product.');
+      
+      setFormStatus('success');
+      setEditingProduct(null);
+      setProductForm({
+        name: '', category: 'Immunity', price: '', originalPrice: '',
+        description: '', benefits: '', ingredients: '', dosage: '',
+        size: '', badge: '', icon: '🌿', color: '#1a6e52'
+      });
+      loadDynamicContent();
+      setTimeout(() => setFormStatus(''), 3000);
+    } catch (err) {
+      setFormStatus('error');
+      setFormError(err.message);
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/dynamic-products/${id}?key=${secret}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete product.');
+      if (editingProduct && editingProduct.id === id) {
+        setEditingProduct(null);
+        setProductForm({
+          name: '', category: 'Immunity', price: '', originalPrice: '',
+          description: '', benefits: '', ingredients: '', dosage: '',
+          size: '', badge: '', icon: '🌿', color: '#1a6e52'
+        });
+      }
+      loadDynamicContent();
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const parseBlogContent = (text) => {
+    if (!text || !text.includes('### ')) {
+      return text;
+    }
+    const sections = [];
+    const parts = text.split(/(?=### )/);
+    parts.forEach(part => {
+      const match = part.match(/^### (.*?)\n([\s\S]*)/);
+      if (match) {
+        sections.push({
+          heading: match[1].trim(),
+          body: match[2].trim()
+        });
+      } else if (part.trim()) {
+        sections.push({
+          heading: 'Content',
+          body: part.trim()
+        });
+      }
+    });
+    return sections;
+  };
+
   const handleAddBlog = async (e) => {
     e.preventDefault();
     setFormStatus('sending');
     setFormError('');
     try {
+      const parsedContent = parseBlogContent(blogForm.content);
       const res = await fetch(`${BACKEND_URL}/api/dynamic-blogs?key=${secret}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(blogForm),
+        body: JSON.stringify({
+          ...blogForm,
+          content: parsedContent
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to add blog.');
@@ -217,6 +303,59 @@ export default function AdminDashboard() {
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message);
+    }
+  };
+
+  const handleUpdateBlog = async (e) => {
+    e.preventDefault();
+    if (!editingBlog) return;
+    setFormStatus('sending');
+    setFormError('');
+    try {
+      const parsedContent = parseBlogContent(blogForm.content);
+      const res = await fetch(`${BACKEND_URL}/api/dynamic-blogs/${editingBlog.id}?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...blogForm,
+          content: parsedContent
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update blog.');
+      
+      setFormStatus('success');
+      setEditingBlog(null);
+      setBlogForm({
+        title: '', category: 'Nutrition', author: 'By Prof. Ramesh',
+        readTime: '5 min read', excerpt: '', content: '', image: ''
+      });
+      loadDynamicContent();
+      setTimeout(() => setFormStatus(''), 3000);
+    } catch (err) {
+      setFormStatus('error');
+      setFormError(err.message);
+    }
+  };
+
+  const handleDeleteBlog = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this blog post?')) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/dynamic-blogs/${id}?key=${secret}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete blog.');
+      if (editingBlog && editingBlog.id === id) {
+        setEditingBlog(null);
+        setBlogForm({
+          title: '', category: 'Nutrition', author: 'By Prof. Ramesh',
+          readTime: '5 min read', excerpt: '', content: '', image: ''
+        });
+      }
+      loadDynamicContent();
+    } catch (err) {
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -242,6 +381,53 @@ export default function AdminDashboard() {
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message);
+    }
+  };
+
+  const handleUpdateTestimonial = async (e) => {
+    e.preventDefault();
+    if (!editingTestimonial) return;
+    setFormStatus('sending');
+    setFormError('');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/dynamic-testimonials/${editingTestimonial.id}?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testimonialForm),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update testimonial.');
+      
+      setFormStatus('success');
+      setEditingTestimonial(null);
+      setTestimonialForm({
+        name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+      });
+      loadDynamicContent();
+      setTimeout(() => setFormStatus(''), 3000);
+    } catch (err) {
+      setFormStatus('error');
+      setFormError(err.message);
+    }
+  };
+
+  const handleDeleteTestimonial = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this testimonial?')) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/dynamic-testimonials/${id}?key=${secret}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to delete testimonial.');
+      if (editingTestimonial && editingTestimonial.id === id) {
+        setEditingTestimonial(null);
+        setTestimonialForm({
+          name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+        });
+      }
+      loadDynamicContent();
+    } catch (err) {
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -667,14 +853,18 @@ export default function AdminDashboard() {
             {/* Tab content */}
             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px', alignItems: 'start' }}>
               
-              {/* LEFT COLUMN: The Creation Form */}
+              {/* LEFT COLUMN: The Creation/Edit Form */}
               <div style={{ background: '#f8fafc', padding: '28px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
                 <h3 style={{ margin: '0 0 20px', fontSize: '15px', fontWeight: 700, color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                  Create New {contentTab === 'products' ? 'Product' : contentTab === 'blogs' ? 'Blog Post' : 'Testimonial'}
+                  {contentTab === 'products' 
+                    ? (editingProduct ? `✏️ Edit Product: ${editingProduct.name}` : '🌿 Create New Product')
+                    : contentTab === 'blogs'
+                    ? (editingBlog ? `✏️ Edit Blog Post: ${editingBlog.title}` : '📝 Create New Blog Post')
+                    : (editingTestimonial ? `✏️ Edit Testimonial: ${editingTestimonial.name}` : '💬 Add New Testimonial')}
                 </h3>
 
                 {contentTab === 'products' && (
-                  <form onSubmit={handleAddProduct}>
+                  <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                       <div>
                         <label style={labelStyle}>Product Name *</label>
@@ -744,14 +934,32 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
-                      {formStatus === 'sending' ? 'Adding Product...' : '🌿 Add Product to Store'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                      <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
+                        {formStatus === 'sending' ? 'Saving...' : (editingProduct ? 'Save Product Changes' : '🌿 Add Product to Store')}
+                      </button>
+                      {editingProduct && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingProduct(null);
+                            setProductForm({
+                              name: '', category: 'Immunity', price: '', originalPrice: '',
+                              description: '', benefits: '', ingredients: '', dosage: '',
+                              size: '', badge: '', icon: '🌿', color: '#1a6e52'
+                            });
+                          }}
+                          style={{ ...submitBtnStyle, background: '#cbd5e1', color: '#1e293b', boxShadow: 'none' }}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
                   </form>
                 )}
 
                 {contentTab === 'blogs' && (
-                  <form onSubmit={handleAddBlog}>
+                  <form onSubmit={editingBlog ? handleUpdateBlog : handleAddBlog}>
                     <div style={{ marginBottom: '16px' }}>
                       <label style={labelStyle}>Blog Title *</label>
                       <input type="text" placeholder="e.g. 10 Early Warning Signs of Cancer" required value={blogForm.title} onChange={e => setBlogForm({...blogForm, title: e.target.value})} style={inputStyle} />
@@ -786,17 +994,34 @@ export default function AdminDashboard() {
 
                     <div style={{ marginBottom: '24px' }}>
                       <label style={labelStyle}>Article Body Content *</label>
-                      <textarea rows={8} placeholder="Write the full content of the blog post..." required value={blogForm.content} onChange={e => setBlogForm({...blogForm, content: e.target.value})} style={inputStyle} />
+                      <textarea rows={8} placeholder="Write the full content of the blog post. Use ### Heading at the start of lines to create leaf-themed sections." required value={blogForm.content} onChange={e => setBlogForm({...blogForm, content: e.target.value})} style={inputStyle} />
                     </div>
 
-                    <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
-                      {formStatus === 'sending' ? 'Publishing Blog...' : '📝 Publish Blog Post'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                      <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
+                        {formStatus === 'sending' ? 'Saving...' : (editingBlog ? 'Save Blog Changes' : '📝 Publish Blog Post')}
+                      </button>
+                      {editingBlog && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingBlog(null);
+                            setBlogForm({
+                              title: '', category: 'Nutrition', author: 'By Prof. Ramesh',
+                              readTime: '5 min read', excerpt: '', content: '', image: ''
+                            });
+                          }}
+                          style={{ ...submitBtnStyle, background: '#cbd5e1', color: '#1e293b', boxShadow: 'none' }}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
                   </form>
                 )}
 
                 {contentTab === 'testimonials' && (
-                  <form onSubmit={handleAddTestimonial}>
+                  <form onSubmit={editingTestimonial ? handleUpdateTestimonial : handleAddTestimonial}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                       <div>
                         <label style={labelStyle}>Patient Name / Initials *</label>
@@ -828,70 +1053,192 @@ export default function AdminDashboard() {
                       <textarea rows={4} placeholder="Write the patient's feedback or healing journey summary..." required value={testimonialForm.text} onChange={e => setTestimonialForm({...testimonialForm, text: e.target.value})} style={inputStyle} />
                     </div>
 
-                    <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
-                      {formStatus === 'sending' ? 'Saving Testimonial...' : '💬 Add Testimonial'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                      <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
+                        {formStatus === 'sending' ? 'Saving...' : (editingTestimonial ? 'Save Testimonial Changes' : '💬 Add Testimonial')}
+                      </button>
+                      {editingTestimonial && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingTestimonial(null);
+                            setTestimonialForm({
+                              name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+                            });
+                          }}
+                          style={{ ...submitBtnStyle, background: '#cbd5e1', color: '#1e293b', boxShadow: 'none' }}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
                   </form>
                 )}
               </div>
 
-              {/* RIGHT COLUMN: Already Dynamically Added Items */}
+              {/* RIGHT COLUMN: Already Added Items List */}
               <div style={{ background: '#fff', padding: '24px', borderRadius: '20px', border: '1px solid #e2e8f0', minHeight: '300px' }}>
                 <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                  Dynamically Added {contentTab === 'products' ? 'Products' : contentTab === 'blogs' ? 'Articles' : 'Testimonials'} ({contentTab === 'products' ? dynProducts.length : contentTab === 'blogs' ? dynBlogs.length : dynTestimonials.length})
+                  {contentTab === 'products' ? 'All Products' : contentTab === 'blogs' ? 'All Blog Articles' : 'All Testimonials'} ({contentTab === 'products' ? dynProducts.length : contentTab === 'blogs' ? dynBlogs.length : dynTestimonials.length})
                 </h3>
 
-                {contentTab === 'products' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {dynProducts.length === 0 ? (
-                      <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No dynamic products added yet.</p>
+                <div style={{ maxHeight: '650px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingRight: '4px' }}>
+                  {contentTab === 'products' && (
+                    dynProducts.length === 0 ? (
+                      <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No products found.</p>
                     ) : (
                       dynProducts.map(p => (
                         <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                          <div>
-                            <strong style={{ fontSize: '13.5px', color: '#0f172a' }}>{p.name}</strong>
+                          <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
+                            <strong style={{ fontSize: '13.5px', color: '#0f172a', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{p.name}</strong>
                             <span style={{ fontSize: '11px', color: '#64748b', display: 'block' }}>Category: {p.category} • Price: ₹{p.price}</span>
                           </div>
-                          <span style={{ fontSize: '18px' }}>{p.icon}</span>
+                          <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                            <button
+                              onClick={() => {
+                                setEditingProduct(p);
+                                setProductForm({
+                                  name: p.name,
+                                  category: p.category,
+                                  price: p.price,
+                                  originalPrice: p.originalPrice || '',
+                                  description: p.description || '',
+                                  benefits: Array.isArray(p.benefits) ? p.benefits.join(', ') : '',
+                                  ingredients: p.ingredients || '',
+                                  dosage: p.dosage || '',
+                                  size: p.size || '',
+                                  badge: p.badge || '',
+                                  icon: p.icon || '🌿',
+                                  color: p.color || '#1a6e52'
+                                });
+                                setFormError('');
+                                setFormStatus('');
+                              }}
+                              style={{
+                                background: '#eff6ff', border: 'none', color: '#2563eb',
+                                padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                fontSize: '12px', fontWeight: 600, fontFamily: 'inherit'
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(p.id)}
+                              style={{
+                                background: '#fef2f2', border: 'none', color: '#dc2626',
+                                padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                fontSize: '12px', fontWeight: 600, fontFamily: 'inherit'
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       ))
-                    )}
-                  </div>
-                )}
+                    )
+                  )}
 
-                {contentTab === 'blogs' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {dynBlogs.length === 0 ? (
-                      <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No dynamic blogs added yet.</p>
+                  {contentTab === 'blogs' && (
+                    dynBlogs.length === 0 ? (
+                      <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No blogs found.</p>
                     ) : (
                       dynBlogs.map(b => (
-                        <div key={b.id} style={{ padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                          <strong style={{ fontSize: '13.5px', color: '#0f172a', display: 'block' }}>{b.title}</strong>
-                          <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginTop: '4px' }}>{b.author} • {b.date} • {b.readTime}</span>
+                        <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                          <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
+                            <strong style={{ fontSize: '13.5px', color: '#0f172a', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{b.title}</strong>
+                            <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginTop: '4px' }}>{b.author} • {b.date}</span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                            <button
+                              onClick={() => {
+                                setEditingBlog(b);
+                                setBlogForm({
+                                  title: b.title,
+                                  category: b.category,
+                                  author: b.author,
+                                  readTime: b.readTime || '5 min read',
+                                  excerpt: b.excerpt || '',
+                                  content: typeof b.content === 'string' ? b.content : (Array.isArray(b.content) ? b.content.map(s => `### ${s.heading}\n${s.body}`).join('\n\n') : ''),
+                                  image: b.image || ''
+                                });
+                                setFormError('');
+                                setFormStatus('');
+                              }}
+                              style={{
+                                background: '#eff6ff', border: 'none', color: '#2563eb',
+                                padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                fontSize: '12px', fontWeight: 600, fontFamily: 'inherit'
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBlog(b.id)}
+                              style={{
+                                background: '#fef2f2', border: 'none', color: '#dc2626',
+                                padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                fontSize: '12px', fontWeight: 600, fontFamily: 'inherit'
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       ))
-                    )}
-                  </div>
-                )}
+                    )
+                  )}
 
-                {contentTab === 'testimonials' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {dynTestimonials.length === 0 ? (
-                      <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No dynamic testimonials added yet.</p>
+                  {contentTab === 'testimonials' && (
+                    dynTestimonials.length === 0 ? (
+                      <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No testimonials found.</p>
                     ) : (
                       dynTestimonials.map((t, idx) => (
-                        <div key={idx} style={{ padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <strong style={{ fontSize: '13.5px', color: '#0f172a' }}>{t.name} ({t.location})</strong>
-                            <span style={{ color: '#fbbf24', fontSize: '12px' }}>{'★'.repeat(t.rating)}</span>
+                        <div key={t.id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                          <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <strong style={{ fontSize: '13.5px', color: '#0f172a' }}>{t.name} ({t.location})</strong>
+                              <span style={{ color: '#fbbf24', fontSize: '12px' }}>{'★'.repeat(t.rating)}</span>
+                            </div>
+                            <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#475569', fontStyle: 'italic', textOverflow: 'ellipsis', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>"{t.text}"</p>
                           </div>
-                          <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#475569', fontStyle: 'italic' }}>"{t.text}"</p>
+                          <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                            <button
+                              onClick={() => {
+                                setEditingTestimonial(t);
+                                setTestimonialForm({
+                                  name: t.name,
+                                  location: t.location || 'India',
+                                  rating: t.rating || 5,
+                                  text: t.text || '',
+                                  date: t.date || 'Recent'
+                                });
+                                setFormError('');
+                                setFormStatus('');
+                              }}
+                              style={{
+                                background: '#eff6ff', border: 'none', color: '#2563eb',
+                                padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                fontSize: '12px', fontWeight: 600, fontFamily: 'inherit'
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTestimonial(t.id)}
+                              style={{
+                                background: '#fef2f2', border: 'none', color: '#dc2626',
+                                padding: '6px 12px', borderRadius: '6px', cursor: 'pointer',
+                                fontSize: '12px', fontWeight: 600, fontFamily: 'inherit'
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       ))
-                    )}
-                  </div>
-                )}
-
+                    )
+                  )}
+                </div>
               </div>
             </div>
           </div>

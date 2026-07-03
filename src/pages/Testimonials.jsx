@@ -106,14 +106,8 @@ export default function Testimonials() {
       try {
         const res = await fetch(`${BACKEND_URL}/api/dynamic-testimonials`);
         const data = await res.json();
-        if (data.success && data.testimonials?.length > 0) {
-          const merged = [...reviewsList];
-          data.testimonials.forEach(dt => {
-            if (!merged.some(r => r.name === dt.name && r.text === dt.text)) {
-              merged.push(dt);
-            }
-          });
-          setAllReviews(merged);
+        if (data.success && data.testimonials) {
+          setAllReviews(data.testimonials);
         }
       } catch (err) {
         console.warn('Failed to fetch dynamic testimonials:', err);

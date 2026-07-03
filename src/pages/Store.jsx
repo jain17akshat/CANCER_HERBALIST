@@ -42,12 +42,8 @@ export default function Store() {
       try {
         const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
         const data = await res.json();
-        if (data.success && data.products?.length > 0) {
-          const merged = [...products];
-          data.products.forEach(dp => {
-            if (!merged.some(p => p.id === dp.id)) merged.push(dp);
-          });
-          setAllProducts(merged);
+        if (data.success && data.products) {
+          setAllProducts(data.products);
         }
       } catch (err) {
         console.warn('Error fetching dynamic products:', err);

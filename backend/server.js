@@ -35,25 +35,33 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
     callback(new Error(`CORS: origin "${origin}" not allowed`));
   },
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
 
 /* ── Rate limiting ──────────────────────────────────────────── */
+const isLocalRequest = (req) => {
+  if (process.env.NODE_ENV === 'development') return true;
+  const ip = req.ip || req.connection?.remoteAddress || '';
+  return ip.includes('127.0.0.1') || ip.includes('::1') || ip.includes('localhost');
+};
+
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 60,                  // max 60 requests per window per IP
+  max: 500,                 // Increased threshold to accommodate admin dashboard polling
   standardHeaders: true,
   legacyHeaders: false,
+  skip: isLocalRequest,
   message: { error: 'Too many requests. Please try again later.' },
 });
 
 // Tighter limit on order creation to prevent Razorpay quota abuse
 const orderLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: isLocalRequest,
   message: { error: 'Too many order requests. Please wait before trying again.' },
 });
 
