@@ -49,17 +49,9 @@ export default function Checkout() {
   const { cart, cartTotal, clearCart } = useCart();
 
   /* derived helpers */
-  const isSuccess     = status === 'success' || rzpStatus === 'success';
   const isProcessing  = status === 'submitting' ||
     rzpStatus === 'creating' || rzpStatus === 'paying' || rzpStatus === 'verifying';
   const displayError  = error || rzpError;
-
-  /* Scroll to top when order succeeds so mobile users see the confirmation */
-  useEffect(() => {
-    if (isSuccess) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [isSuccess]);
 
   /* State for direct Buy Now vs Cart */
   const isDirectBuy = !!state?.product;
@@ -71,10 +63,11 @@ export default function Checkout() {
 
   const total = isDirectBuy ? (state.product.price * directQty) : cartTotal;
 
-  /* redirect if no product context — but NOT after a successful order (cart was just cleared) */
+  /* Redirect if no product/cart context — only on initial mount */
   useEffect(() => {
-    if (!state?.product && cart.length === 0 && !isSuccess) navigate('/store', { replace: true });
-  }, [state, navigate, cart.length, isSuccess]);
+    if (!state?.product && cart.length === 0) navigate('/store', { replace: true });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally run only once on mount
 
   const [paymentMethod, setPaymentMethod] = useState(state?.paymentMethod || 'cod');
 
@@ -88,7 +81,6 @@ export default function Checkout() {
     pincode: '',
   });
   const [formError, setFormError] = useState('');
-  const [orderId, setOrderId] = useState('');
 
   /* ── field change ────────────────────────────────────────────────── */
   const handleChange = (e) =>
@@ -118,9 +110,36 @@ export default function Checkout() {
     const apiProductId = checkoutItems.map(i => i.product.id).join(',');
     const apiQuantity = checkoutItems.reduce((acc, i) => acc + i.qty, 0);
 
-    const handleSuccess = (data) => {
-      setOrderId(data?.orderId || '');
+    // Build WhatsApp text upfront (while form data is still available)
+    const buildWaText = (oid) => {
+      const itemsText = checkoutItems.map(i => `- ${i.product.name} (x${i.qty})`).join('\n');
+      return encodeURIComponent(
+        `🌿 *New Order — Cancer Herbalist*\n\n` +
+        `Items:\n${itemsText}\nTotal Amount: ₹${total.toLocaleString('en-IN')}\n` +
+        `Payment Method: ${paymentMethod === 'online' ? 'Paid Online via UPI' : 'COD / Bank Transfer'}\n` +
+        (oid ? `Order ID: ${oid}\n` : '') + `\n` +
+        `Name: ${form.customerName}\nPhone: ${form.phone}\n` +
+        `Email: ${form.email}\n` +
+        `Address: ${form.address}, ${form.city}, ${form.state} - ${form.pincode}` +
+        (paymentMethod === 'online' ? `\n\n(I am attaching my payment screenshot below)` : '')
+      );
+    };
+
+    // Navigate to success page — completely decoupled from cart/hook state
+    const goToSuccess = (oid) => {
       if (!isDirectBuy) clearCart();
+      navigate('/order-success', {
+        replace: true,
+        state: {
+          orderId:       oid,
+          paymentMethod,
+          total,
+          email:         form.email.trim(),
+          phone:         form.phone.trim(),
+          customerName:  form.customerName.trim(),
+          waText:        buildWaText(oid),
+        },
+      });
     };
 
     if (paymentMethod === 'online') {
@@ -137,9 +156,9 @@ export default function Checkout() {
         state:        form.state.trim(),
         pincode:      form.pincode.trim(),
         quantity:     apiQuantity,
-        unitPrice:    total, // use total for mixed carts
+        unitPrice:    total,
         orderAmount:  total,
-        onSuccess:    handleSuccess,
+        onSuccess:    (data) => goToSuccess(data?.orderId || ''),
       });
     } else {
       /* ── COD flow ── */
@@ -159,7 +178,7 @@ export default function Checkout() {
           productId:      apiProductId,
           paymentMethod:  'COD / Bank Transfer',
         });
-        handleSuccess(result);
+        goToSuccess(result?.orderId || '');
       } catch (_) {
         // error handled by useOrderSubmit
       }
