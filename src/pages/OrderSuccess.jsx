@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
@@ -9,6 +9,13 @@ const PRIMARY = '#1a6e52';
 export default function OrderSuccess() {
   const { state } = useLocation();
   const navigate  = useNavigate();
+
+  // If someone lands here directly with no state, send them to store
+  useEffect(() => {
+    if (!state?.orderId) {
+      navigate('/store', { replace: true });
+    }
+  }, [state, navigate]);
 
   // state is passed from Checkout via navigate('/order-success', { state: { ... } })
   const {
@@ -21,11 +28,8 @@ export default function OrderSuccess() {
     waText        = '',
   } = state || {};
 
-  // If someone lands here directly with no state, send them to store
-  if (!state?.orderId) {
-    navigate('/store', { replace: true });
-    return null;
-  }
+  // Don't render anything while redirecting
+  if (!state?.orderId) return null;
 
   const upiLink = `upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`;
   const qrUrl   = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiLink)}`;

@@ -127,6 +127,7 @@ export default function Checkout() {
 
     // Navigate to success page — completely decoupled from cart/hook state
     const goToSuccess = (oid) => {
+      console.log('[Checkout] goToSuccess called with orderId:', oid);
       if (!isDirectBuy) clearCart();
       navigate('/order-success', {
         replace: true,
@@ -140,6 +141,7 @@ export default function Checkout() {
           waText:        buildWaText(oid),
         },
       });
+      console.log('[Checkout] navigate to /order-success fired');
     };
 
     if (paymentMethod === 'online') {
@@ -179,8 +181,9 @@ export default function Checkout() {
           paymentMethod:  'COD / Bank Transfer',
         });
         goToSuccess(result?.orderId || '');
-      } catch (_) {
+      } catch (err) {
         // error handled by useOrderSubmit
+        console.error('[Checkout] submitOrder failed:', err);
       }
     }
   };
@@ -242,8 +245,7 @@ export default function Checkout() {
             </button>
 
             {/* ── FORM ── */}
-            {!isSuccess && (
-              <form onSubmit={handleSubmit} className="checkout-form"
+            <form onSubmit={handleSubmit} className="checkout-form"
                 style={{
                   background: '#fff', borderRadius: '20px',
                   boxShadow: '0 4px 24px rgba(0,0,0,0.07)',
@@ -435,7 +437,6 @@ export default function Checkout() {
 
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               </form>
-            )}
           </div>
 
           {/* ── RIGHT: Order Summary ── */}
