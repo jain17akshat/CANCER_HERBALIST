@@ -56,7 +56,7 @@ export default function AdminDashboard() {
     readTime: '5 min read', excerpt: '', content: '', image: ''
   });
   const [testimonialForm, setTestimonialForm] = useState({
-    name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+    name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
   });
 
   const [formStatus, setFormStatus] = useState(''); // 'sending' | 'success' | 'error'
@@ -374,7 +374,7 @@ export default function AdminDashboard() {
       
       setFormStatus('success');
       setTestimonialForm({
-        name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+        name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
       });
       loadDynamicContent();
       setTimeout(() => setFormStatus(''), 3000);
@@ -401,7 +401,7 @@ export default function AdminDashboard() {
       setFormStatus('success');
       setEditingTestimonial(null);
       setTestimonialForm({
-        name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+        name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
       });
       loadDynamicContent();
       setTimeout(() => setFormStatus(''), 3000);
@@ -422,7 +422,7 @@ export default function AdminDashboard() {
       if (editingTestimonial && editingTestimonial.id === id) {
         setEditingTestimonial(null);
         setTestimonialForm({
-          name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+          name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
         });
       }
       loadDynamicContent();
@@ -509,12 +509,174 @@ export default function AdminDashboard() {
   ═══════════════════════════════════════════════════════════════ */
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: 'Poppins, sans-serif' }}>
+      <style>{`
+        /* Responsive styles for Admin Dashboard */
+        .admin-dashboard-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 32px 20px;
+        }
+        .admin-main-grid {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 24px;
+          align-items: start;
+        }
+        .admin-content-grid {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr;
+          gap: 32px;
+          align-items: start;
+        }
+        .form-grid-2col {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin-bottom: 16px;
+        }
+        .slot-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+          gap: 8px;
+        }
+        .admin-item-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px;
+          background: #f8fafc;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+        }
+        .admin-item-row-actions {
+          display: flex;
+          gap: 6px;
+          flex-shrink: 0;
+        }
+        .admin-header-flex {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 12px;
+          padding: 24px 32px;
+        }
+        .admin-header-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .admin-tab-nav {
+          background: #fff;
+          border-bottom: 1px solid #e2e8f0;
+          padding: 0 32px;
+          display: flex;
+          gap: 24px;
+          flex-wrap: wrap;
+        }
+        .appointment-item {
+          padding: 18px 22px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .appointment-time-badge {
+          border-radius: 10px;
+          padding: 10px 14px;
+          text-align: center;
+          flex-shrink: 0;
+          min-width: 72px;
+        }
+        .appointment-action-btn {
+          color: #fff;
+          border-radius: 10px;
+          padding: 10px 14px;
+          text-decoration: none;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 700;
+        }
+        @media (max-width: 991px) {
+          .admin-main-grid {
+            grid-template-columns: 1fr;
+          }
+          .admin-content-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+        }
+        @media (max-width: 600px) {
+          .admin-dashboard-container {
+            padding: 16px 12px;
+          }
+          .admin-header-flex {
+            padding: 16px !important;
+            flex-direction: column;
+            align-items: stretch !important;
+            text-align: center;
+            gap: 16px !important;
+          }
+          .admin-header-flex > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .admin-header-actions {
+            justify-content: center;
+          }
+          .admin-tab-nav {
+            padding: 0 16px !important;
+            justify-content: center;
+          }
+          .appointment-item {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 12px !important;
+          }
+          .appointment-time-badge {
+            align-self: flex-start;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          .appointment-action-btn {
+            width: 100%;
+            justify-content: center;
+          }
+          .form-grid-2col {
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+          .admin-card {
+            padding: 16px !important;
+            border-radius: 16px !important;
+          }
+          .admin-form-container {
+            padding: 16px !important;
+            border-radius: 16px !important;
+          }
+          .admin-list-container {
+            padding: 16px !important;
+            border-radius: 16px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .admin-item-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+          }
+          .admin-item-row-actions {
+            justify-content: flex-end;
+          }
+        }
+      `}</style>
 
       {/* Header */}
-      <div style={{
+      <div className="admin-header-flex" style={{
         background: `linear-gradient(135deg, ${PRIMARY} 0%, #0f3460 100%)`,
-        padding: '24px 32px', display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <span style={{ fontSize: '32px' }}>🛡️</span>
@@ -525,7 +687,7 @@ export default function AdminDashboard() {
             <p style={{ margin: 0, color: '#a7f3d0', fontSize: '12px' }}>{today}</p>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div className="admin-header-actions">
           <button onClick={() => { fetchAppts(secret, filterDate); loadDynamicContent(); }} style={{
             display: 'flex', alignItems: 'center', gap: '8px',
             background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
@@ -546,10 +708,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Sub-navigation Tabs */}
-      <div style={{
-        background: '#fff', borderBottom: '1px solid #e2e8f0',
-        padding: '0 32px', display: 'flex', gap: '24px'
-      }}>
+      <div className="admin-tab-nav">
         {[
           { id: 'appointments', label: '📅 Bookings & Slots' },
           { id: 'content', label: '🛠️ Manage Content' },
@@ -570,7 +729,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 20px' }}>
+      <div className="admin-dashboard-container">
         {activeDashboardTab === 'appointments' ? (
           <>
             {/* Stats row */}
@@ -610,7 +769,7 @@ export default function AdminDashboard() {
           {fetchError && <span style={{ fontSize: '12px', color: '#ef4444' }}>⚠ {fetchError}</span>}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px', alignItems: 'start' }}>
+        <div className="admin-main-grid">
 
           {/* Appointment list */}
           <div>
@@ -629,21 +788,19 @@ export default function AdminDashboard() {
                   <div
                     key={a.apptId}
                     onClick={() => { setSelected(a); setSlotViewDate(a.appointmentDay); }}
+                    className="appointment-item"
                     style={{
-                      background: '#fff', borderRadius: '14px', padding: '18px 22px',
+                      background: '#fff', borderRadius: '14px',
                       boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
                       border: `1.5px solid ${selectedAppt?.apptId === a.apptId ? PRIMARY : '#e2e8f0'}`,
                       cursor: 'pointer', transition: 'all 0.2s',
-                      display: 'flex', alignItems: 'center', gap: '16px',
                     }}
                     onMouseEnter={e => e.currentTarget.style.borderColor = PRIMARY}
                     onMouseLeave={e => e.currentTarget.style.borderColor = selectedAppt?.apptId === a.apptId ? PRIMARY : '#e2e8f0'}
                   >
                     {/* Time badge */}
-                    <div style={{
+                    <div className="appointment-time-badge" style={{
                       background: `${PRIMARY}12`, border: `1.5px solid ${PRIMARY}30`,
-                      borderRadius: '10px', padding: '10px 14px', textAlign: 'center',
-                      flexShrink: 0, minWidth: '72px',
                     }}>
                       <FaClock style={{ color: PRIMARY, fontSize: '12px' }} />
                       <p style={{ margin: '4px 0 0', fontSize: '12px', fontWeight: 700, color: PRIMARY, whiteSpace: 'nowrap' }}>
@@ -676,11 +833,8 @@ export default function AdminDashboard() {
                       href={`https://wa.me/91${String(a.phone).replace(/\D/g,'')}`}
                       target="_blank" rel="noreferrer"
                       onClick={e => e.stopPropagation()}
-                      style={{
-                        background: '#25d366', color: '#fff', borderRadius: '10px',
-                        padding: '10px 14px', textDecoration: 'none', flexShrink: 0,
-                        display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700,
-                      }}
+                      className="appointment-action-btn"
+                      style={{ background: '#25d366' }}
                     >
                       <FaWhatsapp /> Chat
                     </a>
@@ -704,7 +858,7 @@ export default function AdminDashboard() {
               <p style={{ margin: '0 0 14px', fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>
                 {slotGridDate === today ? "Today" : slotGridDate}
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div className="slot-grid">
                 {TIME_SLOTS.map(slot => {
                   // Slot grid always shows today's bookings
                   const booked = slotGridBooked.has(slot);
@@ -803,7 +957,7 @@ export default function AdminDashboard() {
         </div>
           </>
         ) : (
-          <div style={{ background: '#fff', borderRadius: '24px', padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+          <div className="admin-card" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
               <div>
                 <h2 style={{ margin: 0, fontFamily: 'Playfair Display, serif', color: '#0f172a', fontSize: '1.6rem' }}>
@@ -851,10 +1005,10 @@ export default function AdminDashboard() {
             )}
 
             {/* Tab content */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px', alignItems: 'start' }}>
+            <div className="admin-content-grid">
               
               {/* LEFT COLUMN: The Creation/Edit Form */}
-              <div style={{ background: '#f8fafc', padding: '28px', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
+              <div className="admin-form-container">
                 <h3 style={{ margin: '0 0 20px', fontSize: '15px', fontWeight: 700, color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
                   {contentTab === 'products' 
                     ? (editingProduct ? `✏️ Edit Product: ${editingProduct.name}` : '🌿 Create New Product')
@@ -865,7 +1019,7 @@ export default function AdminDashboard() {
 
                 {contentTab === 'products' && (
                   <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Product Name *</label>
                         <input type="text" placeholder="e.g. Cap CH95 (30Cap)" required value={productForm.name} onChange={e => setProductForm({...productForm, name: e.target.value})} style={inputStyle} />
@@ -880,7 +1034,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Price (₹) *</label>
                         <input type="number" placeholder="599" required value={productForm.price} onChange={e => setProductForm({...productForm, price: e.target.value})} style={inputStyle} />
@@ -891,7 +1045,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Badge (e.g. Best Seller)</label>
                         <input type="text" placeholder="Best Seller" value={productForm.badge} onChange={e => setProductForm({...productForm, badge: e.target.value})} style={inputStyle} />
@@ -902,7 +1056,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Icon Emoji</label>
                         <input type="text" placeholder="🌿" value={productForm.icon} onChange={e => setProductForm({...productForm, icon: e.target.value})} style={inputStyle} />
@@ -923,7 +1077,7 @@ export default function AdminDashboard() {
                       <input type="text" placeholder="Supports immunity, Reduces inflammation, Cellular repair" value={productForm.benefits} onChange={e => setProductForm({...productForm, benefits: e.target.value})} style={inputStyle} />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                    <div className="form-grid-2col" style={{ marginBottom: '24px' }}>
                       <div>
                         <label style={labelStyle}>Key Ingredients</label>
                         <input type="text" placeholder="Curcumin 95%, Piperine" value={productForm.ingredients} onChange={e => setProductForm({...productForm, ingredients: e.target.value})} style={inputStyle} />
@@ -965,7 +1119,7 @@ export default function AdminDashboard() {
                       <input type="text" placeholder="e.g. 10 Early Warning Signs of Cancer" required value={blogForm.title} onChange={e => setBlogForm({...blogForm, title: e.target.value})} style={inputStyle} />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Category *</label>
                         <input type="text" placeholder="Nutrition" required value={blogForm.category} onChange={e => setBlogForm({...blogForm, category: e.target.value})} style={inputStyle} />
@@ -976,7 +1130,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Read Time (e.g. 5 min read)</label>
                         <input type="text" placeholder="5 min read" value={blogForm.readTime} onChange={e => setBlogForm({...blogForm, readTime: e.target.value})} style={inputStyle} />
@@ -1022,7 +1176,7 @@ export default function AdminDashboard() {
 
                 {contentTab === 'testimonials' && (
                   <form onSubmit={editingTestimonial ? handleUpdateTestimonial : handleAddTestimonial}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Patient Name / Initials *</label>
                         <input type="text" placeholder="e.g. Amit K." required value={testimonialForm.name} onChange={e => setTestimonialForm({...testimonialForm, name: e.target.value})} style={inputStyle} />
@@ -1033,7 +1187,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="form-grid-2col">
                       <div>
                         <label style={labelStyle}>Rating (1-5 Stars)</label>
                         <select value={testimonialForm.rating} onChange={e => setTestimonialForm({...testimonialForm, rating: Number(e.target.value)})} style={inputStyle}>
@@ -1045,6 +1199,17 @@ export default function AdminDashboard() {
                       <div>
                         <label style={labelStyle}>Date Indicator</label>
                         <input type="text" placeholder="e.g. Recent, 1 month ago" value={testimonialForm.date} onChange={e => setTestimonialForm({...testimonialForm, date: e.target.value})} style={inputStyle} />
+                      </div>
+                    </div>
+
+                    <div className="form-grid-2col">
+                      <div>
+                        <label style={labelStyle}>Thumbnail Image URL</label>
+                        <input type="url" placeholder="https://images.unsplash.com/..." value={testimonialForm.thumbnailUrl} onChange={e => setTestimonialForm({...testimonialForm, thumbnailUrl: e.target.value})} style={inputStyle} />
+                      </div>
+                      <div>
+                        <label style={labelStyle}>Video Link (e.g. YouTube)</label>
+                        <input type="url" placeholder="https://youtube.com/watch?v=..." value={testimonialForm.videoUrl} onChange={e => setTestimonialForm({...testimonialForm, videoUrl: e.target.value})} style={inputStyle} />
                       </div>
                     </div>
 
@@ -1063,7 +1228,7 @@ export default function AdminDashboard() {
                           onClick={() => {
                             setEditingTestimonial(null);
                             setTestimonialForm({
-                              name: '', location: 'India', rating: 5, text: '', date: 'Recent'
+                              name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
                             });
                           }}
                           style={{ ...submitBtnStyle, background: '#cbd5e1', color: '#1e293b', boxShadow: 'none' }}
@@ -1077,7 +1242,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* RIGHT COLUMN: Already Added Items List */}
-              <div style={{ background: '#fff', padding: '24px', borderRadius: '20px', border: '1px solid #e2e8f0', minHeight: '300px' }}>
+              <div className="admin-list-container">
                 <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
                   {contentTab === 'products' ? 'All Products' : contentTab === 'blogs' ? 'All Blog Articles' : 'All Testimonials'} ({contentTab === 'products' ? dynProducts.length : contentTab === 'blogs' ? dynBlogs.length : dynTestimonials.length})
                 </h3>
@@ -1088,12 +1253,12 @@ export default function AdminDashboard() {
                       <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No products found.</p>
                     ) : (
                       dynProducts.map(p => (
-                        <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                        <div key={p.id} className="admin-item-row">
                           <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
                             <strong style={{ fontSize: '13.5px', color: '#0f172a', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{p.name}</strong>
                             <span style={{ fontSize: '11px', color: '#64748b', display: 'block' }}>Category: {p.category} • Price: ₹{p.price}</span>
                           </div>
-                          <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                          <div className="admin-item-row-actions">
                             <button
                               onClick={() => {
                                 setEditingProduct(p);
@@ -1143,12 +1308,12 @@ export default function AdminDashboard() {
                       <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No blogs found.</p>
                     ) : (
                       dynBlogs.map(b => (
-                        <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                        <div key={b.id} className="admin-item-row">
                           <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
                             <strong style={{ fontSize: '13.5px', color: '#0f172a', display: 'block', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{b.title}</strong>
                             <span style={{ fontSize: '11px', color: '#64748b', display: 'block', marginTop: '4px' }}>{b.author} • {b.date}</span>
                           </div>
-                          <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                          <div className="admin-item-row-actions">
                             <button
                               onClick={() => {
                                 setEditingBlog(b);
@@ -1193,15 +1358,21 @@ export default function AdminDashboard() {
                       <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No testimonials found.</p>
                     ) : (
                       dynTestimonials.map((t, idx) => (
-                        <div key={t.id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                        <div key={t.id || idx} className="admin-item-row" style={{ alignItems: 'flex-start' }}>
                           <div style={{ flex: 1, minWidth: 0, marginRight: '8px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <strong style={{ fontSize: '13.5px', color: '#0f172a' }}>{t.name} ({t.location})</strong>
                               <span style={{ color: '#fbbf24', fontSize: '12px' }}>{'★'.repeat(t.rating)}</span>
                             </div>
                             <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#475569', fontStyle: 'italic', textOverflow: 'ellipsis', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>"{t.text}"</p>
+                            {(t.videoUrl || t.thumbnailUrl) && (
+                              <div style={{ display: 'flex', gap: '8px', marginTop: '4px', fontSize: '11px', color: '#047857', fontWeight: 600 }}>
+                                {t.thumbnailUrl && <span>🖼️ Thumbnail</span>}
+                                {t.videoUrl && <span>🎥 Video</span>}
+                              </div>
+                            )}
                           </div>
-                          <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                          <div className="admin-item-row-actions">
                             <button
                               onClick={() => {
                                 setEditingTestimonial(t);
@@ -1210,7 +1381,9 @@ export default function AdminDashboard() {
                                   location: t.location || 'India',
                                   rating: t.rating || 5,
                                   text: t.text || '',
-                                  date: t.date || 'Recent'
+                                  date: t.date || 'Recent',
+                                  videoUrl: t.videoUrl || '',
+                                  thumbnailUrl: t.thumbnailUrl || ''
                                 });
                                 setFormError('');
                                 setFormStatus('');

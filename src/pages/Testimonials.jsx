@@ -6,6 +6,26 @@ import { FaPlay, FaTimes, FaVideo, FaCheckCircle, FaStar, FaQuoteLeft, FaBookmar
 const ACCENT = '#38bed5';
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 
+function getEmbedUrl(url) {
+  if (!url) return '';
+  if (url.includes('/embed/')) return url;
+  
+  if (url.includes('youtube.com/watch')) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      return `https://www.youtube.com/embed/${match[2]}`;
+    }
+  }
+  if (url.includes('youtu.be/')) {
+    const parts = url.split('youtu.be/');
+    if (parts[1]) {
+      const id = parts[1].split(/[?#]/)[0];
+      return `https://www.youtube.com/embed/${id}`;
+    }
+  }
+  return url;
+}
 
 const videos = [
   {
@@ -210,7 +230,7 @@ export default function Testimonials() {
                   <FaTimes />
                 </button>
                 <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
-                  <iframe src={activeVideo.videoUrl} title={activeVideo.name} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }} />
+                  <iframe src={getEmbedUrl(activeVideo.videoUrl)} title={activeVideo.name} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }} />
                 </div>
                 <div style={{ padding: '24px' }}>
                   <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '6px' }}>{activeVideo.name} — {activeVideo.condition}</div>
@@ -251,26 +271,89 @@ export default function Testimonials() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
             {allReviews.map((review, i) => (
               <motion.div
                 key={review.name + i}
                 data-aos="fade-up"
                 data-aos-delay={i * 80}
                 whileHover={{ y: -4 }}
-                style={{ background: 'white', borderRadius: '16px', padding: 'var(--card-padding-sm, 24px)', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--gray-2)', position: 'relative' }}
+                style={{ 
+                  background: 'white', 
+                  borderRadius: '16px', 
+                  padding: 'var(--card-padding-sm, 24px)', 
+                  boxShadow: 'var(--shadow-sm)', 
+                  border: '1px solid var(--gray-2)', 
+                  position: 'relative',
+                  cursor: review.videoUrl ? 'pointer' : 'default',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  overflow: 'hidden'
+                }}
+                onClick={() => {
+                  if (review.videoUrl) {
+                    setActiveVideo({
+                      name: review.name,
+                      videoUrl: review.videoUrl,
+                      condition: review.location,
+                      status: 'Verified Patient Story'
+                    });
+                  }
+                }}
               >
-                <FaQuoteLeft style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '24px', color: 'var(--primary)', opacity: 0.1 }} />
-                <div style={{ display: 'flex', gap: '2px', color: '#FBBF24', marginBottom: '14px' }}>
-                  {[...Array(review.rating)].map((_, idx) => <FaStar key={idx} />)}
+                <div>
+                  {review.thumbnailUrl && (
+                    <div style={{ height: '160px', margin: '-24px -24px 16px -24px', position: 'relative', overflow: 'hidden', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
+                      <img src={review.thumbnailUrl} alt={review.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      {review.videoUrl && (
+                        <div className="video-card-overlay" style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}>
+                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-primary)', fontSize: '14px', color: 'white', paddingLeft: '3px' }}>
+                            <FaPlay />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div style={{ position: 'relative' }}>
+                    <FaQuoteLeft style={{ position: 'absolute', top: '0', right: '0', fontSize: '24px', color: 'var(--primary)', opacity: 0.1 }} />
+                    <div style={{ display: 'flex', gap: '2px', color: '#FBBF24', marginBottom: '14px' }}>
+                      {[...Array(review.rating)].map((_, idx) => <FaStar key={idx} />)}
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', marginBottom: '20px' }}>"{review.text}"</p>
                 </div>
-                <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.6', marginBottom: '20px' }}>"{review.text}"</p>
                 <div>
                   <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--dark-2)' }}>{review.name}</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--gray-3)', marginTop: '2px' }}>
                     <span>{review.location}</span>
                     <span>{review.date}</span>
                   </div>
+
+                  {review.videoUrl && !review.thumbnailUrl && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setActiveVideo({ name: review.name, videoUrl: review.videoUrl, condition: review.location, status: 'Verified Patient Story' }); }}
+                      style={{
+                        width: '100%',
+                        background: 'var(--gradient-primary)',
+                        color: '#fff',
+                        border: 'none',
+                        padding: '8px 16px',
+                        borderRadius: '999px',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        fontSize: '12px',
+                        marginTop: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      <FaPlay style={{ fontSize: '9px' }} /> Watch Journey Video
+                    </button>
+                  )}
                 </div>
               </motion.div>
             ))}

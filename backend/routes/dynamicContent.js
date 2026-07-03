@@ -868,6 +868,8 @@ router.post('/dynamic-testimonials', checkAdmin, (req, res) => {
     rating: Number(newTestimonial.rating || 5),
     text: newTestimonial.text,
     date: newTestimonial.date || 'Recent',
+    videoUrl: newTestimonial.videoUrl || '',
+    thumbnailUrl: newTestimonial.thumbnailUrl || '',
   };
 
   list.push(testimonial);
@@ -898,6 +900,8 @@ router.put('/dynamic-testimonials/:id', checkAdmin, (req, res) => {
     rating: Number(updatedTestimonial.rating || list[idx].rating || 5),
     text: updatedTestimonial.text,
     date: updatedTestimonial.date || list[idx].date,
+    videoUrl: updatedTestimonial.videoUrl !== undefined ? updatedTestimonial.videoUrl : list[idx].videoUrl,
+    thumbnailUrl: updatedTestimonial.thumbnailUrl !== undefined ? updatedTestimonial.thumbnailUrl : list[idx].thumbnailUrl,
   };
 
   if (writeData(TESTIMONIALS_FILE, list)) {
