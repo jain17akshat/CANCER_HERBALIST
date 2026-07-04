@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaCalendarAlt, FaClock, FaUser, FaPhone, FaEnvelope, FaLeaf, FaLock, FaSync, FaWhatsapp } from 'react-icons/fa';
+import {
+  FaCalendarAlt, FaClock, FaUser, FaPhone, FaEnvelope, FaLeaf, FaLock,
+  FaSync, FaWhatsapp, FaInfoCircle, FaArrowUp, FaArrowDown, FaTrash, FaPlus
+} from 'react-icons/fa';
+import { useContent } from '../context/ContentContext';
 
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 const PRIMARY = '#1a6e52';
@@ -34,11 +38,21 @@ export default function AdminDashboard() {
   const [slotViewDate, setSlotViewDate] = useState(null); // date string for the slot grid
 
   // ── Website Content Management State ──
+  const { content: globalContent, updateContent: saveGlobalContent, refreshContent } = useContent();
+  const [generalForm, setGeneralForm] = useState(null);
+  const [generalSubTab, setGeneralSubTab] = useState('contact'); // 'contact' | 'stats' | 'whyChooseUs' | 'healingPillars' | 'heroSlides'
+  const [activeHeroSlideIdx, setActiveHeroSlideIdx] = useState(0);
   const [activeDashboardTab, setActiveDashboardTab] = useState('appointments'); // 'appointments' | 'content'
-  const [contentTab, setContentTab] = useState('products'); // 'products' | 'blogs' | 'testimonials'
+  const [contentTab, setContentTab] = useState('products'); // 'products' | 'blogs' | 'testimonials' | 'general'
   const [dynProducts, setDynProducts] = useState([]);
   const [dynBlogs, setDynBlogs] = useState([]);
   const [dynTestimonials, setDynTestimonials] = useState([]);
+
+  useEffect(() => {
+    if (globalContent) {
+      setGeneralForm(JSON.parse(JSON.stringify(globalContent)));
+    }
+  }, [globalContent]);
 
   // Editing states
   const [editingProduct, setEditingProduct] = useState(null);
@@ -196,6 +210,26 @@ export default function AdminDashboard() {
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message);
+    }
+  };
+
+  const handleUpdateGeneralContent = async (e) => {
+    e.preventDefault();
+    setFormStatus('sending');
+    setFormError('');
+    try {
+      const res = await saveGlobalContent(generalForm, secret);
+      if (res.success) {
+        setFormStatus('success');
+        refreshContent();
+        setTimeout(() => setFormStatus(''), 4000);
+      } else {
+        setFormStatus('error');
+        setFormError(res.error || 'Failed to update website copy.');
+      }
+    } catch (err) {
+      setFormStatus('error');
+      setFormError(err.message || 'An error occurred while saving.');
     }
   };
 
@@ -429,6 +463,182 @@ export default function AdminDashboard() {
     } catch (err) {
       alert(`Error: ${err.message}`);
     }
+  };
+
+  const renderListEditor = (title, path, fields, newItemTemplate) => {
+    const parts = path.split('.');
+    let arr = generalForm;
+    for (const part of parts) {
+      arr = arr ? arr[part] : undefined;
+    }
+    if (!Array.isArray(arr)) arr = [];
+
+    const handleFieldChange = (idx, key, val) => {
+      const updated = { ...generalForm };
+      let cur = updated;
+      for (let i = 0; i < parts.length - 1; i++) {
+        cur = cur[parts[i]];
+      }
+      cur[parts[parts.length - 1]][idx][key] = val;
+      setGeneralForm(updated);
+    };
+
+    const handleAdd = () => {
+      const updated = { ...generalForm };
+      let cur = updated;
+      for (let i = 0; i < parts.length - 1; i++) {
+        cur = cur[parts[i]];
+      }
+      if (!cur[parts[parts.length - 1]]) cur[parts[parts.length - 1]] = [];
+      cur[parts[parts.length - 1]].push({ ...newItemTemplate });
+      setGeneralForm(updated);
+    };
+
+    const handleDelete = (idx) => {
+      if (!window.confirm('Are you sure you want to delete this item?')) return;
+      const updated = { ...generalForm };
+      let cur = updated;
+      for (let i = 0; i < parts.length - 1; i++) {
+        cur = cur[parts[i]];
+      }
+      cur[parts[parts.length - 1]].splice(idx, 1);
+      setGeneralForm(updated);
+    };
+
+    const handleMove = (idx, dir) => {
+      const updated = { ...generalForm };
+      let cur = updated;
+      for (let i = 0; i < parts.length - 1; i++) {
+        cur = cur[parts[i]];
+      }
+      const targetArr = cur[parts[parts.length - 1]];
+      const nextIdx = idx + dir;
+      if (nextIdx < 0 || nextIdx >= targetArr.length) return;
+      const temp = targetArr[idx];
+      targetArr[idx] = targetArr[nextIdx];
+      targetArr[nextIdx] = temp;
+      setGeneralForm(updated);
+    };
+
+    return (
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+          <h4 style={{ margin: 0, fontSize: '13.5px', color: PRIMARY, fontWeight: 700 }}>{title}</h4>
+          <button
+            type="button"
+            onClick={handleAdd}
+            style={{
+              background: PRIMARY, color: '#fff', border: 'none', borderRadius: '6px',
+              padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: '4px'
+            }}
+          >
+            <FaPlus /> Add Item
+          </button>
+        </div>
+
+        {arr.length === 0 ? (
+          <p style={{ color: '#94a3b8', fontSize: '12.5px', margin: '10px 0', textAlign: 'center' }}>No items yet. Click "Add Item" above.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {arr.map((item, idx) => (
+              <div key={idx} style={{ background: '#fff', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '16px', position: 'relative' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px dashed #e2e8f0', paddingBottom: '8px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>Item #{idx + 1}</span>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => handleMove(idx, -1)}
+                      style={{ background: '#f1f5f9', border: 'none', borderRadius: '4px', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', cursor: idx === 0 ? 'not-allowed' : 'pointer', fontSize: '11px' }}
+                    >
+                      <FaArrowUp />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === arr.length - 1}
+                      onClick={() => handleMove(idx, 1)}
+                      style={{ background: '#f1f5f9', border: 'none', borderRadius: '4px', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', cursor: idx === arr.length - 1 ? 'not-allowed' : 'pointer', fontSize: '11px' }}
+                    >
+                      <FaArrowDown />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(idx)}
+                      style={{ background: '#fee2e2', border: 'none', borderRadius: '4px', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', cursor: 'pointer', fontSize: '11px' }}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {fields.map(f => (
+                    <div key={f.key}>
+                      <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', fontWeight: 600, color: '#475569' }}>{f.label}</label>
+                      {f.type === 'textarea' ? (
+                        <textarea
+                          rows={2}
+                          value={item[f.key] || ''}
+                          onChange={e => handleFieldChange(idx, f.key, e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '13.5px', fontFamily: 'inherit', color: '#1e293b', outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      ) : f.type === 'color' ? (
+                        <input
+                          type="color"
+                          value={item[f.key] || '#1a6e52'}
+                          onChange={e => handleFieldChange(idx, f.key, e.target.value)}
+                          style={{ width: '100%', padding: '4px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '13.5px', fontFamily: 'inherit', color: '#1e293b', outline: 'none', boxSizing: 'border-box', height: '40px' }}
+                        />
+                      ) : f.type === 'image' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  handleFieldChange(idx, f.key, reader.result);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            style={{ fontSize: '12px' }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Or paste image URL"
+                            value={item[f.key] || ''}
+                            onChange={e => handleFieldChange(idx, f.key, e.target.value)}
+                            style={{ width: '100%', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '13.5px', fontFamily: 'inherit', color: '#1e293b', outline: 'none', boxSizing: 'border-box' }}
+                          />
+                          {item[f.key] && (
+                            <img
+                              src={item[f.key]}
+                              alt="Preview"
+                              style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #cbd5e1', marginTop: '4px' }}
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <input
+                          type={f.type || 'text'}
+                          value={item[f.key] || ''}
+                          onChange={e => handleFieldChange(idx, f.key, e.target.value)}
+                          style={{ width: '100%', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '13.5px', fontFamily: 'inherit', color: '#1e293b', outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   /* ── Slot grid helpers ──────────────────────────────── */
@@ -975,6 +1185,7 @@ export default function AdminDashboard() {
                 { id: 'products', label: '🌿 Products', count: dynProducts.length },
                 { id: 'blogs', label: '📝 Blog Articles', count: dynBlogs.length },
                 { id: 'testimonials', label: '💬 Testimonials', count: dynTestimonials.length },
+                { id: 'general', label: '⚙️ General Copy', count: 'Edit' },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -995,7 +1206,7 @@ export default function AdminDashboard() {
             {/* Success / Error Messages */}
             {formStatus === 'success' && (
               <div style={{ background: '#d1fae5', color: '#065f46', padding: '16px 20px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, marginBottom: '24px' }}>
-                ✓ Content added successfully! It is now live on the respective pages.
+                ✓ {contentTab === 'general' ? 'General website copy updated successfully! All pages will show the new content immediately.' : 'Content added successfully! It is now live on the respective pages.'}
               </div>
             )}
             {formStatus === 'error' && (
@@ -1014,8 +1225,40 @@ export default function AdminDashboard() {
                     ? (editingProduct ? `✏️ Edit Product: ${editingProduct.name}` : '🌿 Create New Product')
                     : contentTab === 'blogs'
                     ? (editingBlog ? `✏️ Edit Blog Post: ${editingBlog.title}` : '📝 Create New Blog Post')
-                    : (editingTestimonial ? `✏️ Edit Testimonial: ${editingTestimonial.name}` : '💬 Add New Testimonial')}
+                    : contentTab === 'testimonials'
+                    ? (editingTestimonial ? `✏️ Edit Testimonial: ${editingTestimonial.name}` : '💬 Add New Testimonial')
+                    : '⚙️ Edit General Website Copy'}
                 </h3>
+
+                {contentTab === 'general' && generalForm && (
+                  <div style={{ marginBottom: '20px', display: 'flex', gap: '6px', flexWrap: 'wrap', background: '#f1f5f9', padding: '6px', borderRadius: '10px' }}>
+                    {[
+                      { id: 'contact', label: '📞 Contact & Stats' },
+                      { id: 'home', label: '🏠 Home Page' },
+                      { id: 'about', label: '📖 About Page' },
+                      { id: 'programs', label: '🩺 Care Programs' },
+                      { id: 'methods', label: '🧪 Treatment Methods' },
+                      { id: 'team', label: '👥 Our Team' },
+                      { id: 'education', label: '🧬 Patient Education' },
+                    ].map(sub => (
+                      <button
+                        key={sub.id}
+                        type="button"
+                        onClick={() => { setGeneralSubTab(sub.id); setFormError(''); setFormStatus(''); }}
+                        style={{
+                          padding: '8px 14px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 600,
+                          border: 'none',
+                          background: generalSubTab === sub.id ? '#fff' : 'transparent',
+                          color: generalSubTab === sub.id ? PRIMARY : '#64748b',
+                          boxShadow: generalSubTab === sub.id ? '0 2px 6px rgba(0,0,0,0.06)' : 'none',
+                          cursor: 'pointer', transition: 'all 0.15s', fontFamily: 'inherit'
+                        }}
+                      >
+                        {sub.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {contentTab === 'products' && (
                   <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}>
@@ -1239,15 +1482,1133 @@ export default function AdminDashboard() {
                     </div>
                   </form>
                 )}
+
+                {contentTab === 'general' && generalForm && (
+                  <form onSubmit={handleUpdateGeneralContent}>
+                    
+                    {/* PAGE 1: Contact & Stats */}
+                    {generalSubTab === 'contact' && (
+                      <div>
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            📞 Contact Details
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Phone Number *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.contact?.phone || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    contact: { ...(generalForm.contact || {}), phone: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Email Address *</label>
+                                <input
+                                  type="email"
+                                  required
+                                  value={generalForm.contact?.email || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    contact: { ...(generalForm.contact || {}), email: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>WhatsApp (Digits only with Country Code, e.g. 918884588835) *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.contact?.whatsapp || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    contact: { ...(generalForm.contact || {}), whatsapp: e.target.value.replace(/\D/g, '') }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Consultation Timings *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.contact?.timings || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    contact: { ...(generalForm.contact || {}), timings: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Location / Physical Address *</label>
+                              <input
+                                type="text"
+                                required
+                                value={generalForm.contact?.address || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    contact: { ...(generalForm.contact || {}), address: e.target.value }
+                                  })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('📊 Statistics List', 'stats', [
+                          { key: 'value', label: 'Numeric Value *', type: 'number' },
+                          { key: 'suffix', label: 'Suffix (e.g. +, %)' },
+                          { key: 'label', label: 'Label *' },
+                          { key: 'sublabel', label: 'Sublabel *' }
+                        ], { value: 0, suffix: '', label: '', sublabel: '' })}
+                      </div>
+                    )}
+
+                    {/* PAGE 2: Home Page */}
+                    {generalSubTab === 'home' && (
+                      <div>
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🌟 Why Patients Trust Us (General Copy)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div style={{ marginBottom: '12px' }}>
+                              <label style={labelStyle}>Section Title *</label>
+                              <input
+                                type="text"
+                                required
+                                value={generalForm.whyChooseUs?.title || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  whyChooseUs: { ...(generalForm.whyChooseUs || {}), title: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Section Subtitle *</label>
+                              <textarea
+                                rows={2}
+                                required
+                                value={generalForm.whyChooseUs?.subtitle || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  whyChooseUs: { ...(generalForm.whyChooseUs || {}), subtitle: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('🌟 Why Choose Us - Cards', 'whyChooseUs.items', [
+                          { key: 'title', label: 'Card Title *' },
+                          { key: 'desc', label: 'Card Description *', type: 'textarea' }
+                        ], { title: '', desc: '' })}
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🛡️ Recovery Pillars (General Copy)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div style={{ marginBottom: '12px' }}>
+                              <label style={labelStyle}>Section Title *</label>
+                              <input
+                                type="text"
+                                required
+                                value={generalForm.healingPillars?.title || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  healingPillars: { ...(generalForm.healingPillars || {}), title: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Section Subtitle *</label>
+                              <textarea
+                                rows={2}
+                                required
+                                value={generalForm.healingPillars?.subtitle || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  healingPillars: { ...(generalForm.healingPillars || {}), subtitle: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('🛡️ Recovery Pillars - Cards', 'healingPillars.items', [
+                          { key: 'title', label: 'Pillar Title *' },
+                          { key: 'stat', label: 'Pillar Stat Value (e.g. 20+) *' },
+                          { key: 'statLabel', label: 'Pillar Stat Label (e.g. Custom Blends) *' },
+                          { key: 'desc', label: 'Pillar Description *', type: 'textarea' }
+                        ], { title: '', stat: '', statLabel: '', desc: '' })}
+
+                        {renderListEditor('🖼️ Hero Slider - Carousel Slides', 'heroSlides', [
+                          { key: 'badge', label: 'Slide Badge Text *' },
+                          { key: 'headline', label: 'Headline Title *' },
+                          { key: 'headlineAccent', label: 'Headline Accent (Green Highlighted Word) *' },
+                          { key: 'subline', label: 'Subheading Subline *', type: 'textarea' },
+                          { key: 'statValue', label: 'Stat Value (e.g. 4000+) *' },
+                          { key: 'statLabel', label: 'Stat Description Label *' },
+                          { key: 'ctaLabel', label: 'Primary Button Label *' },
+                          { key: 'ctaHref', label: 'Primary Button Link *' },
+                          { key: 'secondaryCtaLabel', label: 'Secondary Button Label *' },
+                          { key: 'secondaryCtaHref', label: 'Secondary Button Link *' }
+                        ], { badge: '', headline: '', headlineAccent: '', subline: '', statValue: '', statLabel: '', ctaLabel: '/contact', ctaHref: '', secondaryCtaLabel: '', secondaryCtaHref: '' })}
+                      </div>
+                    )}
+
+                    {/* PAGE 3: About Page */}
+                    {generalSubTab === 'about' && (
+                      <div>
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🖼️ Hero Section (About Page)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Badge *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutHero?.badge || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutHero: { ...(generalForm.aboutHero || {}), badge: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Headline Accent Word *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutHero?.headlineAccent || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutHero: { ...(generalForm.aboutHero || {}), headlineAccent: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                            <div style={{ marginBottom: '12px' }}>
+                              <label style={labelStyle}>Headline *</label>
+                              <input
+                                type="text"
+                                required
+                                value={generalForm.aboutHero?.headline || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  aboutHero: { ...(generalForm.aboutHero || {}), headline: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                            <div style={{ marginBottom: '12px' }}>
+                              <label style={labelStyle}>Subline *</label>
+                              <textarea
+                                rows={2}
+                                required
+                                value={generalForm.aboutHero?.subline || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  aboutHero: { ...(generalForm.aboutHero || {}), subline: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                            <div className="form-grid-2col" style={{ marginBottom: 0 }}>
+                              <div>
+                                <label style={labelStyle}>Primary CTA Button Label</label>
+                                <input
+                                  type="text"
+                                  value={generalForm.aboutHero?.cta1Label || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutHero: { ...(generalForm.aboutHero || {}), cta1Label: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Primary CTA Button Link</label>
+                                <input
+                                  type="text"
+                                  value={generalForm.aboutHero?.cta1Link || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutHero: { ...(generalForm.aboutHero || {}), cta1Link: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            📖 Our Story Section
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Badge *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutStory?.badge || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutStory: { ...(generalForm.aboutStory || {}), badge: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutStory?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutStory: { ...(generalForm.aboutStory || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div style={{ marginBottom: '16px' }}>
+                              <label style={labelStyle}>Story Paragraphs (Separated by two newlines / blank lines) *</label>
+                              <textarea
+                                rows={6}
+                                required
+                                value={Array.isArray(generalForm.aboutStory?.paragraphs) ? generalForm.aboutStory.paragraphs.join('\n\n') : ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  aboutStory: { ...(generalForm.aboutStory || {}), paragraphs: e.target.value.split('\n\n').map(p => p.trim()).filter(Boolean) }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Founder Quote *</label>
+                                <textarea
+                                  rows={3}
+                                  required
+                                  value={generalForm.aboutStory?.founderQuote || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutStory: { ...(generalForm.aboutStory || {}), founderQuote: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Founder Quote Author *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutStory?.founderQuoteAuthor || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutStory: { ...(generalForm.aboutStory || {}), founderQuoteAuthor: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-grid-2col" style={{ marginBottom: 0 }}>
+                              <div>
+                                <label style={labelStyle}>Founder Image *</label>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={e => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                      const reader = new FileReader();
+                                      reader.onloadend = () => {
+                                        setGeneralForm({
+                                          ...generalForm,
+                                          aboutStory: { ...(generalForm.aboutStory || {}), founderImage: reader.result }
+                                        });
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }}
+                                  style={{ marginBottom: '10px' }}
+                                />
+                                {generalForm.aboutStory?.founderImage && (
+                                  <img
+                                    src={generalForm.aboutStory.founderImage}
+                                    alt="Founder Preview"
+                                    style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #cbd5e1' }}
+                                  />
+                                )}
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Story Highlights (Comma-separated) *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={Array.isArray(generalForm.aboutStory?.highlights) ? generalForm.aboutStory.highlights.join(', ') : ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutStory: { ...(generalForm.aboutStory || {}), highlights: e.target.value.split(',').map(h => h.trim()).filter(Boolean) }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🎯 Mission & Vision Section
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Section Main Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutMission?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutMission: { ...(generalForm.aboutMission || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Section Subtitle *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutMission?.subtitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutMission: { ...(generalForm.aboutMission || {}), subtitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Mission Card Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutMission?.missionTitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutMission: { ...(generalForm.aboutMission || {}), missionTitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Mission Card Text *</label>
+                                <textarea
+                                  rows={3}
+                                  required
+                                  value={generalForm.aboutMission?.missionText || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutMission: { ...(generalForm.aboutMission || {}), missionText: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-grid-2col" style={{ marginBottom: 0 }}>
+                              <div>
+                                <label style={labelStyle}>Vision Card Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutMission?.visionTitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutMission: { ...(generalForm.aboutMission || {}), visionTitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Vision Card Text *</label>
+                                <textarea
+                                  rows={3}
+                                  required
+                                  value={generalForm.aboutMission?.visionText || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutMission: { ...(generalForm.aboutMission || {}), visionText: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            💎 Core Values (General Copy)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Section Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutValues?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutValues: { ...(generalForm.aboutValues || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Section Subtitle *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutValues?.subtitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutValues: { ...(generalForm.aboutValues || {}), subtitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('💎 Core Values - Cards', 'aboutValues.items', [
+                          { key: 'title', label: 'Card Title *' },
+                          { key: 'desc', label: 'Card Description *', type: 'textarea' },
+                          { key: 'color', label: 'Theme Accent Color *', type: 'color' }
+                        ], { title: '', desc: '', color: '#1a6e52' })}
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            📅 Our Journey Timeline (General Copy)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Section Title *</label>
+                              <input
+                                type="text"
+                                required
+                                value={generalForm.aboutMilestones?.title || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  aboutMilestones: { ...(generalForm.aboutMilestones || {}), title: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('📅 Journey Milestones - Timeline', 'aboutMilestones.items', [
+                          { key: 'year', label: 'Year (e.g. 1989) *' },
+                          { key: 'title', label: 'Milestone Title *' },
+                          { key: 'desc', label: 'Milestone Description *', type: 'textarea' }
+                        ], { year: '', title: '', desc: '' })}
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🚶 Our Care Approach (General Copy)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Section Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutApproach?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutApproach: { ...(generalForm.aboutApproach || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Section Subtitle *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutApproach?.subtitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutApproach: { ...(generalForm.aboutApproach || {}), subtitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('🚶 Care Approach Steps', 'aboutApproach.items', [
+                          { key: 'step', label: 'Step Label (e.g. Step 1) *' },
+                          { key: 'title', label: 'Step Title *' },
+                          { key: 'desc', label: 'Step Description *', type: 'textarea' }
+                        ], { step: '', title: '', desc: '' })}
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🧑 Meet The Founder Section
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Section Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutFounderProfile?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Section Subtitle *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutFounderProfile?.subtitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), subtitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Founder Name *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutFounderProfile?.name || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), name: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Founder Role / Designation *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutFounderProfile?.role || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), role: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div style={{ marginBottom: '16px' }}>
+                              <label style={labelStyle}>Profile Paragraphs (Separated by two newlines / blank lines) *</label>
+                              <textarea
+                                rows={6}
+                                required
+                                value={Array.isArray(generalForm.aboutFounderProfile?.paragraphs) ? generalForm.aboutFounderProfile.paragraphs.join('\n\n') : ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), paragraphs: e.target.value.split('\n\n').map(p => p.trim()).filter(Boolean) }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Founder Quote *</label>
+                                <textarea
+                                  rows={3}
+                                  required
+                                  value={generalForm.aboutFounderProfile?.quote || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), quote: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Founder Quote Author *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutFounderProfile?.quoteAuthor || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), quoteAuthor: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-grid-2col" style={{ marginBottom: 0 }}>
+                              <div>
+                                <label style={labelStyle}>Founder Profile Image *</label>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={e => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                      const reader = new FileReader();
+                                      reader.onloadend = () => {
+                                        setGeneralForm({
+                                          ...generalForm,
+                                          aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), image: reader.result }
+                                        });
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }}
+                                  style={{ marginBottom: '10px' }}
+                                />
+                                {generalForm.aboutFounderProfile?.image && (
+                                  <img
+                                    src={generalForm.aboutFounderProfile.image}
+                                    alt="Founder Profile Preview"
+                                    style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #cbd5e1' }}
+                                  />
+                                )}
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Founder Credentials (Comma-separated list) *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={Array.isArray(generalForm.aboutFounderProfile?.credentials) ? generalForm.aboutFounderProfile.credentials.join(', ') : ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutFounderProfile: { ...(generalForm.aboutFounderProfile || {}), credentials: e.target.value.split(',').map(c => c.trim()).filter(Boolean) }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      </div>
+                    )}
+
+                    {/* PAGE 4: Care Programs Page */}
+                    {generalSubTab === 'programs' && (
+                      <div>
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🖼️ Hero Section (Care Programs Page)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Badge *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.careProgramsHero?.badge || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    careProgramsHero: { ...(generalForm.careProgramsHero || {}), badge: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Headline Accent Word *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.careProgramsHero?.titleAccent || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    careProgramsHero: { ...(generalForm.careProgramsHero || {}), titleAccent: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                            <div style={{ marginBottom: '12px' }}>
+                              <label style={labelStyle}>Headline Title *</label>
+                              <input
+                                type="text"
+                                required
+                                value={generalForm.careProgramsHero?.title || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  careProgramsHero: { ...(generalForm.careProgramsHero || {}), title: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Subline *</label>
+                              <textarea
+                                rows={2}
+                                required
+                                value={generalForm.careProgramsHero?.subline || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  careProgramsHero: { ...(generalForm.careProgramsHero || {}), subline: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('🩺 Featured Care Programs List', 'careProgramsList', [
+                          { key: 'title', label: 'Program Name *' },
+                          { key: 'slug', label: 'URL Slug *' },
+                          { key: 'desc', label: 'Program Description *', type: 'textarea' }
+                        ], { title: '', slug: '', desc: '' })}
+
+                        {renderListEditor('🚶 5-Step Journey Steps', 'careProgramsSteps', [
+                          { key: 'num', label: 'Step Number (e.g. 01) *' },
+                          { key: 'title', label: 'Step Title *' },
+                          { key: 'desc', label: 'Step Description *', type: 'textarea' }
+                        ], { num: '', title: '', desc: '' })}
+                      </div>
+                    )}
+
+                    {/* PAGE 5: Treatment Methods Page */}
+                    {generalSubTab === 'methods' && (
+                      <div>
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🖼️ Hero Section (Treatment Methods Page)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Badge *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.treatmentMethodsHero?.badge || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    treatmentMethodsHero: { ...(generalForm.treatmentMethodsHero || {}), badge: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Headline Accent Word *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.treatmentMethodsHero?.titleAccent || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    treatmentMethodsHero: { ...(generalForm.treatmentMethodsHero || {}), titleAccent: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                            <div style={{ marginBottom: '12px' }}>
+                              <label style={labelStyle}>Headline Title *</label>
+                              <input
+                                type="text"
+                                required
+                                value={generalForm.treatmentMethodsHero?.title || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  treatmentMethodsHero: { ...(generalForm.treatmentMethodsHero || {}), title: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Subline *</label>
+                              <textarea
+                                rows={2}
+                                required
+                                value={generalForm.treatmentMethodsHero?.subline || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  treatmentMethodsHero: { ...(generalForm.treatmentMethodsHero || {}), subline: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('🛡️ Philosophy Pillars', 'treatmentMethodsPhilosophy', [
+                          { key: 'title', label: 'Pillar Title *' },
+                          { key: 'desc', label: 'Pillar Description *', type: 'textarea' }
+                        ], { title: '', desc: '' })}
+
+                        {renderListEditor('🚶 Treatment Journey Steps', 'treatmentMethodsJourney', [
+                          { key: 'num', label: 'Step Number (e.g. 01) *' },
+                          { key: 'title', label: 'Step Title *' },
+                          { key: 'desc', label: 'Step Short Description *', type: 'textarea' },
+                          { key: 'detail', label: 'Step Detail / Modal Description *', type: 'textarea' }
+                        ], { num: '', title: '', desc: '', detail: '' })}
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🎗️ Cancer Types & Side Effects Lists
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div style={{ marginBottom: '16px' }}>
+                              <label style={labelStyle}>Supported Cancer Types (One type per line) *</label>
+                              <textarea
+                                rows={6}
+                                required
+                                value={Array.isArray(generalForm.treatmentMethodsCancers) ? generalForm.treatmentMethodsCancers.join('\n') : ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  treatmentMethodsCancers: e.target.value.split('\n').map(c => c.trim()).filter(Boolean)
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Side Effects Addressed (One side effect per line) *</label>
+                              <textarea
+                                rows={6}
+                                required
+                                value={Array.isArray(generalForm.treatmentMethodsSideEffects) ? generalForm.treatmentMethodsSideEffects.join('\n') : ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  treatmentMethodsSideEffects: e.target.value.split('\n').map(s => s.trim()).filter(Boolean)
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+                      </div>
+                    )}
+
+                    {/* PAGE 6: Our Team */}
+                    {generalSubTab === 'team' && (
+                      <div>
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            👥 Hero Section (Our Team Page)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Badge *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.doctorsHero?.badge || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    doctorsHero: { ...(generalForm.doctorsHero || {}), badge: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Headline Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.doctorsHero?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    doctorsHero: { ...(generalForm.doctorsHero || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Subtitle *</label>
+                              <textarea
+                                rows={3}
+                                required
+                                value={generalForm.doctorsHero?.subtitle || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  doctorsHero: { ...(generalForm.doctorsHero || {}), subtitle: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('👥 Team Member Profiles', 'doctorsList', [
+                          { key: 'name', label: 'Member Name *' },
+                          { key: 'role', label: 'Role / Designation (e.g. Pharmacologist — M.Pharm, PhD) *' },
+                          { key: 'experience', label: 'Experience Label (e.g. 22 Years Experience)' },
+                          { key: 'specialty', label: 'Specialty *' },
+                          { key: 'bio', label: 'Biography Description *', type: 'textarea' },
+                          { key: 'image', label: 'Profile Photo *', type: 'image' }
+                        ], { id: Date.now(), name: '', role: '', experience: '', specialty: '', bio: '', image: '/images/doctor-placeholder.png' })}
+                      </div>
+                    )}
+
+                    {/* PAGE 7: Patient Education */}
+                    {generalSubTab === 'education' && (
+                      <div>
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            📖 Hero Section (Patient Education Page)
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Badge *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.patientEducationHero?.badge || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    patientEducationHero: { ...(generalForm.patientEducationHero || {}), badge: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Headline Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.patientEducationHero?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    patientEducationHero: { ...(generalForm.patientEducationHero || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+                            <div style={{ marginBottom: 0 }}>
+                              <label style={labelStyle}>Subtitle *</label>
+                              <textarea
+                                rows={3}
+                                required
+                                value={generalForm.patientEducationHero?.subtitle || ''}
+                                onChange={e => setGeneralForm({
+                                  ...generalForm,
+                                  patientEducationHero: { ...(generalForm.patientEducationHero || {}), subtitle: e.target.value }
+                                })}
+                                style={inputStyle}
+                              />
+                            </div>
+                          </div>
+                        </details>
+
+                        {renderListEditor('📊 Immune System Stats', 'patientEducationStats', [
+                          { key: 'value', label: 'Stat Value (e.g. 2 Billion+) *' },
+                          { key: 'label', label: 'Stat Description Label *' },
+                          { key: 'icon', label: 'Stat Emoji Icon *' }
+                        ], { value: '', label: '', icon: '🧬' })}
+
+                        {renderListEditor('📖 Educational Guides / Articles', 'patientEducationArticles', [
+                          { key: 'id', label: 'Article Route ID (e.g. tcells-vs-nk-cells) *' },
+                          { key: 'title', label: 'Article Title *' },
+                          { key: 'category', label: 'Category (e.g. Immunology) *' },
+                          { key: 'badge', label: 'Badge (e.g. 🧬 Immune Defence) *' },
+                          { key: 'icon', label: 'Emoji Icon *' },
+                          { key: 'excerpt', label: 'Excerpt / Summary Description *', type: 'textarea' },
+                          { key: 'readTime', label: 'Read Time (e.g. 10 min read, or Coming Soon) *' },
+                          { key: 'gradient', label: 'Card Gradient Style (CSS linear-gradient) *' }
+                        ], { id: '', title: '', category: '', badge: '', icon: '🛡️', excerpt: '', readTime: '5 min read', gradient: 'linear-gradient(135deg, #0b5b67 0%, #38bed5 100%)', disabled: false })}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                      <button type="submit" disabled={formStatus === 'sending'} style={submitBtnStyle}>
+                        {formStatus === 'sending' ? 'Saving Copy...' : '⚙️ Save Website Copy'}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
 
               {/* RIGHT COLUMN: Already Added Items List */}
               <div className="admin-list-container">
                 <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
-                  {contentTab === 'products' ? 'All Products' : contentTab === 'blogs' ? 'All Blog Articles' : 'All Testimonials'} ({contentTab === 'products' ? dynProducts.length : contentTab === 'blogs' ? dynBlogs.length : dynTestimonials.length})
+                  {contentTab === 'products' ? 'All Products' : contentTab === 'blogs' ? 'All Blog Articles' : contentTab === 'testimonials' ? 'All Testimonials' : 'ℹ️ Editorial Guidelines'} 
+                  {contentTab !== 'general' && ` (${contentTab === 'products' ? dynProducts.length : contentTab === 'blogs' ? dynBlogs.length : dynTestimonials.length})`}
                 </h3>
 
                 <div style={{ maxHeight: '650px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', paddingRight: '4px' }}>
+                  {contentTab === 'general' && (
+                    <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <h3 style={{ margin: '0 0 16px', fontSize: '15px', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <FaInfoCircle style={{ color: PRIMARY }} /> Guidelines for Copy Updates
+                      </h3>
+                      <ul style={{ margin: 0, paddingLeft: '20px', color: '#475569', fontSize: '13px', lineHeight: '1.8' }}>
+                        <li><strong>Instant Sync:</strong> Changes are written to the database and will update globally on the site immediately upon clicking "Save Website Copy".</li>
+                        <li><strong>Safe Defaults:</strong> If you clear a field, the site will automatically fallback to default values to prevent layout breaks.</li>
+                        <li><strong>SEO Compliance:</strong> Avoid changing titles to very long texts as it may affect metadata responsiveness.</li>
+                        <li><strong>WhatsApp:</strong> Ensure the WhatsApp number is written with country code and digits only (e.g. <code>918884588835</code>) so the click-to-chat links work correctly.</li>
+                      </ul>
+                      <div style={{ marginTop: '24px', padding: '12px', background: `${PRIMARY}08`, borderRadius: '10px', borderLeft: `4px solid ${PRIMARY}` }}>
+                        <span style={{ fontSize: '11px', fontWeight: 700, color: PRIMARY, textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Active Config File</span>
+                        <code style={{ fontSize: '11.5px', color: '#334155' }}>backend/data/websiteContent.json</code>
+                      </div>
+                    </div>
+                  )}
+
                   {contentTab === 'products' && (
                     dynProducts.length === 0 ? (
                       <p style={{ color: '#94a3b8', fontSize: '13px', textAlign: 'center', margin: '40px 0' }}>No products found.</p>

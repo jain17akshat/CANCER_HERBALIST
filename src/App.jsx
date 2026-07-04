@@ -33,6 +33,7 @@ import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider } from './context/CartContext';
+import { ContentProvider } from './context/ContentContext';
 import CartDrawer from './components/CartDrawer';
 import SEO from './components/SEO';
 
@@ -56,9 +57,10 @@ function App() {
   }, []);
 
   return (
-    <CartProvider>
-      <WishlistProvider>
-        <Router>
+    <ContentProvider>
+      <CartProvider>
+        <WishlistProvider>
+          <Router>
           <ScrollToTop />
           <SEO />
           <div
@@ -112,6 +114,7 @@ function App() {
         </Router>
       </WishlistProvider>
     </CartProvider>
+  </ContentProvider>
   );
 }
 

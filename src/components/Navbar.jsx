@@ -3,6 +3,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { FaBars, FaTimes, FaPhone, FaChevronDown, FaLeaf, FaHeart, FaShoppingBag } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
@@ -26,6 +27,15 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const { content } = useContent();
+  const contactInfo = content?.contact || {
+    phone: '+91 88845 88835',
+    email: 'cancerherbalist@gmail.com',
+    whatsapp: '918884588835',
+    timings: 'Mon–Sat, 9 AM–6 PM',
+    address: 'Bangalore, India'
+  };
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null); // desktop
@@ -186,7 +196,7 @@ export default function Navbar() {
 
           {/* ── Right side ── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <a
+            {/* <a
               href="tel:+918884588835"
               className="ch-phone-link"
               style={{
@@ -201,7 +211,7 @@ export default function Navbar() {
             >
               <FaPhone style={{ fontSize: '11px' }} />
               +91 8884588835
-            </a>
+            </a> */}
 
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -397,7 +407,7 @@ export default function Navbar() {
               </button>
 
               <motion.a
-                href="tel:+918884588835"
+                href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -411,7 +421,7 @@ export default function Navbar() {
                 }}
               >
                 <FaPhone style={{ fontSize: '12px' }} />
-                +91 8884588835
+                {contactInfo.phone}
               </motion.a>
 
               <button

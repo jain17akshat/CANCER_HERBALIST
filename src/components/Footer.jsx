@@ -11,6 +11,8 @@ const DARK    = '#0a1628';
 const WHITE60 = 'rgba(255,255,255,0.60)';
 const WHITE80 = 'rgba(255,255,255,0.85)';
 
+import { useContent } from '../context/ContentContext';
+
 const quickLinks = [
   { label: 'Home',              to: '/' },
   { label: 'About Us',          to: '/about' },
@@ -41,6 +43,15 @@ const colHead = (title) => (
 );
 
 export default function Footer() {
+  const { content } = useContent();
+  const contactInfo = content?.contact || {
+    phone: '+91 88845 88835',
+    email: 'cancerherbalist@gmail.com',
+    whatsapp: '918884588835',
+    timings: 'Mon–Sat, 9 AM–6 PM',
+    address: 'Bangalore, India'
+  };
+
   return (
     <footer style={{ background: DARK, color: WHITE60, fontSize: '14px', fontFamily: 'Poppins, sans-serif' }}>
 
@@ -109,8 +120,8 @@ export default function Footer() {
             {/* Contact info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[
-                { href: 'tel:8884588835',                  icon: <FaPhoneAlt />,      text: '88845 88835' },
-                { href: 'mailto:cancerherbalist@gmail.com', icon: <FaEnvelope />,     text: 'cancerherbalist@gmail.com' },
+                { href: 'tel:' + contactInfo.phone.replace(/[^0-9+]/g, ''), icon: <FaPhoneAlt />,      text: contactInfo.phone },
+                { href: 'mailto:' + contactInfo.email, icon: <FaEnvelope />,     text: contactInfo.email },
                 { href: 'mailto:drherbalistindia@gmail.com', icon: <FaEnvelope />,   text: 'drherbalistindia@gmail.com', sub: 'Appointment Bookings & Patient Enquiries' },
               ].map((c, i) => (
                 <a
@@ -135,9 +146,7 @@ export default function Footer() {
                   <FaMapMarkerAlt />
                 </span>
                 <span style={{ lineHeight: '1.7' }}>
-                  Agara Main Road, Near Dinnepalya Bus Stand,<br />
-                  Kaggalipura Post, Off Kanakapura Road,<br />
-                  Bangalore 560116
+                  {contactInfo.address}
                 </span>
               </div>
             </div>
@@ -223,7 +232,7 @@ export default function Footer() {
               </Link>
 
               <a
-                href="https://wa.me/918884588835"
+                href={`https://wa.me/${contactInfo.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

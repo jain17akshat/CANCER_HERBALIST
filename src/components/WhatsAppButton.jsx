@@ -1,12 +1,22 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { useContent } from '../context/ContentContext';
 
 export default function WhatsAppButton() {
+  const { content } = useContent();
+  const contactInfo = content?.contact || {
+    phone: '+91 88845 88835',
+    email: 'cancerherbalist@gmail.com',
+    whatsapp: '918884588835',
+    timings: 'Mon–Sat, 9 AM–6 PM',
+    address: 'Bangalore, India'
+  };
+
   return (
     <>
       <motion.a
-        href="https://wa.me/918884588835?text=Hi!%20I%20would%20like%20to%20inquire%20about%20herbal%20treatment%20support."
+        href={`https://wa.me/${contactInfo.whatsapp}?text=Hi!%20I%20would%20like%20to%20inquire%20about%20herbal%20treatment%20support.`}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}

@@ -1,40 +1,49 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaUserMd, FaGraduationCap, FaBriefcase } from 'react-icons/fa';
-
-const doctors = [
-  {
-    id: 1,
-    name: 'Prof. Ramesh Babu',
-    role: 'Pharmacologist — M.Pharm, PhD',
-    experience: '22 Years Experience',
-    specialty: 'Integrative Pharmacology & Herbal Oncology',
-    bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD in Pharmaceutical Sciences, demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.',
-    image: '/images/doctor1.png',
-  },
-  {
-    id: 2,
-    name: 'Nutraceutical Team',
-    role: 'Multidisciplinary Research & Care Team',
-    specialty: 'Clinical Nutrition, Herbal Research & Patient Support',
-    bio: "Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individual's unique needs throughout their treatment journey.",
-    image: '/images/doctor33.png',
-  },
-];
+import { useContent } from '../context/ContentContext';
 
 export default function Doctors() {
+  const { content } = useContent();
+
+  const hero = content?.doctorsHero || {
+    badge: 'OUR NUTRACEUTICAL TEAM',
+    title: 'Meet Our Expert Team',
+    subtitle: 'Our multidisciplinary team of medical doctors, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients.'
+  };
+
+  const doctorsList = content?.doctorsList || [
+    {
+      id: 1,
+      name: 'Prof. Ramesh Babu',
+      role: 'Pharmacologist — M.Pharm, PhD',
+      experience: '22 Years Experience',
+      specialty: 'Integrative Pharmacology & Herbal Oncology',
+      bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD in Pharmaceutical Sciences, demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.',
+      image: '/images/doctor1.png',
+    },
+    {
+      id: 2,
+      name: 'Nutraceutical Team',
+      role: 'Multidisciplinary Research & Care Team',
+      specialty: 'Clinical Nutrition, Herbal Research & Patient Support',
+      bio: "Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individual's unique needs throughout their treatment journey.",
+      image: '/images/doctor33.png',
+    },
+  ];
+
   return (
     <section className="section-padding" style={{ background: 'var(--gray-1)' }}>
       <div className="container">
         <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '56px' }}>
           <span className="section-badge">
-            <FaUserMd /> OUR NUTRACEUTICAL TEAM
+            <FaUserMd /> {hero.badge}
           </span>
           <h2 className="section-title">
-            Meet Our Expert Team <span></span>
+            {hero.title} <span></span>
           </h2>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
-            Our multidisciplinary team of medical doctors, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients.
+            {hero.subtitle}
           </p>
         </div>
 
@@ -45,7 +54,7 @@ export default function Doctors() {
             gap: '30px',
           }}
         >
-          {doctors.map((doctor) => (
+          {doctorsList.map((doctor) => (
             <motion.div
               key={doctor.id}
               data-aos="fade-up"

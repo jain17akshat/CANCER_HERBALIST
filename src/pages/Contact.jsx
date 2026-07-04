@@ -59,6 +59,8 @@ const TREATMENTS = [
 
 const CANCER_STAGES = ['Stage I', 'Stage II', 'Stage III', 'Stage IV', 'Remission', 'Not Sure / Other'];
 
+import { useContent } from '../context/ContentContext';
+
 const inputStyle = {
   width: '100%',
   padding: '13px 16px',
@@ -83,6 +85,15 @@ const labelStyle = {
 };
 
 export default function Contact() {
+  const { content } = useContent();
+  const contactInfo = content?.contact || {
+    phone: '+91 88845 88835',
+    email: 'cancerherbalist@gmail.com',
+    whatsapp: '918884588835',
+    timings: 'Mon–Sat, 9 AM–6 PM',
+    address: 'Bangalore, India'
+  };
+
   const [step, setStep] = useState(1); // 1=form, 2=slot, 3=success
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -184,7 +195,7 @@ export default function Contact() {
           Start Your <span style={{ color: ACCENT }}>Healing Journey</span>
         </h1>
         <p style={{ maxWidth: '680px', margin: '0 auto', color: '#64748B', lineHeight: '1.8', fontSize: '1.05rem' }}>
-          Book a free discovery consultation with our senior herbal oncology practitioners. Slots are available Mon–Sat, 9 AM – 6 PM.
+          Book a free discovery consultation with our senior herbal oncology practitioners. Slots are available {contactInfo.timings}.
         </p>
       </section>
 
@@ -192,10 +203,10 @@ export default function Contact() {
       <section style={{ maxWidth: '1300px', margin: '-40px auto 0', padding: '0 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(220px, 100%), 1fr))', gap: '20px' }}>
           {[
-            { icon: <FaPhone />, title: 'Call Us', text: '+91 88845 88835', href: 'tel:+918884588835' },
-            { icon: <FaEnvelope />, title: 'Email', text: 'cancerherbalist@gmail.com', href: 'mailto:cancerherbalist@gmail.com' },
-            { icon: <FaMapMarkerAlt />, title: 'Location', text: 'Kaggalipura, Bangalore 560116', href: '#map' },
-            { icon: <FaClock />, title: 'Working Hours', text: 'Mon – Sat | 9 AM – 6 PM', href: null },
+            { icon: <FaPhone />, title: 'Call Us', text: contactInfo.phone, href: 'tel:' + contactInfo.phone.replace(/[^0-9+]/g, '') },
+            { icon: <FaEnvelope />, title: 'Email', text: contactInfo.email, href: 'mailto:' + contactInfo.email },
+            { icon: <FaMapMarkerAlt />, title: 'Location', text: contactInfo.address, href: '#map' },
+            { icon: <FaClock />, title: 'Working Hours', text: contactInfo.timings, href: null },
           ].map((item, i) => (
             <div key={i} style={{ background: '#fff', borderRadius: '20px', padding: '28px', textAlign: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.07)', border: `1px solid ${ACCENT}18` }}>
               <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: '#DBEAFE', color: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', fontSize: '22px' }}>
@@ -407,7 +418,7 @@ export default function Contact() {
               <p style={{ opacity: 0.85, lineHeight: '1.8', fontSize: '0.95rem' }}>
                 Connect directly with our team for immediate assistance and appointment scheduling. We typically respond within 30 minutes.
               </p>
-              <a href="https://wa.me/918884588835" target="_blank" rel="noreferrer"
+              <a href={`https://wa.me/${contactInfo.whatsapp}`} target="_blank" rel="noreferrer"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: '#25d366', color: '#fff', padding: '14px 24px', borderRadius: '12px', textDecoration: 'none', fontWeight: 700, width: 'fit-content' }}>
                 <FaWhatsapp /> Chat on WhatsApp
               </a>

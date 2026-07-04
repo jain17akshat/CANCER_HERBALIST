@@ -12,6 +12,7 @@ if (!fs.existsSync(DATA_DIR)) {
 const PRODUCTS_FILE     = path.join(DATA_DIR, 'products.json');
 const BLOGS_FILE        = path.join(DATA_DIR, 'blogs.json');
 const TESTIMONIALS_FILE = path.join(DATA_DIR, 'testimonials.json');
+const WEBSITE_CONTENT_FILE = path.join(DATA_DIR, 'websiteContent.json');
 
 // Helper to read JSON safely
 const readData = (filePath) => {
@@ -598,6 +599,158 @@ const initialTestimonials = [
   }
 ];
 
+const defaultWebsiteContent = {
+  contact: {
+    phone: '+91 88845 88835',
+    email: 'cancerherbalist@gmail.com',
+    whatsapp: '918884588835',
+    timings: 'Mon–Sat, 9 AM–6 PM',
+    address: 'Bangalore, India'
+  },
+  stats: [
+    { value: 4000, suffix: '+', label: 'Patients Served', sublabel: 'Worldwide' },
+    { value: 10, suffix: '+', label: 'Countries', sublabel: 'Global Reach' },
+    { value: 7000, suffix: '+', label: 'Consultations', sublabel: 'Completed' },
+    { value: 35, suffix: '+', label: 'Years of Research Experience', sublabel: 'Expert Practice' },
+    { value: 98, suffix: '%', label: 'Satisfaction Rate', sublabel: 'Patient Feedback' }
+  ],
+  whyChooseUs: {
+    title: 'Why Patients Trust Us',
+    subtitle: 'Our integrative approach combines clinical precision with compassionate, whole-person care.',
+    items: [
+      { title: 'Personalized Protocols', desc: 'Every patient receives a unique herbal formula tailored to their specific cancer type, staging, and treatment history.' },
+      { title: 'Safety-First Approach', desc: 'All herbs are screened against your medications to eliminate drug-herb interactions before we begin.' },
+      { title: 'Continuous Support', desc: 'Weekly check-ins, diet adjustments, and formula refinements so you are never alone on your healing path.' },
+      { title: 'Certified Organic Sourcing', desc: 'We source from GMP-certified organic farms with full lab-tested purity and potency reports.' }
+    ]
+  },
+  healingPillars: {
+    title: 'Three Pillars of Recovery',
+    subtitle: 'A clinically structured framework that addresses the physical, nutritional, and immunological dimensions of cancer care.',
+    items: [
+      { title: 'Herbal Formulation', stat: '20+', statLabel: 'Custom Blends', desc: 'Precision-crafted tinctures combining ancient wisdom with modern pharmacognosy research.' },
+      { title: 'Lifestyle Integration', stat: '95%', statLabel: 'Patient Compliance', desc: 'Anti-cancer nutrition plans, breathing protocols, and stress-reduction frameworks.' },
+      { title: 'Immune Optimization', stat: '87%', statLabel: 'Improved Markers', desc: 'Targeted adaptogens and immunomodulators to strengthen your bodys natural defenses.' }
+    ]
+  },
+  heroSlides: [
+    {
+      id: 1,
+      badge: '🌿 Natural Cancer Treatment Specialists',
+      headline: 'Fight Cancer Holistically',
+      headlineAccent: 'Holistically',
+      subline: 'Combining ancient herbal wisdom with modern medical knowledge for personalized cancer support.',
+      highlights: [
+        'Natural Herbal Treatments',
+        'Certified Practitioners',
+        'Personalized Care Plans',
+        'Regular Support (9AM–6PM)'
+      ],
+      statValue: '4000+',
+      statLabel: 'Patients Supported',
+      ctaLabel: 'Book Free Consultation',
+      ctaHref: '/contact',
+      secondaryCtaLabel: 'Watch Story',
+      secondaryCtaHref: '/testimonials'
+    },
+    {
+      id: 2,
+      badge: '⏰ Unmatched Patient Dedication',
+      headline: '1–2 Hours With Every Patient',
+      headlineAccent: 'Every Patient',
+      subline: 'While the industry average is just 15 minutes, Prof. Ramesh personally reviews your reports, scans, and history in a deep one-on-one session.',
+      highlights: [
+        'Full Report Review',
+        'Scan & Biopsy Analysis',
+        'Personalized Strategy',
+        'Zero Rushed Consultations'
+      ],
+      statValue: '1–2 Hrs',
+      statLabel: 'Personal Time Per Patient',
+      ctaLabel: 'Book Your Session',
+      ctaHref: '/contact',
+      secondaryCtaLabel: 'Read Success Stories',
+      secondaryCtaHref: '/testimonials'
+    },
+    {
+      id: 3,
+      badge: '🎗️ Complete Cancer Coverage',
+      headline: 'Every Cancer Type, One Team',
+      headlineAccent: 'One Team',
+      subline: 'From common to rare — breast, lung, blood, brain, pancreatic and beyond. No diagnosis is out of scope. We build a personalised herbal pathway for every patient.',
+      highlights: [
+        'Breast & Gynaecological',
+        'Lung & Respiratory',
+        'Blood & Lymphatic',
+        'Brain, Bone & Rare Types'
+      ],
+      statValue: '∞',
+      statLabel: 'No Cancer Is Out of Scope',
+      ctaLabel: 'Find Your Program',
+      ctaHref: '/care-programs',
+      secondaryCtaLabel: 'See All Programs',
+      secondaryCtaHref: '/care-programs'
+    },
+    {
+      id: 4,
+      badge: '🧪 Integrative, Not Alternative',
+      headline: 'Works Alongside Chemotherapy',
+      headlineAccent: 'Chemotherapy',
+      subline: 'Our herbal protocols are screened for drug-herb interactions and complement your conventional treatment — reducing side effects and supporting recovery.',
+      highlights: [
+        'No Drug Conflicts',
+        'Reduces Chemo Side Effects',
+        'Supports Immunity',
+        'Improves Quality of Life'
+      ],
+      statValue: '87%',
+      statLabel: 'Patients Report Improved Energy',
+      ctaLabel: 'Start Integrative Care',
+      ctaHref: '/contact',
+      secondaryCtaLabel: 'Explore Our Products',
+      secondaryCtaHref: '/store'
+    },
+    {
+      id: 5,
+      badge: '❤️ No Patient Left Alone',
+      headline: 'Weekly Follow-Ups, Every Time',
+      headlineAccent: 'Every Time',
+      subline: 'Your protocol evolves with you. Our team refines your diet plans, herbal formulas, and lifestyle guidance every week based on how your body responds.',
+      highlights: [
+        'Custom Diet Charts',
+        'WhatsApp Support Line',
+        'Formula Adjustments',
+        'Monthly Report Reviews'
+      ],
+      statValue: '95%',
+      statLabel: 'Patient Retention Rate',
+      ctaLabel: 'Join Our Program',
+      ctaHref: '/contact',
+      secondaryCtaLabel: 'Meet Our Team',
+      secondaryCtaHref: '/doctors'
+    },
+    {
+      id: 6,
+      badge: '🛡️ Certified, Safe & Trusted',
+      headline: 'FSSAI Certified Pharmaceuticals',
+      headlineAccent: 'Pharmaceuticals',
+      subline: "Every herbal product is lab-tested, made by standardized extracts, and FSSAI certified. We're not making claims — we're backed by science, certification, and 35+ years of research & practice.",
+      highlights: [
+        'Lab-Tested Purity',
+        'Standardized Extracts',
+        'FSSAI Licence Verified',
+        '35+ Years of Research'
+      ],
+      statValue: '35+',
+      statLabel: 'Years of Research & Practice',
+      ctaLabel: 'Shop Certified Products',
+      ctaHref: '/store',
+      secondaryCtaLabel: 'Learn About Us',
+      secondaryCtaHref: '/about'
+    }
+  ]
+};
+
 // Seed databases if they are missing or do not contain the initial items
 const seedDatabase = () => {
   // Products Seed
@@ -654,6 +807,20 @@ const seedDatabase = () => {
   });
   if (updatedTestimonials) {
     writeData(TESTIMONIALS_FILE, testimonials);
+  }
+
+  // Website Content Seed
+  if (!fs.existsSync(WEBSITE_CONTENT_FILE)) {
+    writeData(WEBSITE_CONTENT_FILE, defaultWebsiteContent);
+  } else {
+    // Merge structure in case we add fields later
+    try {
+      const currentContent = JSON.parse(fs.readFileSync(WEBSITE_CONTENT_FILE, 'utf8'));
+      const merged = { ...defaultWebsiteContent, ...currentContent };
+      writeData(WEBSITE_CONTENT_FILE, merged);
+    } catch (e) {
+      writeData(WEBSITE_CONTENT_FILE, defaultWebsiteContent);
+    }
   }
 };
 
@@ -921,6 +1088,33 @@ router.delete('/dynamic-testimonials/:id', checkAdmin, (req, res) => {
 
   if (writeData(TESTIMONIALS_FILE, filtered)) {
     res.json({ success: true, message: 'Testimonial deleted successfully.' });
+  } else {
+    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+  }
+});
+
+/* ── WEBSITE CONTENT API ───────────────────────────────────────── */
+router.get('/website-content', (req, res) => {
+  try {
+    if (fs.existsSync(WEBSITE_CONTENT_FILE)) {
+      const data = JSON.parse(fs.readFileSync(WEBSITE_CONTENT_FILE, 'utf8'));
+      return res.json({ success: true, content: data });
+    }
+    return res.json({ success: true, content: defaultWebsiteContent });
+  } catch (err) {
+    console.error('Error reading website content:', err);
+    res.status(500).json({ success: false, error: 'Failed to read website content.' });
+  }
+});
+
+router.post('/website-content', checkAdmin, (req, res) => {
+  const newContent = req.body;
+  if (!newContent || typeof newContent !== 'object') {
+    return res.status(400).json({ success: false, error: 'Invalid content data.' });
+  }
+  
+  if (writeData(WEBSITE_CONTENT_FILE, newContent)) {
+    res.json({ success: true, content: newContent });
   } else {
     res.status(500).json({ success: false, error: 'Failed to write to file.' });
   }

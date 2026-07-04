@@ -1,28 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaRibbon, FaLungs, FaAppleAlt, FaHeartbeat, FaRegHospital, FaTint, FaArrowRight, FaChevronDown, FaCalendarAlt, FaFileMedical, FaFileSignature, FaCapsules, FaUserShield, FaLeaf, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
+import {
+  FaRibbon, FaLungs, FaAppleAlt, FaHeartbeat, FaRegHospital, FaTint,
+  FaArrowRight, FaChevronDown, FaCalendarAlt, FaFileMedical, FaFileSignature,
+  FaCapsules, FaUserShield, FaLeaf, FaCheckCircle, FaWhatsapp
+} from 'react-icons/fa';
+import { useContent } from '../context/ContentContext';
 
 const A='#38bed5',AL='#38bed518',AM='#38bed535',AD='#2ca8be',P='#1a6e52';
 const up={hidden:{opacity:0,y:32},show:{opacity:1,y:0,transition:{duration:0.6,ease:[0.22,1,0.36,1]}}};
 const stg={show:{transition:{staggerChildren:0.1}}};
-
-const services=[
-  {icon:<FaRibbon/>,title:'Breast Cancer',slug:'breast-cancer',desc:'Targeted herbal formulas to regulate hormone levels, support cell health and minimise treatment side effects.'},
-  {icon:<FaLungs/>,title:'Lung Cancer',slug:'lung-cancer',desc:'Respiratory herbs that improve lung capacity, reduce coughing and support pulmonary tissue resilience.'},
-  {icon:<FaAppleAlt/>,title:'Colon Cancer',slug:'colon-cancer',desc:'Gut-healing botanicals that optimise digestion, restore intestinal flora and soothe abdominal inflammation.'},
-  {icon:<FaHeartbeat/>,title:'Prostate Cancer',slug:'prostate-cancer',desc:'Herbs targeting endocrine health, reducing pelvic inflammation and supporting urinary tract function.'},
-  {icon:<FaRegHospital/>,title:'Liver Cancer',slug:'liver-cancer',desc:'Hepatoprotective herbs that boost liver detoxification, aid cell regeneration and improve metabolic strength.'},
-  {icon:<FaTint/>,title:'Blood Cancer',slug:'blood-cancer',desc:'Immune tonics and blood-purifying botanicals supporting marrow health and optimising energy levels.'},
-];
-
-const steps=[
-  {num:'01',icon:<FaCalendarAlt/>,title:'Free Consultation',desc:'A no-obligation discovery call with our senior practitioners. We listen to your story, understand your diagnosis and explain how our programs work.'},
-  {num:'02',icon:<FaFileMedical/>,title:'Comprehensive Evaluation',desc:'Detailed review of all medical records, diagnostic reports, imaging, lab values and medication list to fully assess your health.'},
-  {num:'03',icon:<FaFileSignature/>,title:'Personalised Treatment Plan',desc:'A customised herbal remedy plan with targeted nutritional and lifestyle guidance tailored to your specific cancer type and stage.'},
-  {num:'04',icon:<FaCapsules/>,title:'Treatment Guidance',desc:'Receive premium herbal formulations with step-by-step instructions on dosages, timing and dietary protocols to follow.'},
-  {num:'05',icon:<FaUserShield/>,title:'Ongoing Follow-Up Support',desc:'Continuous monitoring, weekly check-ins, symptom tracking and formula adjustments to keep your recovery on track.'},
-];
 
 const CANCERS=['Breast','Lung','Colon','Prostate','Liver','Blood','Cervical','Ovarian','Pancreatic','Thyroid','Bladder','Kidney','Brain','Skin / Melanoma','Bone','Oral','Oesophageal','Uterine','Lymphoma','Myeloma','Testicular','Rectal','Gallbladder','Stomach'];
 
@@ -68,7 +56,32 @@ function Step({step,open,onToggle}){
 }
 
 export default function CarePrograms(){
+  const { content } = useContent();
   const [open,setOpen]=useState(0);
+
+  // Dynamic values
+  const careProgramsHero = content?.careProgramsHero || {};
+  const careProgramsList = content?.careProgramsList || [];
+  const careProgramsSteps = content?.careProgramsSteps || [];
+
+  const staticServicesIcons = [
+    <FaRibbon/>, <FaLungs/>, <FaAppleAlt/>, <FaHeartbeat/>, <FaRegHospital/>, <FaTint/>
+  ];
+
+  const staticStepsIcons = [
+    <FaCalendarAlt/>, <FaFileMedical/>, <FaFileSignature/>, <FaCapsules/>, <FaUserShield/>
+  ];
+
+  const activeServices = careProgramsList.map((svc, i) => ({
+    ...svc,
+    icon: staticServicesIcons[i % staticServicesIcons.length]
+  }));
+
+  const activeSteps = careProgramsSteps.map((step, i) => ({
+    ...step,
+    icon: staticStepsIcons[i % staticStepsIcons.length]
+  }));
+
   return(
     <div style={{background:'#fff',minHeight:'100vh'}}>
 
@@ -81,12 +94,15 @@ export default function CarePrograms(){
           <motion.div key={i} animate={{y:[-14,14,-14],rotate:[0,180,360],opacity:[0.08,0.18,0.08]}} transition={{duration:4+i,repeat:Infinity,delay:i*0.6}} style={{position:'absolute',left:`${(i*13)%94}%`,top:`${(i*11)%88}%`,color:A,fontSize:8+i*2,zIndex:1,pointerEvents:'none'}}><FaLeaf/></motion.div>
         ))}
         <motion.div initial={{opacity:0,y:40}} animate={{opacity:1,y:0}} transition={{duration:0.7}} style={{position:'relative',zIndex:2,maxWidth:720,margin:'0 auto'}}>
-          <motion.span initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{delay:0.2}} style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}30`,border:`1px solid ${A}60`,color:A,padding:'6px 18px',borderRadius:50,fontSize:12,fontWeight:700,letterSpacing:'0.5px',marginBottom:22}}><FaLeaf/> Our Care Programs</motion.span>
+          <motion.span initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{delay:0.2}} style={{display:'inline-flex',alignItems:'center',gap:7,background:`${A}30`,border:`1px solid ${A}60`,color:A,padding:'6px 18px',borderRadius:50,fontSize:12,fontWeight:700,letterSpacing:'0.5px',marginBottom:22}}>
+            <FaLeaf/> {careProgramsHero.badge || 'Our Care Programs'}
+          </motion.span>
           <h1 style={{fontFamily:'Playfair Display,serif',fontSize:'clamp(2rem,5.5vw,3.4rem)',fontWeight:900,lineHeight:1.15,marginBottom:18}}>
-            Specialized <span style={{color:A}}>Herbal Care</span><br/>& Your Healing Journey
+            {careProgramsHero.title || 'Specialized Herbal Care'}{' '}
+            <span style={{color:A}}>{careProgramsHero.titleAccent || '& Your Healing Journey'}</span>
           </h1>
           <p style={{opacity:0.85,fontSize:'clamp(0.9rem,2.5vw,1.05rem)',lineHeight:1.85,maxWidth:560,margin:'0 auto 32px'}}>
-            Evidence-based herbal support for every cancer type, combined with a structured 5-step process from first consultation to full recovery.
+            {careProgramsHero.subline || 'Evidence-based herbal support for every cancer type...'}
           </p>
           <motion.a whileHover={{scale:1.04}} href="#how-we-treat" style={{display:'inline-flex',alignItems:'center',gap:8,background:'rgba(255,255,255,0.12)',color:'#fff',padding:'14px 30px',borderRadius:50,fontWeight:600,textDecoration:'none',fontSize:14,border:'1px solid rgba(255,255,255,0.3)',backdropFilter:'blur(10px)'}}>
             See Our 5-Step Process
@@ -132,7 +148,7 @@ export default function CarePrograms(){
 
             {/* Right: program list */}
             <motion.div variants={stg} initial="hidden" whileInView="show" viewport={{once:true,amount:0.05}} style={{display:'flex',flexDirection:'column',gap:12}}>
-              {services.map(svc=>(
+              {activeServices.map(svc=>(
                 <motion.div key={svc.slug} variants={up} whileHover={{x:6}} style={{display:'flex',alignItems:'center',gap:16,background:'#fff',borderRadius:16,padding:'16px 18px',border:`1.5px solid ${AM}`,boxShadow:'0 2px 12px rgba(0,0,0,0.04)',transition:'box-shadow 0.2s',position:'relative',overflow:'hidden'}}>
                   <div style={{position:'absolute',top:-30,right:-30,width:80,height:80,borderRadius:'50%',background:A,filter:'blur(35px)',opacity:0.07,pointerEvents:'none'}}/>
                   <div style={{width:46,height:46,borderRadius:13,background:`linear-gradient(135deg,${A},${AD})`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,color:'#fff',flexShrink:0,boxShadow:`0 6px 16px ${A}44`}}>{svc.icon}</div>
@@ -176,8 +192,8 @@ export default function CarePrograms(){
             </motion.div>
           </motion.div>
           <motion.div initial="hidden" whileInView="show" variants={stg} viewport={{once:true,amount:0.05}} style={{display:'flex',flexDirection:'column',gap:10}}>
-            {steps.map((step,i)=>(
-              <motion.div key={step.num} variants={up}>
+            {activeSteps.map((step,i)=>(
+              <motion.div key={step.num || i} variants={up}>
                 <Step step={step} open={open===i} onToggle={()=>setOpen(open===i?-1:i)}/>
               </motion.div>
             ))}

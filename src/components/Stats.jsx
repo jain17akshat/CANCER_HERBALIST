@@ -7,6 +7,8 @@ import {
   FaLeaf, FaAward, FaHospital
 } from 'react-icons/fa';
 
+import { useContent } from '../context/ContentContext';
+
 const stats = [
   {
     icon: <FaUsers />,
@@ -56,7 +58,22 @@ const stats = [
 ];
 
 export default function Stats() {
+  const { content } = useContent();
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
+
+  const dynamicStats = (content?.stats || []).map((ds, idx) => {
+    const staticStat = stats[idx] || stats[0];
+    return {
+      icon: staticStat.icon,
+      color: staticStat.color,
+      gradient: staticStat.gradient,
+      value: Number(ds.value) || 0,
+      suffix: ds.suffix || '',
+      label: ds.label || '',
+      sublabel: ds.sublabel || ''
+    };
+  });
+  const activeStats = dynamicStats.length > 0 ? dynamicStats : stats;
 
   return (
     <section
@@ -88,7 +105,7 @@ export default function Stats() {
             gap: '20px',
           }}
         >
-          {stats.map((stat, i) => (
+          {activeStats.map((stat, i) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 30 }}

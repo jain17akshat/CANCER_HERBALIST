@@ -66,7 +66,7 @@ const orderLimiter = rateLimit({
 });
 
 /* ── Body parser ────────────────────────────────────────────── */
-app.use(express.json({ limit: '10kb' })); // Prevent large payload DoS
+app.use(express.json({ limit: '10mb' })); // Support Base64 image uploads in admin copy editor
 
 /* ── Health check ───────────────────────────────────────────── */
 app.get('/', (_req, res) =>

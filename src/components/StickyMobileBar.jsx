@@ -1,7 +1,17 @@
 import React from 'react';
 import { FaPhone, FaWhatsapp, FaCalendarCheck } from 'react-icons/fa';
+import { useContent } from '../context/ContentContext';
 
 export default function StickyMobileBar() {
+  const { content } = useContent();
+  const contactInfo = content?.contact || {
+    phone: '+91 88845 88835',
+    email: 'cancerherbalist@gmail.com',
+    whatsapp: '918884588835',
+    timings: 'Mon–Sat, 9 AM–6 PM',
+    address: 'Bangalore, India'
+  };
+
   return (
     <>
       <div
@@ -23,7 +33,7 @@ export default function StickyMobileBar() {
       >
         {/* Call Now */}
         <a
-          href="tel:+918884588835"
+          href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -42,7 +52,7 @@ export default function StickyMobileBar() {
 
         {/* WhatsApp Chat */}
         <a
-          href="https://wa.me/918884588835?text=Hi!%20I%20would%20like%20to%20inquire%20about%20herbal%20treatment%20support."
+          href={`https://wa.me/${contactInfo.whatsapp}?text=Hi!%20I%20would%20like%20to%20inquire%20about%20herbal%20treatment%20support.`}
           target="_blank"
           rel="noopener noreferrer"
           style={{

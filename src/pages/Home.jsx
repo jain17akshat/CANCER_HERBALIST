@@ -12,6 +12,8 @@ import TrustBadges from '../components/TrustBadges';
 import TreatmentProcess from '../components/TreatmentProcess';
 
 
+import { useContent } from '../context/ContentContext';
+
 const ACCENT = '#38bed5';
 
 /* ─── Why Choose Us – unique to Home ─── */
@@ -46,6 +48,34 @@ const healingPillars = [
 ];
 
 export default function Home() {
+  const { content } = useContent();
+
+  const dynamicWhyChooseUs = (content?.whyChooseUs?.items || []).map((ds, idx) => {
+    const staticItem = whyChooseUs[idx] || whyChooseUs[0];
+    return {
+      icon: staticItem.icon,
+      title: ds.title,
+      desc: ds.desc
+    };
+  });
+  const activeWhyChooseUs = dynamicWhyChooseUs.length > 0 ? dynamicWhyChooseUs : whyChooseUs;
+  const whyChooseUsTitle = content?.whyChooseUs?.title || 'Why Patients Trust Us';
+  const whyChooseUsSubtitle = content?.whyChooseUs?.subtitle || 'Our integrative approach combines clinical precision with compassionate, whole-person care.';
+
+  const dynamicHealingPillars = (content?.healingPillars?.items || []).map((ds, idx) => {
+    const staticItem = healingPillars[idx] || healingPillars[0];
+    return {
+      icon: staticItem.icon,
+      title: ds.title,
+      stat: ds.stat,
+      statLabel: ds.statLabel,
+      desc: ds.desc
+    };
+  });
+  const activeHealingPillars = dynamicHealingPillars.length > 0 ? dynamicHealingPillars : healingPillars;
+  const healingPillarsTitle = content?.healingPillars?.title || 'Three Pillars of Recovery';
+  const healingPillarsSubtitle = content?.healingPillars?.subtitle || 'A clinically structured framework that addresses the physical, nutritional, and immunological dimensions of cancer care.';
+
   return (
     <>
       <Hero />
@@ -65,10 +95,10 @@ export default function Home() {
               <FaShieldAlt /> What Sets Us Apart
             </span>
             <h2 className="section-title">
-              Why Patients <span style={{ color: ACCENT }}>Trust Us</span>
+              {whyChooseUsTitle}
             </h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Our integrative approach combines clinical precision with compassionate, whole-person care.
+              {whyChooseUsSubtitle}
             </p>
           </div>
 
@@ -79,7 +109,7 @@ export default function Home() {
               gap: '24px',
             }}
           >
-            {whyChooseUs.map((item, i) => (
+            {activeWhyChooseUs.map((item, i) => (
               <motion.div
                 key={item.title}
                 data-aos="fade-up"
@@ -161,10 +191,10 @@ export default function Home() {
               <FaLeaf /> Our Healing Framework
             </span>
             <h2 className="section-title">
-              Three Pillars of <span style={{ color: ACCENT }}>Recovery</span>
+              {healingPillarsTitle}
             </h2>
             <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              A clinically structured framework that addresses the physical, nutritional, and immunological dimensions of cancer care.
+              {healingPillarsSubtitle}
             </p>
           </div>
 
@@ -175,7 +205,7 @@ export default function Home() {
               gap: '28px',
             }}
           >
-            {healingPillars.map((pillar, i) => (
+            {activeHealingPillars.map((pillar, i) => (
               <motion.div
                 key={pillar.title}
                 data-aos="fade-up"

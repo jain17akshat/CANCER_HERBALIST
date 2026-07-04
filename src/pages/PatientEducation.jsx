@@ -5,58 +5,83 @@ import {
   FaBookMedical, FaShieldAlt, FaMicroscope, FaDna,
   FaArrowRight, FaBrain, FaHeartbeat, FaSeedling,
 } from 'react-icons/fa';
+import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
 
-/* ── Article listing data ── */
-const articles = [
-  {
-    id: 'tcells-vs-nk-cells',
-    icon: <FaShieldAlt />,
-    category: 'Immunology',
-    title: 'T-Cells vs NK Cells: Your Body\'s Cancer-Fighting Warriors',
-    excerpt:
-      'Discover the two key immune cell types — T-cells and NK cells — that form your body\'s frontline defense against cancer, and learn how they work together to hunt and destroy malignant cells.',
-    readTime: '10 min read',
-    gradient: 'linear-gradient(135deg, #0b5b67 0%, #38bed5 100%)',
-    badge: '🧬 Immune Defence',
-  },
-  {
-    id: 'coming-soon-nutrition',
-    icon: <FaSeedling />,
-    category: 'Nutrition',
-    title: 'Anti-Cancer Nutrition: Foods That Fuel Your Immunity',
-    excerpt:
-      'Learn which superfoods, herbs, and dietary strategies can support your immune system during and after cancer treatment.',
-    readTime: 'Coming Soon',
-    gradient: 'linear-gradient(135deg, #2ca8be 0%, #e0f7fa 100%)',
-    badge: '🥦 Diet & Healing',
-    disabled: true,
-  },
-  {
-    id: 'coming-soon-mindset',
-    icon: <FaBrain />,
-    category: 'Mental Wellness',
-    title: 'The Psychology of Healing: Building a Fighter\'s Mindset',
-    excerpt:
-      'Explore evidence-backed mental wellness strategies — from meditation to visualization — that help cancer patients stay resilient and hopeful.',
-    readTime: 'Coming Soon',
-    gradient: 'linear-gradient(135deg, #38bed5 0%, #0b5b67 100%)',
-    badge: '🧠 Mind & Body',
-    disabled: true,
-  },
-];
+const iconMap = {
+  '🧬': <FaDna />,
+  '🛡️': <FaShieldAlt />,
+  '🔬': <FaMicroscope />,
+  '❤️': <FaHeartbeat />,
+  '🌿': <FaSeedling />,
+  '🧠': <FaBrain />,
+  'FaDna': <FaDna />,
+  'FaShieldAlt': <FaShieldAlt />,
+  'FaMicroscope': <FaMicroscope />,
+  'FaHeartbeat': <FaHeartbeat />,
+  'FaSeedling': <FaSeedling />,
+  'FaBrain': <FaBrain />,
+};
 
-/* ── Immune system quick stats ── */
-const quickStats = [
-  { value: '2 Billion+', label: 'T-Cells in Your Body', icon: <FaDna /> },
-  { value: '5–15%', label: 'Of Blood Lymphocytes Are NK Cells', icon: <FaShieldAlt /> },
-  { value: '24/7', label: 'Immune Surveillance', icon: <FaMicroscope /> },
-  { value: '∞', label: 'Capacity to Learn & Adapt', icon: <FaHeartbeat /> },
-];
+const renderIcon = (iconName) => {
+  if (!iconName) return null;
+  if (typeof iconName !== 'string') return iconName;
+  return iconMap[iconName] || <span style={{ fontSize: '20px' }}>{iconName}</span>;
+};
 
 export default function PatientEducation() {
   const navigate = useNavigate();
+  const { content } = useContent();
+
+  const hero = content?.patientEducationHero || {
+    badge: 'Patient Education Centre',
+    title: 'Fight Cancer Better',
+    subtitle: 'Knowledge is your most powerful weapon. Explore easy-to-understand educational guides that help you understand your immune system, nutrition, and mental wellness — everything a cancer warrior needs.'
+  };
+
+  const quickStats = content?.patientEducationStats || [
+    { value: '2 Billion+', label: 'T-Cells in Your Body', icon: '🧬' },
+    { value: '5–15%', label: 'Of Blood Lymphocytes Are NK Cells', icon: '🛡️' },
+    { value: '24/7', label: 'Immune Surveillance', icon: '🔬' },
+    { value: '∞', label: 'Capacity to Learn & Adapt', icon: '❤️' }
+  ];
+
+  const articles = content?.patientEducationArticles || [
+    {
+      id: 'tcells-vs-nk-cells',
+      icon: '🛡️',
+      category: 'Immunology',
+      title: "T-Cells vs NK Cells: Your Body's Cancer-Fighting Warriors",
+      excerpt: "Discover the two key immune cell types — T-cells and NK cells — that form your body's frontline defense against cancer, and learn how they work together to hunt and destroy malignant cells.",
+      readTime: '10 min read',
+      gradient: 'linear-gradient(135deg, #0b5b67 0%, #38bed5 100%)',
+      badge: '🧬 Immune Defence',
+      disabled: false
+    },
+    {
+      id: 'coming-soon-nutrition',
+      icon: '🌿',
+      category: 'Nutrition',
+      title: 'Anti-Cancer Nutrition: Foods That Fuel Your Immunity',
+      excerpt: 'Learn which superfoods, herbs, and dietary strategies can support your immune system during and after cancer treatment.',
+      readTime: 'Coming Soon',
+      gradient: 'linear-gradient(135deg, #2ca8be 0%, #e0f7fa 100%)',
+      badge: '🥦 Diet & Healing',
+      disabled: true
+    },
+    {
+      id: 'coming-soon-mindset',
+      icon: '🧠',
+      category: 'Mental Wellness',
+      title: "The Psychology of Healing: Building a Fighter's Mindset",
+      excerpt: 'Explore evidence-backed mental wellness strategies — from meditation to visualization — that help cancer patients stay resilient and hopeful.',
+      readTime: 'Coming Soon',
+      gradient: 'linear-gradient(135deg, #38bed5 0%, #0b5b67 100%)',
+      badge: '🧠 Mind & Body',
+      disabled: true
+    }
+  ];
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
@@ -122,7 +147,7 @@ export default function PatientEducation() {
               marginBottom: '24px',
             }}
           >
-            <FaBookMedical /> Patient Education Centre
+            <FaBookMedical /> {hero.badge}
           </span>
 
           <h1
@@ -134,16 +159,23 @@ export default function PatientEducation() {
               lineHeight: 1.15,
             }}
           >
-            Fight Cancer{' '}
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #38bed5, #0b5b67)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Better
-            </span>
+            {hero.title.split(' ').map((word, index, arr) => {
+              if (index === arr.length - 1) {
+                return (
+                  <span
+                    key={index}
+                    style={{
+                      background: 'linear-gradient(135deg, #38bed5, #0b5b67)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    {word}
+                  </span>
+                );
+              }
+              return word + ' ';
+            })}
           </h1>
 
           <p
@@ -155,9 +187,7 @@ export default function PatientEducation() {
               fontSize: 'clamp(0.95rem, 2vw, 1.15rem)',
             }}
           >
-            Knowledge is your most powerful weapon. Explore easy-to-understand
-            educational guides that help you understand your immune system,
-            nutrition, and mental wellness — everything a cancer warrior needs.
+            {hero.subtitle}
           </p>
         </motion.div>
       </section>
@@ -200,7 +230,7 @@ export default function PatientEducation() {
                   marginBottom: '4px',
                 }}
               >
-                {s.icon}
+                {renderIcon(s.icon)}
               </div>
               <span
                 style={{
@@ -246,7 +276,7 @@ export default function PatientEducation() {
         >
           {articles.map((article, i) => (
             <motion.div
-              key={article.id}
+              key={article.id || i}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * i, duration: 0.5 }}
@@ -269,7 +299,7 @@ export default function PatientEducation() {
               {/* Gradient Header */}
               <div
                 style={{
-                  background: article.gradient,
+                  background: article.gradient || 'linear-gradient(135deg, #0b5b67 0%, #38bed5 100%)',
                   padding: '32px 28px 24px',
                   position: 'relative',
                   overflow: 'hidden',
@@ -310,7 +340,7 @@ export default function PatientEducation() {
                     marginBottom: '8px',
                   }}
                 >
-                  {article.icon}
+                  {renderIcon(article.icon)}
                 </div>
               </div>
 

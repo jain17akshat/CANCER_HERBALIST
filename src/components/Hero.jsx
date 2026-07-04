@@ -6,6 +6,8 @@ import {
   FaChevronLeft, FaChevronRight, FaUserMd, FaStar
 } from 'react-icons/fa';
 
+import { useContent } from '../context/ContentContext';
+
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
 
@@ -23,110 +25,32 @@ const slides = [
     id: 1,
     bg: 'linear-gradient(135deg, #f0fbfd 0%, #e0f7fa 60%, #f8fafc 100%)',
     accentColor: ACCENT,
-    badge: '🌿 Natural Cancer Treatment Specialists',
-    headline: ['Fight Cancer', 'Holistically'],
-    headlineAccent: 'Holistically',
-    subline: 'Combining ancient herbal wisdom with modern medical knowledge for personalized cancer support.',
-    highlights: [
-      'Natural Herbal Treatments',
-      'Certified Practitioners',
-      'Personalized Care Plans',
-      'Regular Support (9AM–6PM)',
-    ],
-    stat: { value: '4000+', label: 'Patients Supported' },
-    cta: { label: 'Book Free Consultation', href: '/contact' },
-    secondaryCta: { label: 'Watch Story', href: '/testimonials' },
   },
   {
     id: 2,
     bg: 'linear-gradient(135deg, #eff6ff 0%, #bfdbfe 60%, #eff6ff 100%)',
     accentColor: '#2563eb',
-    badge: '⏰ Unmatched Patient Dedication',
-    headline: ['1–2 Hours With', 'Every Patient'],
-    headlineAccent: 'Every Patient',
-    subline: 'While the industry average is just 15 minutes, Prof. Ramesh  personally reviews your reports, scans, and history in a deep one-on-one session.',
-    highlights: [
-      'Full Report Review',
-      'Scan & Biopsy Analysis',
-      'Personalized Strategy',
-      'Zero Rushed Consultations',
-    ],
-    stat: { value: '1–2 Hrs', label: 'Personal Time Per Patient' },
-    cta: { label: 'Book Your Session', href: '/contact' },
-    secondaryCta: { label: 'Read Success Stories', href: '/testimonials' },
   },
   {
     id: 3,
     bg: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 60%, #fdf4ff 100%)',
     accentColor: '#db2777',
-    badge: '🎗️ Complete Cancer Coverage',
-    headline: ['Every Cancer Type,', 'One Team'],
-    headlineAccent: 'One Team',
-    subline: 'From common to rare — breast, lung, blood, brain, pancreatic and beyond. No diagnosis is out of scope. We build a personalised herbal pathway for every patient.',
-    highlights: [
-      'Breast & Gynaecological',
-      'Lung & Respiratory',
-      'Blood & Lymphatic',
-      'Brain, Bone & Rare Types',
-    ],
-    stat: { value: '∞', label: 'No Cancer Is Out of Scope' },
-    cta: { label: 'Find Your Program', href: '/care-programs' },
-    secondaryCta: { label: 'See All Programs', href: '/care-programs' },
     cancerTicker: true,
   },
   {
     id: 4,
     bg: 'linear-gradient(135deg, #faf5ff 0%, #ede9fe 60%, #f5f3ff 100%)',
     accentColor: '#7c3aed',
-    badge: '🧪 Integrative, Not Alternative',
-    headline: ['Works Alongside', 'Chemotherapy'],
-    headlineAccent: 'Chemotherapy',
-    subline: 'Our herbal protocols are screened for drug-herb interactions and complement your conventional treatment — reducing side effects and supporting recovery.',
-    highlights: [
-      'No Drug Conflicts',
-      'Reduces Chemo Side Effects',
-      'Supports Immunity',
-      'Improves Quality of Life',
-    ],
-    stat: { value: '87%', label: 'Patients Report Improved Energy' },
-    cta: { label: 'Start Integrative Care', href: '/contact' },
-    secondaryCta: { label: 'Explore Our Products', href: '/store' },
   },
   {
     id: 5,
     bg: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 60%, #fff7ed 100%)',
     accentColor: '#ea580c',
-    badge: '❤️ No Patient Left Alone',
-    headline: ['Weekly Follow-Ups,', 'Every Time'],
-    headlineAccent: 'Every Time',
-    subline: 'Your protocol evolves with you. Our team refines your diet plans, herbal formulas, and lifestyle guidance every week based on how your body responds.',
-    highlights: [
-      'Custom Diet Charts',
-      'WhatsApp Support Line',
-      'Formula Adjustments',
-      'Monthly Report Reviews',
-    ],
-    stat: { value: '95%', label: 'Patient Retention Rate' },
-    cta: { label: 'Join Our Program', href: '/contact' },
-    secondaryCta: { label: 'Meet Our Team', href: '/doctors' },
   },
   {
     id: 6,
     bg: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 60%, #fffdf0 100%)',
     accentColor: '#d97706',
-    badge: '🛡️ Certified, Safe & Trusted',
-    headline: ['FSSAI Certified', 'Pharmaceuticals'],
-    headlineAccent: 'Pharmaceuticals',
-    subline: 'Every herbal product is lab-tested, made by standardized extracts, and FSSAI certified. We\'re not making claims — we\'re backed by science, certification, and 35+ years of research & practice.',
-    highlights: [
-      'Lab-Tested Purity',
-      'Standardized Extracts',
-      'FSSAI Licence Verified',
-      '35+ Years of Research',
-    ],
-    stat: { value: '35+', label: 'Years of Research & Practice' },
-    cta: { label: 'Shop Certified Products', href: '/store' },
-    secondaryCta: { label: 'Learn About Us', href: '/about' },
   },
 ];
 
@@ -138,9 +62,31 @@ const slideVariants = {
 };
 
 export default function Hero() {
+  const { content } = useContent();
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+
+  const dynamicSlides = (content?.heroSlides || []).map((ds, idx) => {
+    const staticSlide = slides[idx] || slides[0];
+    const headlineWords = ds.headline ? ds.headline.split(', ') : ['Fight Cancer', 'Holistically'];
+    return {
+      id: ds.id || idx + 1,
+      bg: staticSlide.bg,
+      accentColor: staticSlide.accentColor,
+      badge: ds.badge,
+      headline: headlineWords,
+      headlineAccent: ds.headlineAccent,
+      subline: ds.subline,
+      highlights: ds.highlights || [],
+      stat: { value: ds.statValue, label: ds.statLabel },
+      cta: { label: ds.ctaLabel, href: ds.ctaHref },
+      secondaryCta: { label: ds.secondaryCtaLabel, href: ds.secondaryCtaHref },
+      cancerTicker: staticSlide.cancerTicker || false,
+    };
+  });
+
+  const activeSlides = dynamicSlides.length > 0 ? dynamicSlides : [];
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -155,12 +101,14 @@ export default function Hero() {
   }, []);
 
   const next = useCallback(() => {
-    goTo((current + 1) % slides.length, 1);
-  }, [current, goTo]);
+    if (activeSlides.length === 0) return;
+    goTo((current + 1) % activeSlides.length, 1);
+  }, [current, goTo, activeSlides.length]);
 
   const prev = useCallback(() => {
-    goTo((current - 1 + slides.length) % slides.length, -1);
-  }, [current, goTo]);
+    if (activeSlides.length === 0) return;
+    goTo((current - 1 + activeSlides.length) % activeSlides.length, -1);
+  }, [current, goTo, activeSlides.length]);
 
   // Auto-advance every 4s — always on
   useEffect(() => {
@@ -168,7 +116,7 @@ export default function Hero() {
     return () => clearInterval(t);
   }, [next]);
 
-  const slide = slides[current];
+  const slide = activeSlides[current] || {};
 
   return (
     <section
@@ -393,7 +341,7 @@ export default function Hero() {
       <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
         {/* Dots */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          {slides.map((s, i) => (
+          {activeSlides.map((s, i) => (
             <button key={i}
               onClick={() => goTo(i, i > current ? 1 : -1)}
               style={{ width: current === i ? '32px' : '8px', height: '8px', borderRadius: '4px', background: current === i ? slide.accentColor : `${slide.accentColor}40`, border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.35s ease', boxShadow: current === i ? `0 2px 8px ${slide.accentColor}66` : 'none' }}
