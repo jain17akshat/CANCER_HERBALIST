@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaClock, FaUser } from 'react-icons/fa';
+import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
@@ -44,6 +45,14 @@ export default function Blog() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [allBlogs, setAllBlogs] = useState(blogs);
+  const { content } = useContent();
+  const contactInfo = content?.contact || {
+    phone: '+91 88845 88835',
+    email: 'cancerherbalist@gmail.com',
+    whatsapp: '918884588835',
+    timings: 'Mon–Sat, 9 AM–6 PM',
+    address: 'Bangalore, India'
+  };
 
   React.useEffect(() => {
     const fetchBlogs = async () => {
@@ -77,10 +86,38 @@ export default function Blog() {
         <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', color: '#0f172a', marginBottom: '20px', fontFamily: 'Playfair Display, serif' }}>
           Educational Blog
         </h1>
-        <p style={{ maxWidth: '700px', margin: '0 auto', color: '#64748b', lineHeight: '1.8', fontSize: '1.1rem' }}>
+        <p style={{ maxWidth: '700px', margin: '0 auto 30px', color: '#64748b', lineHeight: '1.8', fontSize: '1.1rem' }}>
           Expert guidance on cancer awareness, nutrition, herbal support, wellness, and recovery.
         </p>
-       
+        
+        {/* Search Bar */}
+        <div style={{ position: 'relative', maxWidth: '500px', margin: '0 auto' }}>
+          <input
+            type="text"
+            placeholder="Search articles by title, category, or author..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '16px 20px 16px 50px',
+              borderRadius: '999px',
+              border: '1.5px solid #e2e8f0',
+              outline: 'none',
+              fontSize: '15px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+              transition: 'border-color 0.2s, box-shadow 0.2s'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = ACCENT;
+              e.target.style.boxShadow = `0 4px 20px ${ACCENT}22`;
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#e2e8f0';
+              e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)';
+            }}
+          />
+          <FaSearch style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: '16px' }} />
+        </div>
       </section>
 
       {/* Blog Grid */}
@@ -136,21 +173,139 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section style={{ background: ACCENT, padding: '80px 20px', textAlign: 'center', color: '#fff' }}>
-        <h2 style={{ fontSize: '2rem', fontFamily: 'Playfair Display, serif' }}>Subscribe For Health Updates</h2>
-        <p style={{ maxWidth: '600px', margin: '15px auto 30px', opacity: 0.9 }}>
-          Receive the latest educational articles, research insights, and wellness guidance.
-        </p>
-        <div style={{ display: 'flex', gap: '12px', maxWidth: '500px', margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <input
-            type="email"
-            placeholder="Enter your email address"
-            style={{ flex: 1, minWidth: '240px', padding: '16px', borderRadius: '999px', border: 'none', outline: 'none', fontSize: '15px' }}
-          />
-          <button style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '16px 28px', borderRadius: '999px', fontWeight: 700, cursor: 'pointer' }}>
-            Subscribe
-          </button>
+      {/* Interactive Consultation CTA Section */}
+      <section style={{ 
+        background: 'linear-gradient(135deg, #1a6e52 0%, #114a37 100%)', 
+        padding: '90px 20px', 
+        textAlign: 'center', 
+        color: '#fff',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Subtle decorative background shapes */}
+        <div style={{
+          position: 'absolute',
+          top: '-50%',
+          left: '-10%',
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          background: 'rgba(56, 190, 213, 0.1)',
+          filter: 'blur(80px)',
+          pointerEvents: 'none'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '-50%',
+          right: '-10%',
+          width: '500px',
+          height: '500px',
+          borderRadius: '50%',
+          background: 'rgba(56, 190, 213, 0.15)',
+          filter: 'blur(100px)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
+          <span style={{ 
+            display: 'inline-block', 
+            background: 'rgba(56, 190, 213, 0.2)', 
+            color: '#38bed5', 
+            padding: '8px 20px', 
+            borderRadius: '999px', 
+            fontSize: '14px', 
+            fontWeight: 700, 
+            letterSpacing: '1px', 
+            textTransform: 'uppercase',
+            marginBottom: '20px',
+            border: '1px solid rgba(56, 190, 213, 0.3)'
+          }}>
+            Personalized Guidance
+          </span>
+          <h2 style={{ 
+            fontSize: 'clamp(2rem, 4vw, 3rem)', 
+            fontFamily: 'Playfair Display, serif', 
+            margin: '0 0 20px',
+            lineHeight: 1.2
+          }}>
+            Confused About Your Cancer Treatment Options?
+          </h2>
+          <p style={{ 
+            maxWidth: '650px', 
+            margin: '0 auto 40px', 
+            opacity: 0.9, 
+            fontSize: '1.1rem',
+            lineHeight: '1.8'
+          }}>
+            Schedule a complimentary discovery call with our experts to discuss your health challenges. Learn how safe, personalized herbal protocols can complement your recovery.
+          </p>
+          
+          <div style={{ 
+            display: 'flex', 
+            gap: '16px', 
+            justifyContent: 'center', 
+            flexWrap: 'wrap'
+          }}>
+            <button 
+              onClick={() => navigate('/contact')}
+              style={{ 
+                background: '#38bed5', 
+                color: '#fff', 
+                border: 'none', 
+                padding: '16px 36px', 
+                borderRadius: '999px', 
+                fontWeight: 750, 
+                cursor: 'pointer',
+                fontSize: '16px',
+                transition: 'transform 0.2s, box-shadow 0.2s, background-color 0.2s',
+                boxShadow: '0 8px 20px rgba(56, 190, 213, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = '#2bb0c7';
+                e.currentTarget.style.boxShadow = '0 12px 24px rgba(56, 190, 213, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = '#38bed5';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(56, 190, 213, 0.3)';
+              }}
+            >
+              Book Free Consultation
+            </button>
+            <a 
+              href={`https://wa.me/${contactInfo.whatsapp}?text=Hi!%20I%20read%20your%20blog%20and%20would%20like%20to%20know%20more%20about%20herbal%20cancer%20protocols.`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                background: 'rgba(255,255,255,0.1)', 
+                color: '#fff', 
+                border: '1px solid rgba(255,255,255,0.3)', 
+                padding: '16px 36px', 
+                borderRadius: '999px', 
+                fontWeight: 750, 
+                cursor: 'pointer',
+                fontSize: '16px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'transform 0.2s, background-color 0.2s, border-color 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+              }}
+            >
+              Chat on WhatsApp
+            </a>
+          </div>
         </div>
       </section>
     </div>
