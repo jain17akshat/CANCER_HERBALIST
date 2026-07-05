@@ -182,6 +182,12 @@ export const defaultWebsiteContent = {
     founderQuoteAuthor: "Prof Ramesh Babu, Founder",
     "founderImage": "/images/doctor1.png"
   },
+  aboutVideo: {
+    title: 'Watch Our Story',
+    subtitle: 'Discover how we combine scientific research and botanical medicine to support cancer patients.',
+    videoUrl: 'https://res.cloudinary.com/zm8wxsqy/video/upload/v1783229564/Cancer_video_ahljqs.mp4',
+    thumbnailUrl: '/logo.png'
+  },
   aboutMission: {
     title: 'Mission & Vision',
     subtitle: 'Two guiding stars that shape every decision we make.',

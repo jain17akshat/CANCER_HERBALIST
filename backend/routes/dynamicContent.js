@@ -748,7 +748,13 @@ const defaultWebsiteContent = {
       secondaryCtaLabel: 'Learn About Us',
       secondaryCtaHref: '/about'
     }
-  ]
+  ],
+  aboutVideo: {
+    title: 'Watch Our Story',
+    subtitle: 'Discover how we combine scientific research and botanical medicine to support cancer patients.',
+    videoUrl: 'https://res.cloudinary.com/zm8wxsqy/video/upload/v1783229564/Cancer_video_ahljqs.mp4',
+    thumbnailUrl: '/logo.png'
+  }
 };
 
 // Seed databases if they are missing or do not contain the initial items

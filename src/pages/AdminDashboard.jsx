@@ -2241,6 +2241,70 @@ export default function AdminDashboard() {
                                   })}
                                   style={inputStyle}
                                 />
+                            </div>
+                          </div>
+                        </div>
+                      </details>
+
+                        <details open style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            🎥 Clinical Video Section
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Video Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutVideo?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutVideo: { ...(generalForm.aboutVideo || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Video Subtitle *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutVideo?.subtitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutVideo: { ...(generalForm.aboutVideo || {}), subtitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="form-grid-2col" style={{ marginBottom: 0 }}>
+                              <div>
+                                <label style={labelStyle}>Video File Path / URL *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutVideo?.videoUrl || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutVideo: { ...(generalForm.aboutVideo || {}), videoUrl: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Thumbnail Image URL</label>
+                                <input
+                                  type="text"
+                                  value={generalForm.aboutVideo?.thumbnailUrl || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutVideo: { ...(generalForm.aboutVideo || {}), thumbnailUrl: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
                               </div>
                             </div>
                           </div>

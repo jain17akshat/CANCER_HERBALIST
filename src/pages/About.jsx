@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FaLeaf, FaHeart, FaShieldAlt, FaRegLightbulb, FaUserMd,
   FaSeedling, FaFlask, FaHandHoldingHeart, FaGlobe,
-  FaArrowRight, FaCheckCircle, FaQuoteLeft
+  FaArrowRight, FaCheckCircle, FaQuoteLeft, FaPlay
 } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 
@@ -13,10 +13,12 @@ const DARK   = '#0a1628';
 
 export default function About() {
   const { content } = useContent();
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Load sections from context or default
   const aboutHero = content?.aboutHero || {};
   const aboutStory = content?.aboutStory || {};
+  const aboutVideo = content?.aboutVideo || {};
   const aboutMission = content?.aboutMission || {};
   const aboutValues = content?.aboutValues || { items: [] };
   const aboutMilestones = content?.aboutMilestones || { items: [] };
@@ -174,6 +176,119 @@ export default function About() {
             ))}
           </motion.div>
         </div>
+      </section>
+
+      {/* ══════════ VIDEO SECTION ══════════ */}
+      <section style={{ padding: 'clamp(50px, 8vw, 80px) 20px', background: '#f1f5f9' }}>
+        <div style={{ maxWidth: '960px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ marginBottom: '32px' }}>
+            <span style={{
+              background: '#e0f2fe',
+              color: '#0369a1',
+              padding: '6px 16px',
+              borderRadius: '20px',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              display: 'inline-block',
+              marginBottom: '14px'
+            }}>
+              Clinical Video
+            </span>
+            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', color: DARK, marginBottom: '16px' }}>
+              {aboutVideo.title || 'Watch Our Story'}
+            </h2>
+            <p style={{ color: '#475569', maxWidth: '600px', margin: '0 auto', lineHeight: '1.7', fontSize: '0.98rem' }}>
+              {aboutVideo.subtitle || 'Discover how we combine scientific research and botanical medicine to support cancer patients.'}
+            </p>
+          </div>
+
+          <div style={{
+            position: 'relative',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
+            background: '#000',
+            aspectRatio: '16/9',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            {!isPlaying ? (
+              <div 
+                onClick={() => setIsPlaying(true)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  cursor: 'pointer',
+                  backgroundImage: aboutVideo.thumbnailUrl ? `url(${aboutVideo.thumbnailUrl}), linear-gradient(135deg, #0e6655 0%, #0a1628 100%)` : 'linear-gradient(135deg, #0e6655 0%, #0a1628 100%)',
+                  backgroundSize: aboutVideo.thumbnailUrl && aboutVideo.thumbnailUrl.toLowerCase().includes('logo') ? 'contain' : 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 2
+                }}
+              >
+                {/* Shimmer overlay for extra premium look */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0, left: 0, right: 0, bottom: 0,
+                  background: 'linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.45))',
+                  zIndex: 1
+                }} />
+
+                {/* Animated Pulsing Play Button */}
+                <div 
+                  className="play-button-outer"
+                  style={{
+                    width: '84px',
+                    height: '84px',
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.25)',
+                    backdropFilter: 'blur(8px)',
+                    border: '2px solid rgba(255, 255, 255, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2,
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <FaPlay style={{ color: '#fff', fontSize: '24px', marginLeft: '6px' }} />
+                </div>
+              </div>
+            ) : (
+              <video 
+                src={aboutVideo.videoUrl || '/cancer-herbalist.mp4'} 
+                controls 
+                autoPlay 
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  zIndex: 1
+                }}
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Style injection for play button hover/pulses */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          .play-button-outer:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.35) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+            box-shadow: 0 12px 40px rgba(56, 190, 213, 0.4) !important;
+          }
+        `}} />
       </section>
 
       {/* ══════════ MISSION + VISION ══════════ */}
