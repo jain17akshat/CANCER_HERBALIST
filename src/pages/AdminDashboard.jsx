@@ -2309,6 +2309,133 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         </details>
+
+                        <details style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', marginBottom: '16px', overflow: 'hidden' }}>
+                          <summary style={{ padding: '14px 20px', background: '#f8fafc', fontWeight: 600, fontSize: '14px', color: '#1e293b', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', userSelect: 'none' }}>
+                            📋 Clinical Success & Case Studies Section
+                          </summary>
+                          <div style={{ padding: '20px' }}>
+                            <div className="form-grid-2col">
+                              <div>
+                                <label style={labelStyle}>Section Title *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutCaseStudies?.title || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutCaseStudies: { ...(generalForm.aboutCaseStudies || {}), title: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                              <div>
+                                <label style={labelStyle}>Section Subtitle *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={generalForm.aboutCaseStudies?.subtitle || ''}
+                                  onChange={e => setGeneralForm({
+                                    ...generalForm,
+                                    aboutCaseStudies: { ...(generalForm.aboutCaseStudies || {}), subtitle: e.target.value }
+                                  })}
+                                  style={inputStyle}
+                                />
+                              </div>
+                            </div>
+
+                            <div style={{ marginTop: '20px' }}>
+                              <label style={{ ...labelStyle, marginBottom: '10px', display: 'block' }}>Case Study Items</label>
+                              {(generalForm.aboutCaseStudies?.items || []).map((item, idx) => (
+                                <div key={idx} style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '16px', border: '1px solid #e2e8f0' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                    <span style={{ fontWeight: 600, fontSize: '14px', color: '#0f172a' }}>Case #{idx + 1}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const newItems = [...(generalForm.aboutCaseStudies.items || [])];
+                                        newItems.splice(idx, 1);
+                                        setGeneralForm({
+                                          ...generalForm,
+                                          aboutCaseStudies: { ...generalForm.aboutCaseStudies, items: newItems }
+                                        });
+                                      }}
+                                      style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+                                    >
+                                      Remove Case
+                                    </button>
+                                  </div>
+                                  <div className="form-grid-2col" style={{ marginBottom: '12px' }}>
+                                    <div>
+                                      <label style={labelStyle}>Badge *</label>
+                                      <input
+                                        type="text"
+                                        required
+                                        value={item.badge || ''}
+                                        onChange={e => {
+                                          const newItems = [...(generalForm.aboutCaseStudies.items || [])];
+                                          newItems[idx] = { ...newItems[idx], badge: e.target.value };
+                                          setGeneralForm({
+                                            ...generalForm,
+                                            aboutCaseStudies: { ...generalForm.aboutCaseStudies, items: newItems }
+                                          });
+                                        }}
+                                        style={inputStyle}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label style={labelStyle}>Title *</label>
+                                      <input
+                                        type="text"
+                                        required
+                                        value={item.title || ''}
+                                        onChange={e => {
+                                          const newItems = [...(generalForm.aboutCaseStudies.items || [])];
+                                          newItems[idx] = { ...newItems[idx], title: e.target.value };
+                                          setGeneralForm({
+                                            ...generalForm,
+                                            aboutCaseStudies: { ...generalForm.aboutCaseStudies, items: newItems }
+                                          });
+                                        }}
+                                        style={inputStyle}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <label style={labelStyle}>Description *</label>
+                                    <textarea
+                                      required
+                                      value={item.description || ''}
+                                      onChange={e => {
+                                        const newItems = [...(generalForm.aboutCaseStudies.items || [])];
+                                        newItems[idx] = { ...newItems[idx], description: e.target.value };
+                                        setGeneralForm({
+                                          ...generalForm,
+                                          aboutCaseStudies: { ...generalForm.aboutCaseStudies, items: newItems }
+                                        });
+                                      }}
+                                      style={{ ...inputStyle, minHeight: '60px', resize: 'vertical' }}
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newItems = [...(generalForm.aboutCaseStudies?.items || [])];
+                                  newItems.push({ badge: 'New Case Badge', title: 'New Case Title', description: 'New Case Description' });
+                                  setGeneralForm({
+                                    ...generalForm,
+                                    aboutCaseStudies: { ...(generalForm.aboutCaseStudies || {}), items: newItems }
+                                  });
+                                }}
+                                style={{ background: '#38bed5', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
+                              >
+                                + Add Success Case
+                              </button>
+                            </div>
+                          </div>
+                        </details>
                       </div>
                     )}
 

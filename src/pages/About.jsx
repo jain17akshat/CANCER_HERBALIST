@@ -23,6 +23,7 @@ export default function About() {
   const aboutValues = content?.aboutValues || { items: [] };
   const aboutMilestones = content?.aboutMilestones || { items: [] };
   const aboutApproach = content?.aboutApproach || { items: [] };
+  const aboutCaseStudies = content?.aboutCaseStudies || { items: [] };
   const aboutFounderProfile = content?.aboutFounderProfile || {};
 
   // Setup static icons map for repeatable values
@@ -440,6 +441,103 @@ export default function About() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ══════════ CLINICAL CASE STUDIES ══════════ */}
+      <section style={{ background: '#f8fafc', padding: 'clamp(50px, 8vw, 100px) 20px', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '64px' }} data-aos="fade-up">
+            <span style={{ color: ACCENT, fontWeight: 700, fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>Clinical Evidence</span>
+            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: DARK, marginTop: '12px', marginBottom: '16px' }}>
+              {aboutCaseStudies.title ? (
+                <>
+                  {aboutCaseStudies.title.split(' ').slice(0, -1).join(' ')}{' '}
+                  <span style={{ color: ACCENT }}>{aboutCaseStudies.title.split(' ').slice(-1)[0]}</span>
+                </>
+              ) : (
+                <>Clinical Success & <span style={{ color: ACCENT }}>Case Studies</span></>
+              )}
+            </h2>
+            <p style={{ color: '#64748b', maxWidth: '620px', margin: '0 auto', lineHeight: '1.8' }}>
+              {aboutCaseStudies.subtitle || 'Verified cases demonstrating recovery and significant quality-of-life improvements using Herbal Chemotherapy (HCT) and Nutrition Therapy (NT).'}
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '32px' }}>
+            {(aboutCaseStudies.items || []).map((item, i) => (
+              <motion.div key={i} data-aos="fade-up" data-aos-delay={i * 70}
+                whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(10,22,40,0.08)' }}
+                style={{
+                  background: '#fff',
+                  borderRadius: '24px',
+                  padding: '36px 32px',
+                  border: '1px solid #e2e8f0',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: i % 2 === 0 ? ACCENT : '#10b981' }} />
+                <div>
+                  <span style={{
+                    display: 'inline-block',
+                    background: i % 2 === 0 ? `${ACCENT}15` : 'rgba(16,185,129,0.12)',
+                    color: i % 2 === 0 ? ACCENT : '#10b981',
+                    padding: '6px 14px',
+                    borderRadius: '50px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    marginBottom: '20px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {item.badge}
+                  </span>
+                  <h4 style={{ color: DARK, fontFamily: 'Playfair Display, serif', fontSize: '1.35rem', fontWeight: 700, marginBottom: '14px', lineHeight: 1.3 }}>
+                    {item.title}
+                  </h4>
+                  <p style={{ color: '#64748b', fontSize: '0.94rem', lineHeight: '1.8', margin: 0 }}>
+                    {item.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Scientific Callout Block */}
+          <motion.div data-aos="fade-up"
+            style={{
+              marginTop: '56px',
+              background: 'linear-gradient(135deg, #0a1628 0%, #0c2b3a 100%)',
+              borderRadius: '28px',
+              padding: '40px 48px',
+              position: 'relative',
+              overflow: 'hidden',
+              border: `1px solid ${ACCENT}33`,
+              boxShadow: '0 20px 40px rgba(10,22,40,0.2)'
+            }}>
+            <div style={{ position: 'absolute', bottom: '-40px', right: '-40px', width: '200px', height: '200px', borderRadius: '50%', background: ACCENT, opacity: 0.05, filter: 'blur(50px)', pointerEvents: 'none' }} />
+            <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, minWidth: '280px' }}>
+                <h4 style={{ color: ACCENT, fontSize: '0.85rem', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '12px' }}>
+                  Scientific Basis: Herbal Chemotherapy (HCT)
+                </h4>
+                <p style={{ color: '#fff', fontSize: '1.05rem', fontFamily: 'Playfair Display, serif', lineHeight: 1.6, marginBottom: '12px' }}>
+                  "HCT utilizes standardized botanical extracts, such as curcuminoids from Turmeric, targeting the NF-κB pathways to eliminate cancer stem cells."
+                </p>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', lineHeight: 1.7, margin: 0 }}>
+                  Clinical studies confirm that these targeted agents downregulate pro-oncogenes, promote cancer cell apoptosis (programmed cell death), and work through anti-angiogenesis (VEGF inhibition) to prevent tumor blood vessel growth, while keeping healthy cells completely unharmed.
+                </p>
+              </div>
+              <div style={{ background: `${ACCENT}1a`, border: `1px solid ${ACCENT}44`, borderRadius: '16px', padding: '16px 24px', textAlign: 'center', minWidth: '150px' }}>
+                <div style={{ color: ACCENT, fontSize: '2.5rem', fontWeight: 800, lineHeight: 1 }}>25+</div>
+                <div style={{ color: '#fff', fontSize: '0.8rem', fontWeight: 600, marginTop: '6px', letterSpacing: '0.5px' }}>Years of Research</div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 

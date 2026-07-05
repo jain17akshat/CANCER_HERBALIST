@@ -754,6 +754,37 @@ const defaultWebsiteContent = {
     subtitle: 'Discover how we combine scientific research and botanical medicine to support cancer patients.',
     videoUrl: 'https://res.cloudinary.com/zm8wxsqy/video/upload/v1783229564/Cancer_video_ahljqs.mp4',
     thumbnailUrl: '/logo.png'
+  },
+  aboutCaseStudies: {
+    title: 'Clinical Success & Case Studies',
+    subtitle: 'Verified cases demonstrating recovery and significant quality-of-life improvements using Herbal Chemotherapy (HCT) and Nutrition Therapy (NT).',
+    items: [
+      {
+        badge: '4th Stage Colon Cancer',
+        title: 'UK Patient Recovery',
+        description: 'Recovery of a 62-year-old patient diagnosed with 4th stage Colon Cancer from London, UK. The response and recovery details surprised oncologists in the UK.'
+      },
+      {
+        badge: '4th Stage Lung Cancer',
+        title: 'Long-Term Survival Recovery',
+        description: 'A female patient who was given only a few months to live recovered completely from 4th stage Lung Cancer. She has been leading a normal, healthy life past 2 years.'
+      },
+      {
+        badge: '4th Stage Pancreatic Cancer',
+        title: 'Inoperable Tumor Response',
+        description: 'A 67-year-old patient from Chennai with IV stage Pancreatic Cancer was deemed inoperable. After 4 months of Nutrition Therapy (NT) at Cancer Herbalist, he recovered completely and has lived normally for over 2 years.'
+      },
+      {
+        badge: 'Elderly Care (Ages 80+)',
+        title: 'Enhanced Response in Elderly',
+        description: 'Satisfactory clinical observations in patients aged 80 and above. Results show a higher rate of response to botanical medicine protocols, often because they do not carry the burden of concurrent aggressive therapies.'
+      },
+      {
+        badge: 'Neck Cancer & Heart Failure',
+        title: 'Complex Double Condition Recovery',
+        description: 'A rare success case of a heart failure patient from Hyderabad suffering from Neck Cancer who achieved complete cure/remission in 3 months of supportive therapy.'
+      }
+    ]
   }
 };
 

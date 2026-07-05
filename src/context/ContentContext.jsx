@@ -168,9 +168,9 @@ export const defaultWebsiteContent = {
     badge: 'Our Story',
     title: 'A Mission Born from Compassion',
     paragraphs: [
-      "Cancer Herbalist was founded in 2012 by a team of integrative medicine practitioners who witnessed firsthand how conventional oncology, while life-saving, often left patients struggling with side effects, fear, and a sense of helplessness.",
-      "Our founders believed that herbal medicine — when practised with scientific rigour and deep respect for conventional treatment — could meaningfully improve quality of life, reduce treatment burden, and support the body's innate capacity to heal.",
-      "Today, Cancer Herbalist operates from Bangalore, India, serving patients locally and internationally through our in-clinic and teleconsultation services. We remain committed to our founding principle: compassionate, evidence-based, integrative care for every patient who walks through our door."
+      "Cancer Herbalist has emerged as a leading integrative oncology center, combining the symbiotic spirit of science and tradition. Our therapies work on the same molecular pathways studied in modern oncology—incorporating clinical research, receptor concepts, oncogene studies, and epigenetics with premium, standardized herbal extracts.",
+      "Founded by a team of pharmacologists and clinical researchers, we specialize in Herbal Chemotherapy (HCT) and Nutrition Therapy (NT). These protocols are designed to target cancer at its roots—including cancer stem cells and NF-κB pathways—while actively protecting healthy cells and downregulating pro-oncogenes.",
+      "Based in Bangalore, India, and serving patients worldwide, we are dedicated to providing evidence-based botanical support that integrates seamlessly with conventional treatments. We offer hope and real science to patients navigating their cancer journey."
     ],
     highlights: [
       "Carefully selected herbal medicines as part of a holistic care approach",
@@ -187,6 +187,37 @@ export const defaultWebsiteContent = {
     subtitle: 'Discover how we combine scientific research and botanical medicine to support cancer patients.',
     videoUrl: 'https://res.cloudinary.com/zm8wxsqy/video/upload/v1783229564/Cancer_video_ahljqs.mp4',
     thumbnailUrl: '/logo.png'
+  },
+  aboutCaseStudies: {
+    title: 'Clinical Success & Case Studies',
+    subtitle: 'Verified cases demonstrating recovery and significant quality-of-life improvements using Herbal Chemotherapy (HCT) and Nutrition Therapy (NT).',
+    items: [
+      {
+        badge: '4th Stage Colon Cancer',
+        title: 'UK Patient Recovery',
+        description: 'Recovery of a 62-year-old patient diagnosed with 4th stage Colon Cancer from London, UK. The response and recovery details surprised oncologists in the UK.'
+      },
+      {
+        badge: '4th Stage Lung Cancer',
+        title: 'Long-Term Survival Recovery',
+        description: 'A female patient who was given only a few months to live recovered completely from 4th stage Lung Cancer. She has been leading a normal, healthy life past 2 years.'
+      },
+      {
+        badge: '4th Stage Pancreatic Cancer',
+        title: 'Inoperable Tumor Response',
+        description: 'A 67-year-old patient from Chennai with IV stage Pancreatic Cancer was deemed inoperable. After 4 months of Nutrition Therapy (NT) at Cancer Herbalist, he recovered completely and has lived normally for over 2 years.'
+      },
+      {
+        badge: 'Elderly Care (Ages 80+)',
+        title: 'Enhanced Response in Elderly',
+        description: 'Satisfactory clinical observations in patients aged 80 and above. Results show a higher rate of response to botanical medicine protocols, often because they do not carry the burden of concurrent aggressive therapies.'
+      },
+      {
+        badge: 'Neck Cancer & Heart Failure',
+        title: 'Complex Double Condition Recovery',
+        description: 'A rare success case of a heart failure patient from Hyderabad suffering from Neck Cancer who achieved complete cure/remission in 3 months of supportive therapy.'
+      }
+    ]
   },
   aboutMission: {
     title: 'Mission & Vision',
