@@ -82,18 +82,6 @@ export default function About() {
             style={{ color: 'rgba(255,255,255,0.80)', fontSize: '1.15rem', lineHeight: '1.9', maxWidth: '620px', marginBottom: '40px' }}>
             {aboutHero.subline || 'Since 2012 Cancer Herbalist has been a trusted partner...'}
           </motion.p>
-
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-            style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-            <Link to={aboutHero.cta1Link || '/contact'}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: ACCENT, color: '#fff', padding: '15px 32px', borderRadius: '50px', fontWeight: 700, textDecoration: 'none', fontSize: '15px', boxShadow: `0 8px 28px ${ACCENT}55` }}>
-              {aboutHero.cta1Label || 'Book Free Consultation'} <FaArrowRight />
-            </Link>
-            <Link to={aboutHero.cta2Link || '/care-programs'}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '15px 32px', borderRadius: '50px', fontWeight: 600, textDecoration: 'none', fontSize: '15px', border: '1px solid rgba(255,255,255,0.25)' }}>
-              {aboutHero.cta2Label || 'Our Approach'}
-            </Link>
-          </motion.div>
         </div>
       </section>
 
