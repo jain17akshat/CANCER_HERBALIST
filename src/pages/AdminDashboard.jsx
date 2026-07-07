@@ -304,6 +304,25 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleCancelOrderDirect = async (orderId, remarks) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/cancel?key=${secret}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ remarks })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
+      alert('Order successfully cancelled!');
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
   /* ── Auto-refresh every 60s ──────────────────────────────────── */
   useEffect(() => {
     if (!authed) return;
@@ -1425,6 +1444,7 @@ export default function AdminDashboard() {
                     onReceiveReturn={handleReceiveReturn}
                     onInitiateRefund={handleInitiateRefund}
                     onSyncRefund={handleSyncRefund}
+                    onCancelOrderDirect={handleCancelOrderDirect}
                     onClose={() => { setSelectedOrder(null); setSelectedOrderDetails(null); }}
                   />
                 ) : (
@@ -3243,7 +3263,7 @@ export default function AdminDashboard() {
   );
 }
 
-function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn, onReceiveReturn, onInitiateRefund, onSyncRefund, onClose }) {
+function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn, onReceiveReturn, onInitiateRefund, onSyncRefund, onCancelOrderDirect, onClose }) {
   const { order, events, refund } = details;
   const [remarks, setRemarks] = React.useState('');
   const [returnRemarks, setReturnRemarks] = React.useState('');
@@ -3495,6 +3515,37 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
         {/* No action active */}
         {!['REQUESTED', 'APPROVED', 'INITIATED', 'PROCESSED', 'FAILED'].includes(order.refundStatus) && order.cancellationStatus !== 'REQUESTED' && order.returnStatus !== 'REQUESTED' && order.orderStatus !== 'RETURN_PICKUP_SCHEDULED' && (
           <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>No pending administrative action for this order.</p>
+        )}
+
+        {/* Direct Cancel Button (Available for confirmed/placed orders that are not shipped, delivered, or cancelled, and don't have a pending cancellation request) */}
+        {!['CANCELLED', 'SHIPPED', 'DELIVERED', 'OUT_FOR_DELIVERY', 'RTO_INITIATED', 'RTO_DELIVERED'].includes(order.orderStatus) && order.cancellationStatus !== 'REQUESTED' && (
+          <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
+            <button
+              onClick={() => {
+                const remarks = prompt('Enter remarks/reason for cancelling this order:');
+                if (remarks !== null) {
+                  onCancelOrderDirect(order.orderId, remarks);
+                }
+              }}
+              style={{
+                width: '100%',
+                background: '#dc2626',
+                color: '#fff',
+                border: 'none',
+                padding: '10px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '12.5px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
+            >
+              ❌ Cancel Order (Remove from Shiprocket)
+            </button>
+          </div>
         )}
       </div>
 

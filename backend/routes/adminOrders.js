@@ -138,6 +138,23 @@ router.put('/admin/orders/:orderId/cancellation', async (req, res) => {
         { remarks }
       );
 
+      // Cancel on Shiprocket if exists
+      if (order.shiprocketOrderId) {
+        try {
+          const { cancelShiprocketOrder } = require('./shiprocket');
+          await cancelShiprocketOrder(order.shiprocketOrderId);
+          console.log(`[admin/cancellation] Order ${orderId} (Shiprocket: ${order.shiprocketOrderId}) cancelled on Shiprocket.`);
+        } catch (srErr) {
+          console.error(`[admin/cancellation] Failed to cancel order ${orderId} on Shiprocket:`, srErr.message);
+          addOrderEvent(
+            orderId, 
+            'SYSTEM_ERROR', 
+            order.orderStatus, 
+            `Failed to cancel shipment on Shiprocket: ${srErr.message}`
+          );
+        }
+      }
+
       // Trigger refund flow if prepaid
       if (order.paymentMethod.toLowerCase().includes('online') && order.paymentStatus === 'PAID') {
         order.refundStatus = 'APPROVED';
@@ -190,6 +207,30 @@ router.put('/admin/orders/:orderId/cancellation', async (req, res) => {
         { rejectionReason }
       );
 
+      // Recreate/create on Shiprocket if missing
+      if (!order.shiprocketOrderId) {
+        try {
+          const { createShiprocketOrder } = require('./shiprocket');
+          const srData = await createShiprocketOrder(order);
+          order.shiprocketOrderId = srData.order_id || srData.id || null;
+          order.shipmentId = srData.shipment_id || null;
+          order.awb = srData.awb_code || null;
+          order.courierName = srData.courier_name || null;
+          order.trackingUrl = srData.tracking_url || null;
+          if (order.awb) order.shipmentStatus = 'AWB_ASSIGNED';
+          saveOrder(order);
+          console.log(`[admin/cancellation] Order ${order.orderId} successfully created on Shiprocket: ${order.shiprocketOrderId}`);
+        } catch (srErr) {
+          console.error(`[admin/cancellation] Failed to create order ${order.orderId} on Shiprocket:`, srErr.message);
+          addOrderEvent(
+            orderId, 
+            'SYSTEM_ERROR', 
+            order.orderStatus, 
+            `Failed to push shipment to Shiprocket: ${srErr.message}`
+          );
+        }
+      }
+
       await sendStatusNotificationEmail(
         order, 
         ORDER_STATUSES.ORDER_CONFIRMED, 
@@ -202,6 +243,99 @@ router.put('/admin/orders/:orderId/cancellation', async (req, res) => {
   } catch (err) {
     console.error('[admin/cancellation]', err.message);
     res.status(500).json({ success: false, error: 'Failed to process cancellation request.' });
+  }
+});
+
+/**
+ * POST /api/admin/orders/:orderId/cancel
+ * Admin directly cancels/removes an order (whether cancellation was requested or not).
+ */
+router.post('/admin/orders/:orderId/cancel', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { remarks } = req.body;
+
+    const order = getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found.' });
+    }
+
+    // Check if order is already cancelled
+    if (order.orderStatus === ORDER_STATUSES.CANCELLED) {
+      return res.status(400).json({ success: false, error: 'Order is already cancelled.' });
+    }
+
+    // Set cancellation status
+    order.cancellationStatus = order.cancellationStatus || 'CANCELLED_BY_ADMIN';
+    order.orderStatus = ORDER_STATUSES.CANCELLED;
+    saveOrder(order);
+
+    addOrderEvent(
+      orderId, 
+      'CANCELLATION', 
+      ORDER_STATUSES.CANCELLED, 
+      `Order cancelled by administrator. Remarks: ${remarks || 'Direct admin cancellation.'}`,
+      { remarks }
+    );
+
+    // Cancel on Shiprocket if exists
+    if (order.shiprocketOrderId) {
+      try {
+        const { cancelShiprocketOrder } = require('./shiprocket');
+        await cancelShiprocketOrder(order.shiprocketOrderId);
+        console.log(`[admin/cancel] Order ${orderId} (Shiprocket: ${order.shiprocketOrderId}) cancelled on Shiprocket.`);
+      } catch (srErr) {
+        console.error(`[admin/cancel] Failed to cancel order ${orderId} on Shiprocket:`, srErr.message);
+        addOrderEvent(
+          orderId, 
+          'SYSTEM_ERROR', 
+          order.orderStatus, 
+          `Failed to cancel shipment on Shiprocket: ${srErr.message}`
+        );
+      }
+    }
+
+    // Trigger refund flow if prepaid
+    if (order.paymentMethod.toLowerCase().includes('online') && order.paymentStatus === 'PAID') {
+      order.refundStatus = 'APPROVED';
+      saveOrder(order);
+
+      const refundData = {
+        refundId: `RF-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+        orderId,
+        amount: order.orderAmount,
+        method: 'Razorpay',
+        status: 'APPROVED',
+        reason: 'Order Cancelled by Admin',
+        approvedAt: new Date().toISOString()
+      };
+      saveRefund(refundData);
+
+      addOrderEvent(
+        orderId, 
+        'REFUND', 
+        ORDER_STATUSES.REFUND_APPROVED, 
+        `Refund of ₹${order.orderAmount} approved for cancelled order. Ready to initiate.`
+      );
+
+      await sendStatusNotificationEmail(
+        order, 
+        ORDER_STATUSES.CANCELLED, 
+        `Your order ${orderId} has been cancelled by our administration. Since this was a prepaid order, a refund of ₹${order.orderAmount} has been approved and will be initiated shortly.`
+      );
+    } else {
+      await sendStatusNotificationEmail(
+        order, 
+        ORDER_STATUSES.CANCELLED, 
+        `Your order ${orderId} has been cancelled by our administration.`
+      );
+    }
+
+    res.json({ success: true, message: 'Order successfully cancelled.', order });
+
+  } catch (err) {
+    console.error('[admin/cancel]', err.message);
+    res.status(500).json({ success: false, error: 'Failed to cancel order.' });
   }
 });
 

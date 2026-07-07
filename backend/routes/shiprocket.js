@@ -183,8 +183,40 @@ async function getShiprocketTrackingByAwb(awb) {
   return data;
 }
 
+async function cancelShiprocketOrder(shiprocketOrderId) {
+  if (!shiprocketOrderId) {
+    console.warn('[Shiprocket] cancelShiprocketOrder called with null/empty shiprocketOrderId.');
+    return null;
+  }
+  const token = await getAuthToken();
+  const res = await fetch(`${BASE_URL}/orders/cancel`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ ids: [Number(shiprocketOrderId)] }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      _cachedToken    = null;
+      _tokenExpiresAt = 0;
+    }
+    throw new Error(
+      `Shiprocket order cancellation failed (${res.status}): ${JSON.stringify(data)}`
+    );
+  }
+
+  console.log(`[Shiprocket] Order ${shiprocketOrderId} successfully cancelled on Shiprocket.`);
+  return data;
+}
+
 module.exports = { 
   createShiprocketOrder, 
   getShiprocketTrackingByShipment, 
-  getShiprocketTrackingByAwb 
+  getShiprocketTrackingByAwb,
+  cancelShiprocketOrder
 };
