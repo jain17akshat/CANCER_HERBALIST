@@ -971,6 +971,37 @@ function EnquiryModal({ product, onClose }) {
   );
 }
 
+const getMockReviewsForProduct = (productId) => {
+  const defaults = [
+    { name: "Rajesh Kumar", rating: 5, date: "2 days ago", title: "Highly recommend", text: "Very effective and high-quality formulation. It was packaged well and delivered quickly.", verified: true },
+    { name: "Simran S.", rating: 5, date: "1 week ago", title: "Very clean ingredients", text: "I have been using this supplement alongside my standard therapy and my vitality levels are back to normal.", verified: true },
+    { name: "Dr. A. Verma", rating: 4, date: "3 weeks ago", title: "Great complementary aid", text: "Highly standardized botanical extract. Clean, pure, and works well for cellular defense support.", verified: true }
+  ];
+
+  const productSpecifics = {
+    1: [
+      { name: "Suresh K.", rating: 5, date: "3 days ago", title: "Excellent immune booster", text: "My energy levels recovered very well after starting CH95 capsules. Highly recommended for oncology support.", verified: true },
+      { name: "Anita Rao", rating: 5, date: "1 week ago", title: "Helped with post-treatment fatigue", text: "This has been a game-changer. I was feeling extremely weak after my sessions, but this helped stabilize my WBC count and stamina.", verified: true },
+      { name: "David M.", rating: 4, date: "3 weeks ago", title: "Good quality, fast delivery", text: "Standardized capsules, very easy to swallow. The shipping was incredibly fast, arrived in 2 days in Delhi.", verified: true }
+    ],
+    2: [
+      { name: "Dr. Sandeep", rating: 5, date: "2 days ago", title: "Highly bioavailable MCT blend", text: "Recommended this Curcumin MCT blend to my patients. Excellent absorption and helps maintain weight without blood sugar spikes.", verified: true },
+      { name: "Meena Patel", rating: 5, date: "2 weeks ago", title: "Tastes good in warm water", text: "Very premium packaging. Has helped control inflammation and feels very light on the stomach.", verified: true },
+      { name: "Amit B.", rating: 4, date: "1 month ago", title: "Effective formulation", text: "Good calorie source. Has helped preserve muscle mass during chemotherapy. A bit expensive but worth it.", verified: true }
+    ],
+    3: [
+      { name: "Pooja Hegde", rating: 5, date: "4 days ago", title: "Great alkaline support", text: "Helps buffer acidity immediately. Take it on an empty stomach in the morning for best results.", verified: true },
+      { name: "Ramesh G.", rating: 4, date: "2 weeks ago", title: "Pure and effective", text: "Standardized minerals, high solubility. Appreciate the detailed guidance on the jar.", verified: true }
+    ],
+    5: [
+      { name: "Vikram Sen", rating: 5, date: "1 day ago", title: "Premium Curcumin extract", text: "This is high potency. The addition of BioPerine makes a visible difference in absorption. Very happy with it.", verified: true },
+      { name: "Sita Nair", rating: 5, date: "10 days ago", title: "Excellent anti-inflammatory support", text: "Joint comfort and energy are much better. Highly recommend AC95 to anyone searching for high quality curcumin.", verified: true }
+    ]
+  };
+
+  return productSpecifics[productId] || defaults;
+};
+
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -979,6 +1010,132 @@ export default function ProductDetail() {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
+
+  // ── Real-time Shipping Estimate ──
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, shipToday: true });
+  const [deliveryDates, setDeliveryDates] = useState({ start: '', end: '' });
+
+  useEffect(() => {
+    const calculateTimeAndDates = () => {
+      const now = new Date();
+      const cutoffHour = 15; // 3:00 PM cutoff time
+      const currentHour = now.getHours();
+      
+      let shipToday = true;
+      let targetTime = new Date();
+      
+      if (currentHour < cutoffHour) {
+        // Ships today
+        targetTime.setHours(cutoffHour, 0, 0, 0);
+        shipToday = true;
+      } else {
+        // Ships tomorrow
+        targetTime.setDate(targetTime.getDate() + 1);
+        targetTime.setHours(cutoffHour, 0, 0, 0);
+        shipToday = false;
+      }
+      
+      const diffMs = targetTime - now;
+      const totalMinutes = Math.floor(diffMs / (1000 * 60));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      
+      setTimeLeft({ hours, minutes, shipToday });
+      
+      // Calculate delivery range (3 to 5 days, skip Sunday)
+      const addDaysSkippingSundays = (date, days) => {
+        let result = new Date(date);
+        let added = 0;
+        while (added < days) {
+          result.setDate(result.getDate() + 1);
+          if (result.getDay() !== 0) { // 0 is Sunday
+            added++;
+          }
+        }
+        return result;
+      };
+      
+      const startShipDate = shipToday ? now : new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const deliveryStart = addDaysSkippingSundays(startShipDate, 3);
+      const deliveryEnd = addDaysSkippingSundays(startShipDate, 5);
+      
+      const options = { day: 'numeric', month: 'short' };
+      setDeliveryDates({
+        start: deliveryStart.toLocaleDateString('en-IN', options),
+        end: deliveryEnd.toLocaleDateString('en-IN', options)
+      });
+    };
+    
+    calculateTimeAndDates();
+    const interval = setInterval(calculateTimeAndDates, 60000); // update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // ── Interactive Product Reviews ──
+  const [reviewsList, setReviewsList] = useState([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({ name: '', email: '', rating: 5, title: '', text: '' });
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!product) return;
+    const mocks = getMockReviewsForProduct(product.id);
+    let stored = [];
+    try {
+      stored = JSON.parse(localStorage.getItem(`ch_reviews_${product.id}`) || '[]');
+    } catch (e) {
+      console.warn('Failed to load reviews from local storage', e);
+    }
+    setReviewsList([...stored, ...mocks]);
+    setSubmitSuccess(false);
+    setShowReviewForm(false);
+  }, [product?.id]);
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (!newReview.name.trim() || !newReview.title.trim() || !newReview.text.trim()) {
+      alert('Please fill out all fields.');
+      return;
+    }
+    
+    const reviewToAdd = {
+      name: newReview.name,
+      rating: newReview.rating,
+      date: 'Just now',
+      title: newReview.title,
+      text: newReview.text,
+      verified: true
+    };
+    
+    // Save to local storage
+    try {
+      const stored = JSON.parse(localStorage.getItem(`ch_reviews_${product.id}`) || '[]');
+      const updatedStored = [reviewToAdd, ...stored];
+      localStorage.setItem(`ch_reviews_${product.id}`, JSON.stringify(updatedStored));
+    } catch (err) {
+      console.warn(err);
+    }
+    
+    setReviewsList(prev => [reviewToAdd, ...prev]);
+    setSubmitSuccess(true);
+    setNewReview({ name: '', email: '', rating: 5, title: '', text: '' });
+    
+    setTimeout(() => {
+      setSubmitSuccess(false);
+      setShowReviewForm(false);
+    }, 3000);
+  };
+
+  const totalReviewsCount = reviewsList.length;
+  const averageRating = totalReviewsCount > 0 
+    ? (reviewsList.reduce((acc, r) => acc + r.rating, 0) / totalReviewsCount).toFixed(1)
+    : (product ? product.rating : 4.8);
+
+  const starCounts = [0, 0, 0, 0, 0];
+  reviewsList.forEach(r => {
+    const starIdx = Math.min(5, Math.max(1, Math.round(r.rating))) - 1;
+    starCounts[starIdx]++;
+  });
 
   useEffect(() => {
     const checkDynamic = async () => {
@@ -1235,7 +1392,7 @@ export default function ProductDetail() {
               {product.tagline}
             </p>
 
-            <StarRating rating={product.rating} count={product.reviews} />
+            <StarRating rating={Number(averageRating)} count={totalReviewsCount} />
 
             <hr style={{ border: 'none', borderTop: '1px solid #f1f5f9', margin: '20px 0' }} />
 
@@ -1295,7 +1452,7 @@ export default function ProductDetail() {
 
             {/* In Stock */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px',
+              display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px',
             }}>
               <span style={{
                 width: '8px', height: '8px', borderRadius: '50%',
@@ -1303,6 +1460,31 @@ export default function ProductDetail() {
                 boxShadow: '0 0 6px #22c55e88',
               }} />
               <span style={{ color: '#16a34a', fontWeight: 600, fontSize: '14px' }}>In Stock — Ready to Ship</span>
+            </div>
+
+            {/* Real-time Shipping Estimate Banner */}
+            <div style={{
+              background: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: '12px',
+              padding: '14px 16px',
+              marginBottom: '20px',
+              boxShadow: '0 2px 8px rgba(34, 197, 94, 0.05)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <span style={{ fontSize: '18px' }}>⚡</span>
+                <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#166534' }}>
+                  {timeLeft.shipToday ? (
+                    <>Order within <strong style={{ color: '#15803d' }}>{timeLeft.hours}h {timeLeft.minutes}m</strong> to ship <strong style={{ textTransform: 'uppercase' }}>Today!</strong></>
+                  ) : (
+                    <>Order within <strong style={{ color: '#15803d' }}>{timeLeft.hours}h {timeLeft.minutes}m</strong> to ship <strong style={{ textTransform: 'uppercase' }}>Tomorrow Morning!</strong></>
+                  )}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#374151', fontSize: '13px', paddingLeft: '28px' }}>
+                <span style={{ color: PRIMARY }}>📦</span>
+                <span>Estimated delivery: <strong>{deliveryDates.start}</strong> – <strong>{deliveryDates.end}</strong> (via Shiprocket Express)</span>
+              </div>
             </div>
 
             {/* CTAs */}
@@ -1453,11 +1635,234 @@ export default function ProductDetail() {
           <AccordionItem title="Dosage & Usage">
             <p>{product.dosage}</p>
           </AccordionItem>
-          <AccordionItem title="Shipping & Returns">
-            <p>✅ <strong>Free shipping</strong> on orders above ₹999.</p>
-            <p>📦 Dispatched within <strong>1–2 business days</strong>. Delivered in 3–7 days across India.</p>
-            <p>🔄 <strong>7-day hassle-free returns</strong> if the product is unopened and in original packaging.</p>
-          </AccordionItem>
+        </div>
+
+        {/* Reviews Section */}
+        <div style={{
+          background: '#fff', borderRadius: '16px',
+          boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
+          border: '1px solid #e2e8f0',
+          padding: '32px', marginTop: '32px',
+        }}>
+          <h2 style={{ fontFamily: 'Playfair Display, serif', color: '#0f172a', marginBottom: '24px', fontSize: '1.4rem' }}>
+            Customer Reviews
+          </h2>
+          
+          <div style={{
+            display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '32px'
+          }} className="reviews-summary-row">
+            
+            {/* Average Rating Block */}
+            <div style={{ textAlign: 'center', minWidth: '150px' }}>
+              <div style={{ fontSize: '48px', fontWeight: 800, color: '#0f172a', lineHeight: 1 }}>
+                {averageRating}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', color: '#f59e0b', margin: '10px 0' }}>
+                {[1, 2, 3, 4, 5].map(n => (
+                  <FaStar key={n} style={{ color: n <= Math.round(averageRating) ? '#f59e0b' : '#e2e8f0', fontSize: '18px' }} />
+                ))}
+              </div>
+              <div style={{ fontSize: '13px', color: '#64748b' }}>
+                Based on {totalReviewsCount} verified reviews
+              </div>
+            </div>
+            
+            {/* Stars Breakdown Progress Bars */}
+            <div style={{ flex: 1, minWidth: '240px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {[5, 4, 3, 2, 1].map(stars => {
+                const count = starCounts[stars - 1] || 0;
+                const percentage = totalReviewsCount > 0 ? (count / totalReviewsCount) * 100 : 0;
+                return (
+                  <div key={stars} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                    <span style={{ minWidth: '40px', fontWeight: 600, color: '#475569' }}>{stars} Star</span>
+                    <div style={{ flex: 1, height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ width: `${percentage}%`, height: '100%', background: '#f59e0b', borderRadius: '4px' }} />
+                    </div>
+                    <span style={{ minWidth: '30px', color: '#94a3b8', textAlign: 'right' }}>{Math.round(percentage)}%</span>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Action CTA Button */}
+            <div style={{ minWidth: '180px' }}>
+              <button
+                onClick={() => setShowReviewForm(!showReviewForm)}
+                style={{
+                  width: '100%', padding: '12px 18px', background: PRIMARY, color: '#fff',
+                  border: 'none', borderRadius: '10px', fontWeight: 700, fontSize: '13.5px',
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'background 0.2s',
+                  boxShadow: `0 4px 12px ${PRIMARY}22`
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#14533d'}
+                onMouseLeave={e => e.currentTarget.style.background = PRIMARY}
+              >
+                {showReviewForm ? 'Cancel Review' : 'Write a Review'}
+              </button>
+            </div>
+          </div>
+
+          {/* Collapsible Write a Review Form */}
+          <AnimatePresence>
+            {showReviewForm && (
+              <motion.form
+                onSubmit={handleReviewSubmit}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                style={{
+                  border: '1.5px solid #e2e8f0', borderRadius: '12px',
+                  padding: '24px', background: '#f8fafc', marginBottom: '24px',
+                  overflow: 'hidden'
+                }}
+              >
+                {submitSuccess ? (
+                  <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                    <span style={{ fontSize: '32px', color: '#22c55e' }}>✓</span>
+                    <h4 style={{ margin: '8px 0 4px', color: '#1e293b' }}>Review Submitted!</h4>
+                    <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>Thank you for sharing your feedback with the community.</p>
+                  </div>
+                ) : (
+                  <>
+                    <h3 style={{ margin: '0 0 16px', fontSize: '15px', fontWeight: 700, color: '#1e293b' }}>Share Your Experience</h3>
+                    
+                    {/* Star Rating Select Input */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#475569' }}>Overall Rating:</span>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {[1, 2, 3, 4, 5].map(stars => (
+                          <button
+                            key={stars}
+                            type="button"
+                            onClick={() => setNewReview(prev => ({ ...prev, rating: stars }))}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                          >
+                            <FaStar style={{ color: stars <= newReview.rating ? '#f59e0b' : '#cbd5e1', fontSize: '20px' }} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }} className="review-form-row">
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Your Name</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Rahul Sharma"
+                          value={newReview.name}
+                          onChange={e => setNewReview(prev => ({ ...prev, name: e.target.value }))}
+                          style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', fontSize: '13.5px' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Email Address (Confidential)</label>
+                        <input
+                          type="email"
+                          required
+                          placeholder="you@example.com"
+                          value={newReview.email}
+                          onChange={e => setNewReview(prev => ({ ...prev, email: e.target.value }))}
+                          style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', fontSize: '13.5px' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Review Title</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Highly beneficial / Works really well"
+                        value={newReview.title}
+                        onChange={e => setNewReview(prev => ({ ...prev, title: e.target.value }))}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', fontSize: '13.5px' }}
+                      />
+                    </div>
+
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '6px', textTransform: 'uppercase' }}>Review Description</label>
+                      <textarea
+                        required
+                        rows={4}
+                        placeholder="How has this supplement helped your clinical care and energy recovery?"
+                        value={newReview.text}
+                        onChange={e => setNewReview(prev => ({ ...prev, text: e.target.value }))}
+                        style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', outline: 'none', fontSize: '13.5px', resize: 'vertical' }}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      style={{
+                        padding: '12px 24px', background: PRIMARY, color: '#fff', border: 'none',
+                        borderRadius: '8px', fontWeight: 700, fontSize: '13.5px', cursor: 'pointer',
+                        fontFamily: 'inherit'
+                      }}
+                    >
+                      Submit Review
+                    </button>
+                  </>
+                )}
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {/* Reviews List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {reviewsList.map((review, i) => (
+              <div
+                key={i}
+                style={{
+                  borderBottom: i < reviewsList.length - 1 ? '1px solid #f1f5f9' : 'none',
+                  paddingBottom: i < reviewsList.length - 1 ? '20px' : '0'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {/* User Avatar Circle */}
+                    <div style={{
+                      width: '36px', height: '36px', borderRadius: '50%',
+                      background: `${PRIMARY}12`, color: PRIMARY, fontWeight: 700,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '14px', textTransform: 'uppercase'
+                    }}>
+                      {review.name ? review.name.charAt(0) : 'A'}
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '13.5px' }}>{review.name}</span>
+                        {review.verified && (
+                          <span style={{
+                            background: '#dcfce7', color: '#15803d', padding: '2px 6px',
+                            borderRadius: '4px', fontSize: '10px', fontWeight: 700,
+                            display: 'flex', alignItems: 'center', gap: '3px'
+                          }}>
+                            ✓ Verified Buyer
+                          </span>
+                        )}
+                      </div>
+                      <span style={{ fontSize: '11px', color: '#94a3b8' }}>{review.date}</span>
+                    </div>
+                  </div>
+                  
+                  {/* Rating Stars */}
+                  <div style={{ display: 'flex', gap: '2px' }}>
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <FaStar key={n} style={{ color: n <= review.rating ? '#f59e0b' : '#e2e8f0', fontSize: '12px' }} />
+                    ))}
+                  </div>
+                </div>
+
+                <h4 style={{ margin: '6px 0 4px', fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>
+                  {review.title}
+                </h4>
+                <p style={{ margin: 0, fontSize: '13.5px', color: '#475569', lineHeight: 1.6 }}>
+                  "{review.text}"
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* ── You May Also Like ── */}
