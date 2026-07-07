@@ -186,5 +186,121 @@
       "remarks": "nn"
     },
     "createdAt": "2026-07-07T05:15:58.401Z"
+  },
+  {
+    "eventId": "EV-1783402151938-3Q2C",
+    "orderId": "CH-1783402151936-0JDP",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:29:11.938Z"
+  },
+  {
+    "eventId": "EV-1783402155361-X1JL",
+    "orderId": "CH-1783402151936-0JDP",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Your order has been confirmed. We are scheduling it for shipment.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:29:15.361Z"
+  },
+  {
+    "eventId": "EV-1783402425410-ZRS4",
+    "orderId": "CH-1783402151936-0JDP",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Order cancelled by administrator. Remarks: Direct admin cancellation.",
+    "internalMetadata": {},
+    "createdAt": "2026-07-07T05:33:45.410Z"
+  },
+  {
+    "eventId": "EV-1783402551830-E5OW",
+    "orderId": "CH-1783402551824-V83Z",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:35:51.830Z"
+  },
+  {
+    "eventId": "EV-1783402555091-JW6Z",
+    "orderId": "CH-1783402551824-V83Z",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Your order has been confirmed. We are scheduling it for shipment.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:35:55.091Z"
+  },
+  {
+    "eventId": "EV-1783403251313-FT9R",
+    "orderId": "CH-1783403251310-MM7Q",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:47:31.313Z"
+  },
+  {
+    "eventId": "EV-1783403254430-WY05",
+    "orderId": "CH-1783403251310-MM7Q",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Your order has been confirmed. We are scheduling it for shipment.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:47:34.430Z"
+  },
+  {
+    "eventId": "EV-1783404118668-7B3G",
+    "orderId": "CH-1783404118613-6159",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T06:01:58.668Z"
+  },
+  {
+    "eventId": "EV-1783404124064-4YU2",
+    "orderId": "CH-1783404118613-6159",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Your order has been confirmed. We are scheduling it for shipment.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T06:02:04.064Z"
+  },
+  {
+    "eventId": "EV-1783404141550-5YIF",
+    "orderId": "CH-1783404118613-6159",
+    "eventType": "SHIPPED",
+    "status": "SHIPPED",
+    "customerMessage": "Order processed and shipped directly from admin panel. AWB Assigned: 19041934662874 via Delhivery Surface. Pickup scheduled. Label generated. Manifest generated. ",
+    "internalMetadata": {
+      "labelUrl": "https://kr-shipmultichannel-mum.s3.ap-south-1.amazonaws.com/171055/labels/dc25d9cb6cc153c9421018d01961f0d4.pdf",
+      "manifestUrl": "https://s3-ap-south-1.amazonaws.com/kr-shipmultichannel-mum/171055/manifest/bulk/temp/abb1dd6a-4ed4-4489-a6ab-75653a3a6a63.pdf",
+      "awb": "19041934662874"
+    },
+    "createdAt": "2026-07-07T06:02:21.550Z"
+  },
+  {
+    "eventId": "EV-1783404303764-L99E",
+    "orderId": "CH-1783403251310-MM7Q",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Order cancelled by administrator. Remarks: nn",
+    "internalMetadata": {
+      "remarks": "nn"
+    },
+    "createdAt": "2026-07-07T06:05:03.764Z"
+  },
+  {
+    "eventId": "EV-1783404309218-E15U",
+    "orderId": "CH-1783402551824-V83Z",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Order cancelled by administrator. Remarks: nn",
+    "internalMetadata": {
+      "remarks": "nn"
+    },
+    "createdAt": "2026-07-07T06:05:09.218Z"
   }
 ]
