@@ -76,7 +76,7 @@ const ORDER_STATUS_LABELS = {
   REFUND_REJECTED: 'Refund Rejected',
   REFUND_INITIATED: 'Refund Initiated',
   REFUND_PROCESSING: 'Refund Processing',
-  REFUND_PROCESSED: 'Refund Processed',
+  REFUND_PROCESSED: 'Refund Credited',
   REFUND_FAILED: 'Refund Failed'
 };
 

@@ -484,7 +484,7 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
       await sendStatusNotificationEmail(
         order, 
         ORDER_STATUSES.REFUND_PROCESSED, 
-        `Your refund of ₹${refund.amount} has been successfully processed via ${manualMethod}. Reference: ${manualTxnId}.`
+        `Your refund of ₹${refund.amount} has been successfully credited to your account via ${manualMethod}. Reference Transaction ID: ${manualTxnId}.`
       );
 
       res.json({ success: true, message: 'Manual refund recorded successfully.', refund });
@@ -538,7 +538,7 @@ router.post('/api/admin/orders/:orderId/refund/sync', async (req, res) => {
       await sendStatusNotificationEmail(
         order, 
         ORDER_STATUSES.REFUND_PROCESSED, 
-        `Your refund of ₹${refund.amount} is fully processed and should reflect in your account.`
+        `Your refund of ₹${refund.amount} has been successfully credited to your account. Transaction Reference: ${rzRefund.id}.`
       );
     } else if (rzRefund.status === 'failed') {
       refund.status = 'FAILED';

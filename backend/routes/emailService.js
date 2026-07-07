@@ -404,13 +404,22 @@ async function sendStatusNotificationEmail(order, status, customerMessage) {
 
   const { ORDER_STATUS_LABELS } = require('./orderStatuses');
   const statusLabel = ORDER_STATUS_LABELS[status] || status;
-  const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+  let subject = `📢 Order Update: ${statusLabel} — ${order.orderId}`;
+  if (status === 'CANCELLED') {
+    subject = `❌ Order Cancelled — ${order.orderId} | Cancer Herbalist`;
+  } else if (status === 'CANCELLATION_REQUESTED') {
+    subject = `⚠️ Cancellation Requested — ${order.orderId} | Cancer Herbalist`;
+  } else if (status === 'REFUND_PROCESSED') {
+    subject = `💸 Refund Credited — ${order.orderId} | Cancer Herbalist`;
+  } else if (status === 'REFUND_INITIATED') {
+    subject = `⏳ Refund Initiated — ${order.orderId} | Cancer Herbalist`;
+  }
 
   try {
     await transporter.sendMail({
       from:    fromAddr,
       to:      order.email,
-      subject: `📢 Order Update: ${statusLabel} — ${order.orderId}`,
+      subject: subject,
       text:    `Hello ${order.customerName},\n\nUpdate for your order ${order.orderId}:\n\n${customerMessage}\n\nTrack your order here: ${process.env.FRONTEND_URL}/track-order?orderId=${order.orderId}`,
       html:    buildStatusEmailHtml(order, status, customerMessage),
     });
