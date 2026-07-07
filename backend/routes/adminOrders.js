@@ -266,7 +266,7 @@ router.post('/admin/orders/:orderId/cancel', async (req, res) => {
     }
 
     // Set cancellation status
-    order.cancellationStatus = order.cancellationStatus || 'CANCELLED_BY_ADMIN';
+    order.cancellationStatus = 'CANCELLED_BY_ADMIN';
     order.orderStatus = ORDER_STATUSES.CANCELLED;
     saveOrder(order);
 
@@ -586,7 +586,7 @@ router.put('/admin/orders/:orderId/return/receive', async (req, res) => {
       );
     } else {
       // Failed return collection
-      order.orderStatus = ORDER_STATUSES.DELIVERY_FAILED; // Return failed
+      order.orderStatus = ORDER_STATUSES.RETURN_REJECTED;
       saveOrder(order);
 
       addOrderEvent(
@@ -738,7 +738,7 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
  * POST /api/admin/orders/:orderId/refund/sync
  * Manually sync/complete initiated refunds by querying Razorpay API.
  */
-router.post('/api/admin/orders/:orderId/refund/sync', async (req, res) => {
+router.post('/admin/orders/:orderId/refund/sync', async (req, res) => {
   try {
     const { orderId } = req.params;
 

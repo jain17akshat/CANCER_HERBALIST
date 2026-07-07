@@ -73,7 +73,8 @@ router.post('/shiprocket/webhook', async (req, res) => {
         customMsg = `Your order is out for delivery today! Keep your phone handy. Our delivery executive will contact you.`;
       } else if (internalStatus === ORDER_STATUSES.DELIVERED) {
         customMsg = `Your package has been successfully delivered. Thank you for shopping with Cancer Herbalist!`;
-        order.paymentStatus = 'PAID'; // Mark as PAID if COD delivered
+        order.paymentStatus = 'PAID'; // Mark COD as PAID when delivered
+        saveOrder(order);             // Persist paymentStatus immediately
       } else if (internalStatus === ORDER_STATUSES.DELIVERY_FAILED) {
         customMsg = `We attempted to deliver your package, but the delivery failed. The courier will re-attempt delivery.`;
       } else if (internalStatus === ORDER_STATUSES.RTO_INITIATED) {
@@ -109,6 +110,12 @@ router.post('/shiprocket/webhook', async (req, res) => {
  * Useful as a cron job or fallback.
  */
 router.get('/shiprocket/sync', async (req, res) => {
+  // Require admin auth to prevent unauthorized mass-sync triggers
+  const key = req.query.key || req.headers['x-admin-key'];
+  const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+  if (key !== adminSecret) {
+    return res.status(401).json({ success: false, error: 'Unauthorized.' });
+  }
   try {
     const orders = getOrders();
     // Filter active orders that have been shipped/confirmed but not delivered/canceled

@@ -6,8 +6,13 @@ import {
 import { useContent } from '../context/ContentContext';
 
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
-const PRIMARY = '#1a6e52';
-const ACCENT  = '#38bed5';
+const THEMES = {
+  green: { primary: '#1a6e52', accent: '#38bed5', name: '🌿 Green Recovery' },
+  blue: { primary: '#0f4c81', accent: '#4b9cd3', name: '🌊 Ocean Calm' },
+  violet: { primary: '#5c2a72', accent: '#d39e82', name: '🔮 Royal Healing' },
+  rose: { primary: '#9d2235', accent: '#e28743', name: '🌸 Sunset Health' },
+  dark: { primary: '#2d3748', accent: '#a0aec0', name: '🖤 Charcoal Sleek' },
+};
 
 const TIME_SLOTS = [
   '09:00 AM','09:30 AM','10:00 AM','10:30 AM',
@@ -23,6 +28,22 @@ function todayLabel() {
 }
 
 export default function AdminDashboard() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('ch_admin_theme') || 'green');
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('ch_admin_dark_mode') === 'true');
+
+  const currentThemeColors = THEMES[theme] || THEMES.green;
+  const PRIMARY = currentThemeColors.primary;
+  const ACCENT  = currentThemeColors.accent;
+
+  const bgMain = darkMode ? '#0f172a' : '#f8fafc';
+  const bgCard = darkMode ? '#1e293b' : '#fff';
+  const borderCard = darkMode ? '#334155' : '#e2e8f0';
+  const textPrimary = darkMode ? '#f8fafc' : '#0f172a';
+  const textSecondary = darkMode ? '#94a3b8' : '#64748b';
+  const inputBg = darkMode ? '#334155' : '#fff';
+  const inputBorder = darkMode ? '#475569' : '#cbd5e1';
+  const inputText = darkMode ? '#f8fafc' : '#1e293b';
+
   const [secret, setSecret]         = useState(
     () => localStorage.getItem('ch_admin_secret') || ''
   );
@@ -890,8 +911,20 @@ export default function AdminDashboard() {
      DASHBOARD
   ═══════════════════════════════════════════════════════════════ */
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: 'Poppins, sans-serif' }}>
+    <div style={{ background: bgMain, minHeight: '100vh', fontFamily: 'Poppins, sans-serif', color: textPrimary, transition: 'background-color 0.2s, color 0.2s' }}>
       <style>{`
+        :root {
+          --primary-color: ${PRIMARY};
+          --accent-color: ${ACCENT};
+          --bg-main: ${darkMode ? '#0f172a' : '#f8fafc'};
+          --bg-card: ${darkMode ? '#1e293b' : '#fff'};
+          --border-color: ${darkMode ? '#334155' : '#e2e8f0'};
+          --text-primary: ${darkMode ? '#f8fafc' : '#0f172a'};
+          --text-secondary: ${darkMode ? '#94a3b8' : '#64748b'};
+          --input-bg: ${darkMode ? '#334155' : '#fff'};
+          --input-border: ${darkMode ? '#475569' : '#cbd5e1'};
+          --input-text: ${darkMode ? '#f8fafc' : '#1e293b'};
+        }
         /* Responsive styles for Admin Dashboard */
         .admin-dashboard-container {
           max-width: 1200px;
@@ -926,9 +959,10 @@ export default function AdminDashboard() {
           justify-content: space-between;
           align-items: center;
           padding: 12px;
-          background: #f8fafc;
+          background: var(--bg-main);
           border-radius: 10px;
-          border: 1px solid #e2e8f0;
+          border: 1px solid var(--border-color);
+          color: var(--text-primary);
         }
         .admin-item-row-actions {
           display: flex;
@@ -949,8 +983,8 @@ export default function AdminDashboard() {
           gap: 10px;
         }
         .admin-tab-nav {
-          background: #fff;
-          border-bottom: 1px solid #e2e8f0;
+          background: var(--bg-card);
+          border-bottom: 1px solid var(--border-color);
           padding: 0 32px;
           display: flex;
           gap: 24px;
@@ -961,6 +995,8 @@ export default function AdminDashboard() {
           display: flex;
           align-items: center;
           gap: 16px;
+          background: var(--bg-card);
+          border: 1.5px solid var(--border-color);
         }
         .appointment-time-badge {
           border-radius: 10px;
@@ -981,6 +1017,21 @@ export default function AdminDashboard() {
           font-size: 12px;
           font-weight: 700;
         }
+        /* Dynamic controls overlaying theme inputs */
+        .admin-form-container input, 
+        .admin-form-container textarea, 
+        .admin-form-container select,
+        .admin-list-container input,
+        .admin-list-container select,
+        .admin-list-container textarea {
+          background-color: var(--input-bg) !important;
+          color: var(--input-text) !important;
+          border: 1px solid var(--input-border) !important;
+        }
+        .admin-form-container label,
+        .admin-list-container label {
+          color: var(--text-secondary) !important;
+        }
         @media (max-width: 991px) {
           .admin-main-grid {
             grid-template-columns: 1fr;
@@ -995,19 +1046,37 @@ export default function AdminDashboard() {
             padding: 16px 12px;
           }
           .admin-header-flex {
-            padding: 16px !important;
-            flex-direction: column;
-            align-items: stretch !important;
-            text-align: center;
-            gap: 16px !important;
+            padding: 12px 16px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            text-align: left !important;
+            gap: 10px !important;
           }
           .admin-header-flex > div {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            text-align: left !important;
           }
           .admin-header-actions {
-            justify-content: center;
+            justify-content: flex-end !important;
+          }
+          .admin-refresh-button {
+            padding: 10px !important;
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            min-width: 40px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+          }
+          .admin-refresh-text {
+            display: none !important;
+          }
+          .admin-header-title {
+            font-size: 1.05rem !important;
           }
           .admin-tab-nav {
             padding: 0 16px !important;
@@ -1063,28 +1132,25 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <span style={{ fontSize: '32px' }}>🛡️</span>
           <div>
-            <h1 style={{ margin: 0, color: '#fff', fontSize: '1.3rem', fontFamily: 'Playfair Display, serif' }}>
+            <h1 className="admin-header-title" style={{ margin: 0, color: '#fff', fontSize: '1.3rem', fontFamily: 'Playfair Display, serif' }}>
               Cancer Herbalist Admin Panel
             </h1>
             <p style={{ margin: 0, color: '#a7f3d0', fontSize: '12px' }}>{today}</p>
           </div>
         </div>
         <div className="admin-header-actions">
-          <button onClick={() => { fetchAppts(secret, filterDate); loadDynamicContent(); }} style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
-            color: '#fff', padding: '10px 18px', borderRadius: '10px',
-            cursor: 'pointer', fontWeight: 600, fontSize: '13px', fontFamily: 'inherit',
-          }}>
-            <FaSync /> Refresh
-          </button>
-          <button onClick={handleLogout} style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.4)',
-            color: '#fca5a5', padding: '10px 18px', borderRadius: '10px',
-            cursor: 'pointer', fontWeight: 600, fontSize: '13px', fontFamily: 'inherit',
-          }}>
-            🚪 Logout
+          <button 
+            onClick={() => { fetchAppts(secret, filterDate); loadDynamicContent(); }} 
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
+              color: '#fff', padding: '10px 18px', borderRadius: '10px',
+              cursor: 'pointer', fontWeight: 600, fontSize: '13px', fontFamily: 'inherit',
+            }}
+            className="admin-refresh-button"
+            title="Refresh Data"
+          >
+            <FaSync /> <span className="admin-refresh-text">Refresh</span>
           </button>
         </div>
       </div>
@@ -1095,13 +1161,14 @@ export default function AdminDashboard() {
           { id: 'appointments', label: '📅 Bookings & Slots' },
           { id: 'orders', label: '📦 Orders & Refunds' },
           { id: 'content', label: '🛠️ Manage Content' },
+          { id: 'settings', label: '⚙️ Settings' },
         ].map(tab => (
           <button
             key={tab.id}
             onClick={() => { setActiveDashboardTab(tab.id); setFormError(''); setFormStatus(''); }}
             style={{
               padding: '16px 8px', background: 'none', border: 'none',
-              color: activeDashboardTab === tab.id ? PRIMARY : '#64748b',
+              color: activeDashboardTab === tab.id ? PRIMARY : textSecondary,
               fontWeight: 700, fontSize: '14px', cursor: 'pointer',
               borderBottom: `3px solid ${activeDashboardTab === tab.id ? PRIMARY : 'transparent'}`,
               transition: 'all 0.2s', fontFamily: 'inherit',
@@ -1124,19 +1191,19 @@ export default function AdminDashboard() {
             { label: 'Total Appointments',     value: appointments.length,    icon: '📋', color: ACCENT },
           ].map(s => (
             <div key={s.label} style={{
-              background: '#fff', borderRadius: '16px', padding: '20px 24px',
+              background: bgCard, borderRadius: '16px', padding: '20px 24px',
               boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: `1px solid ${s.color}20`,
             }}>
               <span style={{ fontSize: '28px' }}>{s.icon}</span>
               <p style={{ margin: '8px 0 2px', fontSize: '28px', fontWeight: 800, color: s.color }}>{s.value}</p>
-              <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontWeight: 600 }}>{s.label}</p>
+              <p style={{ margin: 0, fontSize: '12px', color: textSecondary, fontWeight: 600 }}>{s.label}</p>
             </div>
           ))}
         </div>
 
         {/* Filter bar */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Show:</span>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: textPrimary }}>Show:</span>
           {['today', 'all'].map(f => (
             <button key={f} onClick={() => setFilterDate(f)} style={{
               padding: '8px 18px', borderRadius: '8px', fontWeight: 600, fontSize: '13px',
@@ -1474,21 +1541,166 @@ export default function AdminDashboard() {
 
             </div>
           </div>
+        ) : activeDashboardTab === 'settings' ? (
+          /* ──────────── SETTINGS TAB ──────────── */
+          <div className="admin-card" style={{ maxWidth: 720, margin: '0 auto', padding: '32px', background: bgCard, borderRadius: '20px', boxShadow: '0 4px 24px rgba(0,0,0,0.07)', border: `1px solid ${borderCard}` }}>
+            <h2 style={{ margin: '0 0 4px', fontFamily: 'Playfair Display, serif', color: textPrimary, fontSize: '1.6rem' }}>
+              ⚙️ Admin Settings
+            </h2>
+            <p style={{ margin: '0 0 32px', color: textSecondary, fontSize: '13px' }}>
+              Customize the look and feel of the Admin Panel and manage your session.
+            </p>
+
+            {/* ── Theme Selector ── */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                🎨 Dashboard Theme
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px' }}>
+                {Object.entries(THEMES).map(([key, t]) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setTheme(key);
+                      localStorage.setItem('ch_admin_theme', key);
+                    }}
+                    style={{
+                      border: `2px solid ${theme === key ? t.primary : borderCard}`,
+                      borderRadius: '14px',
+                      padding: '14px 10px',
+                      cursor: 'pointer',
+                      background: theme === key ? `${t.primary}15` : bgMain,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '8px',
+                      transition: 'all 0.2s',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <span style={{ width: 16, height: 16, borderRadius: '50%', background: t.primary, display: 'inline-block' }} />
+                      <span style={{ width: 16, height: 16, borderRadius: '50%', background: t.accent, display: 'inline-block' }} />
+                    </div>
+                    <span style={{ fontSize: '11.5px', fontWeight: 600, color: theme === key ? t.primary : textSecondary }}>{t.name}</span>
+                    {theme === key && <span style={{ fontSize: '10px', color: t.primary, fontWeight: 700 }}>✓ Active</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Dark / Light Mode ── */}
+            <div style={{ marginBottom: '32px', padding: '20px', background: bgMain, borderRadius: '14px', border: `1px solid ${borderCard}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style={{ margin: 0, fontWeight: 700, fontSize: '14px', color: textPrimary }}>
+                  {darkMode ? '🌙 Dark Mode' : '☀️ Light Mode'}
+                </p>
+                <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSecondary }}>
+                  Toggle between light and dark interface.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const next = !darkMode;
+                  setDarkMode(next);
+                  localStorage.setItem('ch_admin_dark_mode', next.toString());
+                }}
+                style={{
+                  position: 'relative',
+                  width: '52px',
+                  height: '28px',
+                  borderRadius: '99px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: darkMode ? PRIMARY : '#cbd5e1',
+                  transition: 'background 0.3s',
+                  flexShrink: 0,
+                }}
+              >
+                <span style={{
+                  position: 'absolute',
+                  top: '3px',
+                  left: darkMode ? '26px' : '3px',
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '50%',
+                  background: '#fff',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+                  transition: 'left 0.25s',
+                  display: 'block',
+                }} />
+              </button>
+            </div>
+
+            {/* ── Session Management ── */}
+            <div style={{ marginBottom: '32px' }}>
+              <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                🔐 Session Management
+              </h3>
+              <div style={{ padding: '20px', background: bgMain, borderRadius: '14px', border: `1px solid ${borderCard}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px', paddingBottom: '16px', borderBottom: `1px solid ${borderCard}` }}>
+                  <div>
+                    <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: textPrimary }}>Logged in as Admin</p>
+                    <p style={{ margin: '4px 0 0', fontSize: '12px', color: textSecondary }}>
+                      Secret key: <code style={{ background: `${PRIMARY}15`, color: PRIMARY, padding: '2px 6px', borderRadius: '6px', fontSize: '11px' }}>
+                        {secret ? `${secret.slice(0, 4)}••••` : '—'}
+                      </code>
+                    </p>
+                  </div>
+                  <span style={{ padding: '4px 12px', borderRadius: '99px', background: '#d1fae5', color: '#065f46', fontSize: '11px', fontWeight: 700 }}>
+                    ✓ Authenticated
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                    background: '#fef2f2', border: '1.5px solid #fca5a5',
+                    color: '#dc2626', padding: '12px 20px', borderRadius: '12px',
+                    cursor: 'pointer', fontWeight: 700, fontSize: '14px', fontFamily: 'inherit',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  🚪 Logout from Admin Panel
+                </button>
+              </div>
+            </div>
+
+            {/* ── Quick Actions ── */}
+            <div>
+              <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: textPrimary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                🔄 Quick Actions
+              </h3>
+              <button
+                onClick={() => { fetchAppts(secret, filterDate); loadDynamicContent(); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  background: `${PRIMARY}12`, border: `1.5px solid ${PRIMARY}40`,
+                  color: PRIMARY, padding: '12px 20px', borderRadius: '12px',
+                  cursor: 'pointer', fontWeight: 700, fontSize: '14px', fontFamily: 'inherit',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <FaSync /> Refresh All Dashboard Data
+              </button>
+            </div>
+          </div>
         ) : (
-          <div className="admin-card" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+          <div className="admin-card" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)', background: bgCard, border: `1px solid ${borderCard}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
               <div>
-                <h2 style={{ margin: 0, fontFamily: 'Playfair Display, serif', color: '#0f172a', fontSize: '1.6rem' }}>
+                <h2 style={{ margin: 0, fontFamily: 'Playfair Display, serif', color: textPrimary, fontSize: '1.6rem' }}>
                   Website Content Manager
                 </h2>
-                <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
+                <p style={{ margin: '4px 0 0', color: textSecondary, fontSize: '13px' }}>
                   Add new products, blog posts, and patient testimonials dynamically to the website.
                 </p>
               </div>
             </div>
 
             {/* Sub tabs for content types */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', borderBottom: `1px solid ${borderCard}`, paddingBottom: '12px', flexWrap: 'wrap' }}>
               {[
                 { id: 'products', label: '🌿 Products', count: dynProducts.length },
                 { id: 'blogs', label: '📝 Blog Articles', count: dynBlogs.length },
