@@ -113,5 +113,16 @@
       "remarks": ""
     },
     "createdAt": "2026-07-07T04:56:35.408Z"
+  },
+  {
+    "eventId": "EV-1783400762437-RTA6",
+    "orderId": "CH-1783399513782-VNX2",
+    "eventType": "CANCELLATION",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Cancellation request rejected. Reason: Not eligible.",
+    "internalMetadata": {
+      "rejectionReason": ""
+    },
+    "createdAt": "2026-07-07T05:06:02.437Z"
   }
 ]

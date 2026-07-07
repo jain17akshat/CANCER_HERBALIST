@@ -49,9 +49,9 @@
     "orderAmount": 599,
     "paymentMethod": "COD / Bank Transfer",
     "paymentStatus": "COD_PENDING",
-    "orderStatus": "CANCELLATION_REQUESTED",
+    "orderStatus": "ORDER_CONFIRMED",
     "shipmentStatus": null,
-    "cancellationStatus": "REQUESTED",
+    "cancellationStatus": "REJECTED",
     "returnStatus": null,
     "refundStatus": null,
     "shiprocketOrderId": null,
@@ -65,7 +65,7 @@
     "lastSyncedAt": null,
     "orderDate": "7/7/2026, 10:15:13 am",
     "createdAt": "2026-07-07T04:45:13.783Z",
-    "updatedAt": "2026-07-07T04:50:26.803Z"
+    "updatedAt": "2026-07-07T05:06:02.436Z"
   },
   {
     "orderId": "CH-1783399559244-TAO5",
