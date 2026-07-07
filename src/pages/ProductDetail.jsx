@@ -27,6 +27,10 @@ export const products = [
     rating: 4.8,
     reviews: 124,
     images: [
+      '/products/product0.1.jpeg',
+      '/products/product0.2.jpeg',
+      '/products/product0.3.jpeg',
+      '/products/product0.4.jpeg',
       '/products/product1.jpg',
       '/products/product1.2.png',
       '/products/product1.3.png',
