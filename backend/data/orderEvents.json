@@ -124,5 +124,67 @@
       "rejectionReason": ""
     },
     "createdAt": "2026-07-07T05:06:02.437Z"
+  },
+  {
+    "eventId": "EV-1783401253552-XUN4",
+    "orderId": "CH-1783399294573-DLXK",
+    "eventType": "CANCELLATION",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Cancellation request rejected. Reason: Not eligible.",
+    "internalMetadata": {
+      "rejectionReason": ""
+    },
+    "createdAt": "2026-07-07T05:14:13.552Z"
+  },
+  {
+    "eventId": "EV-1783401267338-YS8K",
+    "orderId": "CH-1783399513782-VNX2",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Order cancelled by administrator. Remarks: na",
+    "internalMetadata": {
+      "remarks": "na"
+    },
+    "createdAt": "2026-07-07T05:14:27.338Z"
+  },
+  {
+    "eventId": "EV-1783401274606-OB07",
+    "orderId": "CH-1783399294573-DLXK",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Order cancelled by administrator. Remarks: na",
+    "internalMetadata": {
+      "remarks": "na"
+    },
+    "createdAt": "2026-07-07T05:14:34.606Z"
+  },
+  {
+    "eventId": "EV-1783401322588-92CM",
+    "orderId": "CH-1783401322571-RIGF",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:15:22.588Z"
+  },
+  {
+    "eventId": "EV-1783401325863-0BC7",
+    "orderId": "CH-1783401322571-RIGF",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Your order has been confirmed. We are scheduling it for shipment.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T05:15:25.863Z"
+  },
+  {
+    "eventId": "EV-1783401358401-LL2M",
+    "orderId": "CH-1783401322571-RIGF",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Order cancelled by administrator. Remarks: nn",
+    "internalMetadata": {
+      "remarks": "nn"
+    },
+    "createdAt": "2026-07-07T05:15:58.401Z"
   }
 ]
