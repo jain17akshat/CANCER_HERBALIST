@@ -11,6 +11,9 @@ const validateVpaRoute    = require('./routes/validateVpa');
 const submitOrderRoute    = require('./routes/submitOrder');
 const bookAppointmentRoute = require('./routes/bookAppointment');
 const dynamicContentRoute  = require('./routes/dynamicContent');
+const orderActionsRoute    = require('./routes/orderActions');
+const adminOrdersRoute     = require('./routes/adminOrders');
+const shiprocketWebhookRoute = require('./routes/shiprocketWebhook');
 
 const app  = express();
 app.set('trust proxy', 1); // Trust Vercel's proxy for accurate rate limiting and to prevent ValidationErrors
@@ -87,6 +90,9 @@ app.use('/api', validateVpaRoute);
 app.use('/api', submitOrderRoute);
 app.use('/api', bookAppointmentRoute);
 app.use('/api', dynamicContentRoute);
+app.use('/api', orderActionsRoute);
+app.use('/api', adminOrdersRoute);
+app.use('/api', shiprocketWebhookRoute);
 
 /* ── Start ──────────────────────────────────────────────────── */
 app.listen(PORT, () => {

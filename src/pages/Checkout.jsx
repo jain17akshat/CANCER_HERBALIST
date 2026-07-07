@@ -129,6 +129,23 @@ export default function Checkout() {
     const goToSuccess = (oid) => {
       console.log('[Checkout] goToSuccess called with orderId:', oid);
       if (!isDirectBuy) clearCart();
+
+      // Save order to local storage cache for instant dashboard lookup
+      if (oid) {
+        try {
+          const savedOrders = new Set(JSON.parse(localStorage.getItem('my_orders') || '[]'));
+          savedOrders.add(oid.trim());
+          localStorage.setItem('my_orders', JSON.stringify(Array.from(savedOrders)));
+          
+          const contact = form.phone.trim() || form.email.trim();
+          if (contact) {
+            localStorage.setItem('last_verified_contact', contact);
+          }
+        } catch (e) {
+          console.warn('[Checkout] Failed to save order ID to local cache:', e);
+        }
+      }
+
       navigate('/order-success', {
         replace: true,
         state: {

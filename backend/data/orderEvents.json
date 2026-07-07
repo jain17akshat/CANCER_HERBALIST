@@ -1,0 +1,117 @@
+[
+  {
+    "eventId": "EV-1783399294590-3MV2",
+    "orderId": "CH-1783399294573-DLXK",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T04:41:34.590Z"
+  },
+  {
+    "eventId": "EV-1783399513784-1D77",
+    "orderId": "CH-1783399513782-VNX2",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T04:45:13.784Z"
+  },
+  {
+    "eventId": "EV-1783399559246-E7IK",
+    "orderId": "CH-1783399559244-TAO5",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T04:45:59.246Z"
+  },
+  {
+    "eventId": "EV-1783399729508-1X9G",
+    "orderId": "CH-1783399729491-P3HF",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T04:48:49.508Z"
+  },
+  {
+    "eventId": "EV-1783399733803-F8K4",
+    "orderId": "CH-1783399729491-P3HF",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Your order has been confirmed. We are scheduling it for shipment.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-07T04:48:53.803Z"
+  },
+  {
+    "eventId": "EV-1783399771414-39ED",
+    "orderId": "CH-1783399729491-P3HF",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLATION_REQUESTED",
+    "customerMessage": "Your order cancellation request has been submitted and is under review.",
+    "internalMetadata": {
+      "reason": "Changed my mind",
+      "comments": "na"
+    },
+    "createdAt": "2026-07-07T04:49:31.414Z"
+  },
+  {
+    "eventId": "EV-1783399793065-OLWR",
+    "orderId": "CH-1783399294573-DLXK",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLATION_REQUESTED",
+    "customerMessage": "Your order cancellation request has been submitted and is under review.",
+    "internalMetadata": {
+      "reason": "Changed my mind",
+      "comments": ""
+    },
+    "createdAt": "2026-07-07T04:49:53.065Z"
+  },
+  {
+    "eventId": "EV-1783399826804-S46O",
+    "orderId": "CH-1783399513782-VNX2",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLATION_REQUESTED",
+    "customerMessage": "Your order cancellation request has been submitted and is under review.",
+    "internalMetadata": {
+      "reason": "Changed my mind",
+      "comments": ""
+    },
+    "createdAt": "2026-07-07T04:50:26.804Z"
+  },
+  {
+    "eventId": "EV-1783399856502-P1SH",
+    "orderId": "CH-1783399559244-TAO5",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLATION_REQUESTED",
+    "customerMessage": "Your order cancellation request has been submitted and is under review.",
+    "internalMetadata": {
+      "reason": "Changed my mind",
+      "comments": ""
+    },
+    "createdAt": "2026-07-07T04:50:56.502Z"
+  },
+  {
+    "eventId": "EV-1783400185142-TD8P",
+    "orderId": "CH-1783399729491-P3HF",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Cancellation approved by administrator. Remarks: None",
+    "internalMetadata": {
+      "remarks": ""
+    },
+    "createdAt": "2026-07-07T04:56:25.142Z"
+  },
+  {
+    "eventId": "EV-1783400195408-SORU",
+    "orderId": "CH-1783399559244-TAO5",
+    "eventType": "CANCELLATION",
+    "status": "CANCELLED",
+    "customerMessage": "Cancellation approved by administrator. Remarks: None",
+    "internalMetadata": {
+      "remarks": ""
+    },
+    "createdAt": "2026-07-07T04:56:35.408Z"
+  }
+]

@@ -135,4 +135,56 @@ async function createShiprocketOrder(orderRow) {
   return data; // { order_id, shipment_id, status, ... }
 }
 
-module.exports = { createShiprocketOrder };
+async function getShiprocketTrackingByShipment(shipmentId) {
+  const token = await getAuthToken();
+  const res = await fetch(`${BASE_URL}/courier/track/shipment/${shipmentId}`, {
+    method:  'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      _cachedToken    = null;
+      _tokenExpiresAt = 0;
+    }
+    throw new Error(
+      `Shiprocket tracking fetch failed (${res.status}): ${JSON.stringify(data)}`
+    );
+  }
+
+  return data;
+}
+
+async function getShiprocketTrackingByAwb(awb) {
+  const token = await getAuthToken();
+  const res = await fetch(`${BASE_URL}/courier/track/awb/${awb}`, {
+    method:  'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      _cachedToken    = null;
+      _tokenExpiresAt = 0;
+    }
+    throw new Error(
+      `Shiprocket tracking by AWB failed (${res.status}): ${JSON.stringify(data)}`
+    );
+  }
+
+  return data;
+}
+
+module.exports = { 
+  createShiprocketOrder, 
+  getShiprocketTrackingByShipment, 
+  getShiprocketTrackingByAwb 
+};

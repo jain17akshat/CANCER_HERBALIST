@@ -6,6 +6,8 @@ const { createShiprocketOrder }         = require('./shiprocket');
 const { validateOrderAmount }           = require('./priceList');
 const { pushOrderToZoho }               = require('./zoho');
 const { sendOrderConfirmationEmails }   = require('./emailService');
+const { saveOrder, addOrderEvent, updateOrderStatus, getOrderById } = require('./ordersDb');
+const { ORDER_STATUSES } = require('./orderStatuses');
 
 /* Razorpay SDK — for fetching order amount post-payment */
 const razorpay = new Razorpay({
@@ -66,19 +68,57 @@ router.post('/verify-payment', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid order details. Please contact support.' });
     }
 
-    /* ── 2. Build internal order reference ─────────────────────── */
-    const orderId   = `CH-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    /* ── 2. Build or load internal order reference ─────────────────── */
+    const { getOrders } = require('./ordersDb');
+    const existingOrders = getOrders();
+    const existingOrder  = existingOrders.find(o => o.razorpayOrderId === razorpay_order_id);
+
+    let orderId;
+    let orderRow;
     const orderDate = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-    const orderRow  = {
-      orderId, customerName, phone, email,
-      address, city, state, pincode,
-      productName, productId, quantity, unitPrice, orderAmount,
-      paymentMethod:      'Online - Razorpay',
-      razorpayOrderId:    razorpay_order_id,
-      razorpayPaymentId:  razorpay_payment_id,
-      paymentStatus:      'PAID',
-      orderDate,
-    };
+
+    if (existingOrder) {
+      orderId = existingOrder.orderId;
+      existingOrder.paymentStatus = 'PAID';
+      existingOrder.razorpayPaymentId = razorpay_payment_id;
+      existingOrder.orderStatus = ORDER_STATUSES.ORDER_PLACED;
+      saveOrder(existingOrder);
+      orderRow = existingOrder;
+    } else {
+      orderId = `CH-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+      orderRow = {
+        orderId, customerName, phone, email,
+        address, city, state, pincode,
+        productName, productId, 
+        quantity: Number(quantity) || 1, 
+        unitPrice: Number(unitPrice) || Number(orderAmount), 
+        orderAmount: Number(orderAmount),
+        paymentMethod:      'Online - Razorpay',
+        razorpayOrderId:    razorpay_order_id,
+        razorpayPaymentId:  razorpay_payment_id,
+        paymentStatus:      'PAID',
+        orderStatus:        ORDER_STATUSES.ORDER_PLACED,
+        shipmentStatus:     null,
+        cancellationStatus: null,
+        returnStatus:       null,
+        refundStatus:       null,
+        shiprocketOrderId:  null,
+        shipmentId:         null,
+        awb:                null,
+        courierId:          null,
+        courierName:        null,
+        trackingUrl:        null,
+        estimatedDeliveryDate: null,
+        latestStatus:       null,
+        lastSyncedAt:       null,
+        orderDate,
+      };
+      saveOrder(orderRow);
+    }
+
+    // Save placement and verification events
+    addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_PLACED, 'Your payment has been successfully verified via Razorpay.');
+    addOrderEvent(orderId, 'PAYMENT', ORDER_STATUSES.ORDER_PLACED, `Payment of ₹${orderAmount} confirmed. Transaction ID: ${razorpay_payment_id}`, { razorpayPaymentId: razorpay_payment_id });
 
     /* ── 3. Execute integrations in parallel (necessary for Vercel serverless environment) ── */
     const promises = [];
@@ -103,9 +143,33 @@ router.post('/verify-payment', async (req, res) => {
       const shiprocketPromise = (async () => {
         try {
           const srData = await createShiprocketOrder(orderRow);
-          console.log(`[verify-payment] Shiprocket order created: ${srData.order_id || srData.id}`);
+          const shiprocketOrderId = srData.order_id || srData.id || null;
+          const shipmentId = srData.shipment_id || null;
+          const awb = srData.awb_code || null;
+          const courierName = srData.courier_name || null;
+          const trackingUrl = srData.tracking_url || null;
+
+          console.log(`[verify-payment] Shiprocket order created: ${shiprocketOrderId}, shipment: ${shipmentId}`);
+          
+          // Update DB with Shiprocket details
+          const order = getOrderById(orderId);
+          if (order) {
+            order.shiprocketOrderId = shiprocketOrderId;
+            order.shipmentId = shipmentId;
+            order.awb = awb;
+            order.courierName = courierName;
+            order.trackingUrl = trackingUrl;
+            if (awb) order.shipmentStatus = 'AWB_ASSIGNED';
+            saveOrder(order);
+          }
         } catch (srErr) {
           console.error('[verify-payment] Shiprocket error:', srErr.message);
+          const order = getOrderById(orderId);
+          if (order) {
+            order.orderStatus = ORDER_STATUSES.SHIPMENT_CREATION_FAILED;
+            saveOrder(order);
+            addOrderEvent(orderId, 'SYSTEM_ERROR', ORDER_STATUSES.SHIPMENT_CREATION_FAILED, 'Fulfillment creation failed. Our support team will manually process it.', { error: srErr.message });
+          }
         }
       })();
       promises.push(shiprocketPromise);
@@ -130,6 +194,12 @@ router.post('/verify-payment', async (req, res) => {
 
     // Wait for all integrations to finish before sending response (prevent serverless termination)
     await Promise.all(promises);
+
+    // Update order status to CONFIRMED
+    const updatedOrder = getOrderById(orderId);
+    if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
+      updateOrderStatus(orderId, ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been confirmed. We are scheduling it for shipment.');
+    }
 
     /* ── 4. Respond success ─────────────────────────────────────── */
     res.json({ success: true, orderId, paymentId: razorpay_payment_id });

@@ -4,6 +4,8 @@ const { createShiprocketOrder }         = require('./shiprocket');
 const { validateOrderAmount }           = require('./priceList');
 const { pushOrderToZoho }               = require('./zoho');
 const { sendOrderConfirmationEmails }   = require('./emailService');
+const { saveOrder, addOrderEvent, updateOrderStatus, getOrderById } = require('./ordersDb');
+const { ORDER_STATUSES } = require('./orderStatuses');
 
 /**
  * POST /api/submit-order
@@ -71,11 +73,31 @@ router.post('/submit-order', async (req, res) => {
       orderId, customerName, phone, email,
       address, city, state, pincode,
       productName, productId,
-      quantity, unitPrice, orderAmount,
+      quantity: Number(quantity) || 1, 
+      unitPrice: Number(unitPrice) || Number(orderAmount), 
+      orderAmount: Number(orderAmount),
       paymentMethod: paymentMethod || 'COD / Bank Transfer',
-      paymentStatus: 'PENDING',
+      paymentStatus: 'COD_PENDING',
+      orderStatus: ORDER_STATUSES.ORDER_PLACED,
+      shipmentStatus: null,
+      cancellationStatus: null,
+      returnStatus: null,
+      refundStatus: null,
+      shiprocketOrderId: null,
+      shipmentId: null,
+      awb: null,
+      courierId: null,
+      courierName: null,
+      trackingUrl: null,
+      estimatedDeliveryDate: null,
+      latestStatus: null,
+      lastSyncedAt: null,
       orderDate,
     };
+
+    // Save order immediately as PLACED
+    saveOrder(orderRow);
+    addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_PLACED, 'Your order has been successfully placed. We are preparing it for confirmation.');
 
     /* ── 3. Execute integrations in parallel (necessary for Vercel serverless environment) ── */
     const promises = [];
@@ -99,14 +121,42 @@ router.post('/submit-order', async (req, res) => {
 
     // Shiprocket
     let shiprocketOrderId = null;
+    let shipmentId = null;
+    let awb = null;
+    let courierName = null;
+    let trackingUrl = null;
+
     if (process.env.SHIPROCKET_EMAIL && process.env.SHIPROCKET_PASSWORD) {
       const shiprocketPromise = (async () => {
         try {
           const srData = await createShiprocketOrder(orderRow);
           shiprocketOrderId = srData.order_id || srData.id || null;
-          console.log(`[submit-order] Shiprocket order created: ${shiprocketOrderId}`);
+          shipmentId = srData.shipment_id || null;
+          awb = srData.awb_code || null;
+          courierName = srData.courier_name || null;
+          trackingUrl = srData.tracking_url || null;
+
+          console.log(`[submit-order] Shiprocket order created: ${shiprocketOrderId}, shipment: ${shipmentId}`);
+          
+          // Update DB with Shiprocket details
+          const order = getOrderById(orderId);
+          if (order) {
+            order.shiprocketOrderId = shiprocketOrderId;
+            order.shipmentId = shipmentId;
+            order.awb = awb;
+            order.courierName = courierName;
+            order.trackingUrl = trackingUrl;
+            if (awb) order.shipmentStatus = 'AWB_ASSIGNED';
+            saveOrder(order);
+          }
         } catch (srErr) {
           console.error('[submit-order] Shiprocket error:', srErr.message);
+          const order = getOrderById(orderId);
+          if (order) {
+            order.orderStatus = ORDER_STATUSES.SHIPMENT_CREATION_FAILED;
+            saveOrder(order);
+            addOrderEvent(orderId, 'SYSTEM_ERROR', ORDER_STATUSES.SHIPMENT_CREATION_FAILED, 'Fulfillment creation failed. Our support team will manually process it.', { error: srErr.message });
+          }
         }
       })();
       promises.push(shiprocketPromise);
@@ -131,6 +181,12 @@ router.post('/submit-order', async (req, res) => {
 
     // Wait for all integrations to finish before sending response (prevent serverless termination)
     await Promise.all(promises);
+
+    // Update order status to CONFIRMED
+    const updatedOrder = getOrderById(orderId);
+    if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
+      updateOrderStatus(orderId, ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been confirmed. We are scheduling it for shipment.');
+    }
 
     /* ── 4. Respond ───────────────────────────────────────────────── */
     res.json({

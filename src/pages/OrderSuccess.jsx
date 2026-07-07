@@ -160,6 +160,18 @@ export default function OrderSuccess() {
                 {paymentMethod === 'online' ? 'Confirm Payment on WhatsApp' : 'WhatsApp Us'}
               </a>
               <button
+                onClick={() => navigate(`/track-order?orderId=${orderId}`)}
+                style={{
+                  padding: '12px 24px', borderRadius: '12px',
+                  border: 'none', background: PRIMARY,
+                  color: '#fff', fontWeight: 700, fontSize: '14px',
+                  cursor: 'pointer', fontFamily: 'inherit',
+                  boxShadow: `0 4px 10px ${PRIMARY}22`
+                }}
+              >
+                Track Order Status
+              </button>
+              <button
                 onClick={() => navigate('/store')}
                 style={{
                   padding: '12px 24px', borderRadius: '12px',

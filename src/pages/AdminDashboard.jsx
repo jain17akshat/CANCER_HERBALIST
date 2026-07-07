@@ -170,17 +170,153 @@ export default function AdminDashboard() {
   };
 
 
+  // ── Orders & Refunds State ──
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState('');
+  const [orderSearch, setOrderSearch] = useState('');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('ALL');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
+
+  const fetchOrders = useCallback(async (key) => {
+    setOrdersLoading(true);
+    setOrdersError('');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders?key=${key}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch orders.');
+      setOrders(data.orders || []);
+    } catch (err) {
+      setOrdersError(err.message);
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, []);
+
+  const fetchOrderDetails = useCallback(async (orderId) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}?key=${secret}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch details.');
+      setSelectedOrderDetails(data);
+    } catch (err) {
+      alert(`Error loading details: ${err.message}`);
+    }
+  }, [secret]);
+
+  const handleApproveCancellation = async (orderId, approved, remarksOrReason) => {
+    try {
+      const body = approved 
+        ? { approved: true, remarks: remarksOrReason } 
+        : { approved: false, rejectionReason: remarksOrReason };
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/cancellation?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
+      alert(approved ? 'Cancellation approved successfully!' : 'Cancellation request rejected.');
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleApproveReturn = async (orderId, approved, physicalReturnRequired, remarksOrReason) => {
+    try {
+      const body = approved 
+        ? { approved: true, physicalReturnRequired, remarks: remarksOrReason } 
+        : { approved: false, rejectionReason: remarksOrReason };
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/return?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
+      alert(approved ? 'Return approved successfully!' : 'Return request rejected.');
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleReceiveReturn = async (orderId, received, remarks) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/return/receive?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ received, remarks })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
+      alert(received ? 'Return marked as received. Refund is now approved.' : 'Return marked as failed.');
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleInitiateRefund = async (orderId, manualTxnId = '', manualMethod = '') => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/refund/initiate?key=${secret}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ manualTxnId, manualMethod })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
+      alert('Refund initiated successfully!');
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleSyncRefund = async (orderId) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/refund/sync?key=${secret}`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
+      alert(`Refund status synced: ${data.refund.status}`);
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
   /* ── Auto-refresh every 60s ──────────────────────────────────── */
   useEffect(() => {
     if (!authed) return;
     fetchAppts(secret, filterDate);
+    fetchOrders(secret);
     loadDynamicContent();
     const id = setInterval(() => {
       fetchAppts(secret, filterDate);
+      fetchOrders(secret);
       loadDynamicContent();
     }, 60_000);
     return () => clearInterval(id);
-  }, [authed, filterDate, secret, fetchAppts, loadDynamicContent]);
+  }, [authed, filterDate, secret, fetchAppts, fetchOrders, loadDynamicContent]);
 
   /* ── Content Submission Handlers ─────────────────────────────── */
   const handleAddProduct = async (e) => {
@@ -921,6 +1057,7 @@ export default function AdminDashboard() {
       <div className="admin-tab-nav">
         {[
           { id: 'appointments', label: '📅 Bookings & Slots' },
+          { id: 'orders', label: '📦 Orders & Refunds' },
           { id: 'content', label: '🛠️ Manage Content' },
         ].map(tab => (
           <button
@@ -1166,6 +1303,139 @@ export default function AdminDashboard() {
           </div>
         </div>
           </>
+        ) : activeDashboardTab === 'orders' ? (
+          <div className="admin-card" style={{ padding: '24px', background: '#fff', borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, fontFamily: 'Playfair Display, serif', color: '#0f172a', fontSize: '1.6rem' }}>
+                Orders & Refunds Manager
+              </h2>
+              <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '13px' }}>
+                Process cancellations, returns, and track payment refund cycles.
+              </p>
+            </div>
+
+            {/* Filter Bar */}
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="Search Order ID, name, phone..."
+                value={orderSearch}
+                onChange={e => setOrderSearch(e.target.value)}
+                style={{
+                  padding: '10px 14px', borderRadius: '10px', border: '1.5px solid #e2e8f0',
+                  fontSize: '13.5px', outline: 'none', width: '260px'
+                }}
+              />
+              
+              <select
+                value={orderStatusFilter}
+                onChange={e => setOrderStatusFilter(e.target.value)}
+                style={{
+                  padding: '10px 14px', borderRadius: '10px', border: '1.5px solid #e2e8f0',
+                  fontSize: '13.5px', outline: 'none', background: '#fff'
+                }}
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="ORDER_PLACED">Order Placed</option>
+                <option value="ORDER_CONFIRMED">Order Confirmed</option>
+                <option value="CANCELLATION_REQUESTED">Cancellation Requested</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="RETURN_REQUESTED">Return Requested</option>
+                <option value="RETURN_APPROVED">Return Approved</option>
+                <option value="RETURN_PICKUP_SCHEDULED">Return Pickup Scheduled</option>
+                <option value="REFUND_APPROVED">Refund Approved</option>
+                <option value="REFUND_INITIATED">Refund Initiated</option>
+                <option value="REFUND_PROCESSED">Refund Processed</option>
+                <option value="REFUND_FAILED">Refund Failed</option>
+                <option value="DELIVERED">Delivered</option>
+              </select>
+
+              {ordersLoading && <span style={{ fontSize: '12px', color: '#94a3b8' }}>Loading...</span>}
+            </div>
+
+            {/* Main Orders Grid */}
+            <div className="admin-main-grid">
+              
+              {/* Order List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {orders.length === 0 && !ordersLoading ? (
+                  <p style={{ color: '#94a3b8', fontSize: '14px', textAlign: 'center', padding: '40px' }}>No orders found.</p>
+                ) : (
+                  orders
+                    .filter(o => {
+                      const q = orderSearch.toLowerCase().trim();
+                      const matchesSearch = !q || 
+                        String(o.orderId).toLowerCase().includes(q) ||
+                        String(o.customerName).toLowerCase().includes(q) ||
+                        String(o.phone).includes(q) ||
+                        String(o.email || '').toLowerCase().includes(q);
+                      
+                      const matchesStatus = orderStatusFilter === 'ALL' || o.orderStatus === orderStatusFilter;
+                      
+                      return matchesSearch && matchesStatus;
+                    })
+                    .map(o => {
+                      let badgeBg = '#f1f5f9';
+                      let badgeColor = '#475569';
+                      if (o.orderStatus.includes('REQUESTED')) { badgeBg = '#fffbeb'; badgeColor = '#d97706'; }
+                      else if (o.orderStatus === 'CANCELLED' || o.orderStatus === 'REFUND_FAILED') { badgeBg = '#fef2f2'; badgeColor = '#dc2626'; }
+                      else if (o.orderStatus.includes('CONFIRMED') || o.orderStatus.includes('DELIVERED') || o.orderStatus === 'REFUND_PROCESSED') { badgeBg = '#f0fdf4'; badgeColor = '#16a34a'; }
+                      
+                      return (
+                        <div
+                          key={o.orderId}
+                          onClick={() => { setSelectedOrder(o); fetchOrderDetails(o.orderId); }}
+                          style={{
+                            background: '#fff', border: `1.5px solid ${selectedOrder?.orderId === o.orderId ? PRIMARY : '#e2e8f0'}`,
+                            borderRadius: '12px', padding: '16px', cursor: 'pointer', transition: 'all 0.2s',
+                            display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                          }}
+                        >
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                              <strong style={{ fontSize: '14px', color: '#0f172a' }}>{o.orderId}</strong>
+                              <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px', background: badgeBg, color: badgeColor }}>
+                                {o.orderStatus}
+                              </span>
+                            </div>
+                            <p style={{ margin: 0, fontSize: '13px', color: '#334155' }}>
+                              {o.customerName} • {o.phone}
+                            </p>
+                            <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#64748b' }}>
+                              {o.productName} (Qty: {o.quantity})
+                            </p>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <strong style={{ fontSize: '15px', color: '#1a6e52', display: 'block' }}>₹{o.orderAmount}</strong>
+                            <span style={{ fontSize: '11px', color: '#94a3b8' }}>{o.paymentMethod}</span>
+                          </div>
+                        </div>
+                      );
+                    })
+                )}
+              </div>
+
+              {/* Order Detail View Panel */}
+              <div>
+                {selectedOrder && selectedOrderDetails ? (
+                  <OrderDetailViewPanel
+                    details={selectedOrderDetails}
+                    onApproveCancellation={handleApproveCancellation}
+                    onApproveReturn={handleApproveReturn}
+                    onReceiveReturn={handleReceiveReturn}
+                    onInitiateRefund={handleInitiateRefund}
+                    onSyncRefund={handleSyncRefund}
+                    onClose={() => { setSelectedOrder(null); setSelectedOrderDetails(null); }}
+                  />
+                ) : (
+                  <div style={{ background: '#f8fafc', border: '1.5px dashed #cbd5e1', borderRadius: '16px', padding: '40px', textAlign: 'center', color: '#94a3b8', fontSize: '13.5px' }}>
+                    Select an order from the list to view tracking logs, event timeline, and perform return/refund actions.
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
         ) : (
           <div className="admin-card" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '32px' }}>
@@ -2964,10 +3234,283 @@ export default function AdminDashboard() {
                     )
                   )}
                 </div>
-              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
+    </div>
+  );
+}
+
+function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn, onReceiveReturn, onInitiateRefund, onSyncRefund, onClose }) {
+  const { order, events, refund } = details;
+  const [remarks, setRemarks] = React.useState('');
+  const [returnRemarks, setReturnRemarks] = React.useState('');
+  const [physicalReturnRequired, setPhysicalReturnRequired] = React.useState(true);
+  const [manualTxnId, setManualTxnId] = React.useState('');
+  const [manualMethod, setManualMethod] = React.useState('UPI');
+
+  const labelStyle = { fontSize: '11px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '4px' };
+
+  return (
+    <div style={{ background: '#fff', border: '1.5px solid #1a6e5230', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+        <div>
+          <h3 style={{ margin: 0, fontSize: '15px', color: '#0f172a', fontWeight: 700 }}>Order Details</h3>
+          <span style={{ fontSize: '12px', color: '#64748b' }}>{order.orderId}</span>
+        </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#94a3b8' }}>×</button>
+      </div>
+
+      {/* Summary grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12.5px' }}>
+        <div>
+          <span style={labelStyle}>Customer Details</span>
+          <p style={{ margin: '4px 0 0', fontWeight: 600 }}>{order.customerName}</p>
+          <p style={{ margin: '2px 0 0', color: '#475569' }}>{order.phone}</p>
+          <p style={{ margin: '2px 0 0', color: '#475569' }}>{order.email || 'No email'}</p>
+        </div>
+        <div>
+          <span style={labelStyle}>Shipping Address</span>
+          <p style={{ margin: '4px 0 0', color: '#475569', lineHeight: '1.4' }}>
+            {order.address}, {order.city}, {order.state} - {order.pincode}
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12.5px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+        <div>
+          <span style={labelStyle}>Order Summary</span>
+          <p style={{ margin: '4px 0 0', fontWeight: 600 }}>{order.productName}</p>
+          <p style={{ margin: '2px 0 0', color: '#64748b' }}>Qty: {order.quantity} • Amt: ₹{order.orderAmount}</p>
+        </div>
+        <div>
+          <span style={labelStyle}>Payment & Courier</span>
+          <p style={{ margin: '4px 0 0', fontWeight: 600 }}>{order.paymentMethod} ({order.paymentStatus})</p>
+          {order.awb && <p style={{ margin: '2px 0 0', color: '#38bed5', fontWeight: 600 }}>AWB: {order.awb}</p>}
+        </div>
+      </div>
+
+      {/* Dynamic Action Panel depending on state */}
+      <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '16px', border: '1px solid #e2e8f0' }}>
+        <h4 style={{ margin: '0 0 12px', fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>Management Actions</h4>
+        
+        {/* Case 1: Cancellation Requested */}
+        {order.cancellationStatus === 'REQUESTED' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#b45309', fontWeight: 600 }}>⚠️ Customer has requested order cancellation.</p>
+            <input
+              type="text"
+              placeholder="Remarks / Rejection Reason..."
+              value={remarks}
+              onChange={e => setRemarks(e.target.value)}
+              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+            />
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => onApproveCancellation(order.orderId, true, remarks)}
+                style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}
+              >
+                Approve & Cancel
+              </button>
+              <button
+                onClick={() => onApproveCancellation(order.orderId, false, remarks)}
+                style={{ flex: 1, background: '#dc2626', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}
+              >
+                Decline Request
+              </button>
             </div>
           </div>
         )}
+
+        {/* Case 2: Return Requested */}
+        {order.returnStatus === 'REQUESTED' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#b45309', fontWeight: 600 }}>⚠️ Customer has requested return of delivered items.</p>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={physicalReturnRequired}
+                onChange={e => setPhysicalReturnRequired(e.target.checked)}
+              />
+              Require Physical Product Return (Pickup)
+            </label>
+            <input
+              type="text"
+              placeholder="Remarks / Rejection Reason..."
+              value={returnRemarks}
+              onChange={e => setReturnRemarks(e.target.value)}
+              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+            />
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => onApproveReturn(order.orderId, true, physicalReturnRequired, returnRemarks)}
+                style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}
+              >
+                Approve Return
+              </button>
+              <button
+                onClick={() => onApproveReturn(order.orderId, false, false, returnRemarks)}
+                style={{ flex: 1, background: '#dc2626', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}
+              >
+                Decline Return
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Case 3: Return Pickup Scheduled */}
+        {order.orderStatus === 'RETURN_PICKUP_SCHEDULED' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#2563eb', fontWeight: 600 }}>📦 Return pickup scheduled. Verify items received.</p>
+            <input
+              type="text"
+              placeholder="Verification Remarks..."
+              value={remarks}
+              onChange={e => setRemarks(e.target.value)}
+              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+            />
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => onReceiveReturn(order.orderId, true, remarks)}
+                style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}
+              >
+                Mark Items Received (Approve Refund)
+              </button>
+              <button
+                onClick={() => onReceiveReturn(order.orderId, false, remarks)}
+                style={{ flex: 1, background: '#dc2626', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }}
+              >
+                Mark Pickup Failed
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Case 4: Refund Approved */}
+        {order.refundStatus === 'APPROVED' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#16a34a', fontWeight: 600 }}>💰 Refund approved. Ready to initiate transaction.</p>
+            
+            {!order.paymentMethod.toLowerCase().includes('online') ? (
+              // COD/Manual Refund details
+              <>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>Refund Method</label>
+                    <select
+                      value={manualMethod}
+                      onChange={e => setManualMethod(e.target.value)}
+                      style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    >
+                      <option value="UPI">UPI</option>
+                      <option value="Bank Transfer">Bank Transfer</option>
+                      <option value="GPay/PhonePe">GPay / PhonePe</option>
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>Transaction ID *</label>
+                    <input
+                      type="text"
+                      placeholder="Txn Ref No..."
+                      value={manualTxnId}
+                      onChange={e => setManualTxnId(e.target.value)}
+                      style={{ width: '100%', padding: '8px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    if (!manualTxnId) return alert('Transaction ID is required for manual refund.');
+                    onInitiateRefund(order.orderId, manualTxnId, manualMethod);
+                  }}
+                  style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '12.5px', cursor: 'pointer', width: '100%', marginTop: '8px' }}
+                >
+                  Record Manual Refund
+                </button>
+              </>
+            ) : (
+              // Online Gateway Refund
+              <button
+                onClick={() => onInitiateRefund(order.orderId)}
+                style={{ background: '#1a6e52', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '12.5px', cursor: 'pointer', width: '100%' }}
+              >
+                Initiate Gateway Refund (Razorpay API)
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Case 5: Refund Initiated */}
+        {order.refundStatus === 'INITIATED' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#2563eb', fontWeight: 600 }}>⏳ Refund initiated and awaiting gateway settlement.</p>
+            {refund && (
+              <p style={{ margin: 0, fontSize: '12px', color: '#475569' }}>
+                Gateway Refund ID: <strong>{refund.paymentGatewayRefundId}</strong>
+              </p>
+            )}
+            <button
+              onClick={() => onSyncRefund(order.orderId)}
+              style={{ background: '#38bed5', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '12.5px', cursor: 'pointer', width: '100%' }}
+            >
+              Sync Gateway Status (Razorpay)
+            </button>
+          </div>
+        )}
+
+        {/* Case 6: Refund Completed */}
+        {order.refundStatus === 'PROCESSED' && (
+          <div>
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#16a34a', fontWeight: 600 }}>✅ Refund completed successfully.</p>
+            {refund && (
+              <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#475569' }}>
+                Refund ID: <strong>{refund.refundId}</strong><br/>
+                Txn ID: {refund.paymentGatewayRefundId} ({refund.method})<br/>
+                Settled At: {new Date(refund.processedAt).toLocaleString()}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Case 7: Refund Failed */}
+        {order.refundStatus === 'FAILED' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#dc2626', fontWeight: 600 }}>❌ Refund failed at Gateway.</p>
+            {refund && (
+              <p style={{ margin: 0, fontSize: '12px', color: '#ef4444' }}>
+                Reason: {refund.failureReason}
+              </p>
+            )}
+            <button
+              onClick={() => onInitiateRefund(order.orderId)}
+              style={{ background: '#1a6e52', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px', fontWeight: 600, fontSize: '12px', cursor: 'pointer', width: '100%' }}
+            >
+              Retry Gateway Refund
+            </button>
+          </div>
+        )}
+
+        {/* No action active */}
+        {!['REQUESTED', 'APPROVED', 'INITIATED', 'PROCESSED', 'FAILED'].includes(order.refundStatus) && order.cancellationStatus !== 'REQUESTED' && order.returnStatus !== 'REQUESTED' && order.orderStatus !== 'RETURN_PICKUP_SCHEDULED' && (
+          <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>No pending administrative action for this order.</p>
+        )}
+      </div>
+
+      {/* Event history timeline */}
+      <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+        <span style={labelStyle}>Order Event Timeline</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px', maxHeight: '160px', overflowY: 'auto' }}>
+          {events.map((e, idx) => (
+            <div key={idx} style={{ display: 'flex', gap: '8px', fontSize: '12px' }}>
+              <div style={{ color: '#94a3b8', whiteSpace: 'nowrap' }}>{new Date(e.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+              <div>
+                <strong style={{ color: '#0f172a' }}>{e.status}</strong>: {e.customerMessage}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

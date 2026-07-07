@@ -283,4 +283,144 @@ async function sendOrderConfirmationEmails(order) {
   console.log(`[emailService] Emails sent for order ${order.orderId}`);
 }
 
-module.exports = { sendOrderConfirmationEmails };
+/* ── Status change notification email ──────────────────────────── */
+function buildStatusEmailHtml(order, status, customerMessage) {
+  const { orderId, customerName, productName, orderAmount } = order;
+  
+  // Dynamic color coding based on status
+  let statusColor = '#3b82f6'; // Blue default
+  if (status.includes('DELIVERED') || status.includes('APPROVED') || status.includes('PROCESSED')) {
+    statusColor = '#22c55e'; // Green
+  } else if (status.includes('FAIL') || status.includes('REJECTED') || status.includes('CANCEL')) {
+    statusColor = '#ef4444'; // Red
+  } else if (status.includes('PENDING') || status.includes('REQUEST') || status.includes('INITIATED') || status.includes('PROCESSING')) {
+    statusColor = '#f59e0b'; // Amber
+  }
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Update — ${orderId}</title>
+</head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a6e52 0%,#0f3460 100%);padding:36px 40px;text-align:center;">
+            <p style="margin:0 0 8px;font-size:28px;">🌿</p>
+            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.5px;">Cancer Herbalist</h1>
+            <p style="margin:8px 0 0;color:#a7f3d0;font-size:13px;">Order Status Update</p>
+          </td>
+        </tr>
+
+        <!-- Body content -->
+        <tr>
+          <td style="padding:32px 40px 0;">
+            <h2 style="margin:0 0 12px;color:#0f172a;font-size:20px;">
+              Hello, ${customerName}
+            </h2>
+            <p style="margin:0 0 20px;color:#475569;font-size:14px;line-height:1.7;">
+              There is an update regarding your order <strong style="color:#1a6e52;">${orderId}</strong>:
+            </p>
+            
+            <!-- Message card -->
+            <div style="background:#f8fafc;border-left:4px solid ${statusColor};border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:24px;">
+              <p style="margin:0;font-size:14px;color:#1e293b;line-height:1.6;font-weight:500;">
+                ${customerMessage}
+              </p>
+            </div>
+            
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:24px;font-size:13.5px;">
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #e2e8f0;color:#64748b;width:35%;">Order ID</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #e2e8f0;color:#0f172a;font-weight:600;">${orderId}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #e2e8f0;color:#64748b;">Product</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #e2e8f0;color:#0f172a;font-weight:600;">${productName}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;border-bottom:1px solid #e2e8f0;color:#64748b;">Total Amount</td>
+                <td style="padding:12px 16px;border-bottom:1px solid #e2e8f0;color:#1a6e52;font-weight:700;">₹${Number(orderAmount).toLocaleString('en-IN')}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 16px;color:#64748b;">Courier Tracking</td>
+                <td style="padding:12px 16px;color:#0f172a;">
+                  ${order.awb ? `<strong>${order.courierName || 'Courier'}</strong><br/>AWB: ${order.awb}<br/><a href="${order.trackingUrl || '#'}" style="color:#38bed5;text-decoration:none;font-weight:600;">🔗 Track Package</a>` : 'Not Shipped Yet'}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- WhatsApp CTA -->
+        <tr>
+          <td style="padding:0 40px 32px;text-align:center;">
+            <a href="https://wa.me/918884588835" style="display:inline-block;background:#25d366;color:#ffffff;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;">
+              💬 Chat with us on WhatsApp
+            </a>
+            <p style="margin:12px 0 0;color:#94a3b8;font-size:11.5px;">
+              Need help? Reach out at <a href="tel:+918884588835" style="color:#1a6e52;">+91 88845 88835</a>
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
+            <p style="margin:0;color:#94a3b8;font-size:11.5px;line-height:1.6;">
+              Cancer Herbalist | Kaggalipura, Bangalore 560116<br/>
+              cancerherbalist@gmail.com | +91 88845 88835
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+async function sendStatusNotificationEmail(order, status, customerMessage) {
+  console.log(`[emailService] Sending status notification email for order ${order.orderId}`);
+  
+  if (!order.email || !/\S+@\S+\.\S+/.test(order.email)) {
+    console.warn('[emailService] Customer email missing or invalid. Skipping status notification email.');
+    return;
+  }
+
+  const transporter = createTransporter();
+  if (!transporter) {
+    console.warn('[emailService] Transporter is null — GMAIL_USER or GMAIL_APP_PASSWORD missing.');
+    return;
+  }
+
+  const { ORDER_STATUS_LABELS } = require('./orderStatuses');
+  const statusLabel = ORDER_STATUS_LABELS[status] || status;
+  const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+
+  try {
+    await transporter.sendMail({
+      from:    fromAddr,
+      to:      order.email,
+      subject: `📢 Order Update: ${statusLabel} — ${order.orderId}`,
+      text:    `Hello ${order.customerName},\n\nUpdate for your order ${order.orderId}:\n\n${customerMessage}\n\nTrack your order here: ${process.env.FRONTEND_URL}/track-order?orderId=${order.orderId}`,
+      html:    buildStatusEmailHtml(order, status, customerMessage),
+    });
+    console.log(`[emailService] Status notification email sent successfully.`);
+  } catch (err) {
+    console.error('[emailService] Status notification email failed:', err.message);
+  }
+}
+
+module.exports = { 
+  sendOrderConfirmationEmails,
+  sendStatusNotificationEmail
+};

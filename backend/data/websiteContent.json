@@ -206,34 +206,6 @@
     "videoUrl": "https://res.cloudinary.com/zm8wxsqy/video/upload/v1783229564/Cancer_video_ahljqs.mp4",
     "thumbnailUrl": "/logo.png"
   },
-  "aboutHero": {
-    "badge": "About Cancer Herbalist",
-    "headline": "Two Decades of",
-    "headlineAccent": "Healing Through Nature",
-    "subline": "Since 2012 Cancer Herbalist has been a trusted partner for patients navigating cancer — combining the wisdom of botanical medicine with the rigour of modern integrative oncology to support healing at every level.",
-    "cta1Label": "Book Free Consultation",
-    "cta1Link": "/contact",
-    "cta2Label": "Our Approach",
-    "cta2Link": "/care-programs"
-  },
-  "aboutStory": {
-    "badge": "Our Story",
-    "title": "A Mission Born from Compassion",
-    "paragraphs": [
-      "Cancer Herbalist has emerged as a leading integrative oncology center, combining the symbiotic spirit of science and tradition. Our therapies work on the same molecular pathways studied in modern oncology—incorporating clinical research, receptor concepts, oncogene studies, and epigenetics with premium, standardized herbal extracts.",
-      "Founded by a team of pharmacologists and clinical researchers, we specialize in Herbal Chemotherapy (HCT) and Nutrition Therapy (NT). These protocols are designed to target cancer at its roots—including cancer stem cells and NF-κB pathways—while actively protecting healthy cells and downregulating pro-oncogenes.",
-      "Based in Bangalore, India, and serving patients worldwide, we are dedicated to providing evidence-based botanical support that integrates seamlessly with conventional treatments. We offer hope and real science to patients navigating their cancer journey."
-    ],
-    "highlights": [
-      "Carefully selected herbal medicines as part of a holistic care approach",
-      "Trusted herbal formulations developed through years of clinical practice",
-      "Traditional herbal medicines integrated with supportive patient care",
-      "Quality herbal formulations guided by extensive clinical experience"
-    ],
-    "founderQuote": "Nature holds the answers. We hold the knowledge to translate them into healing.",
-    "founderQuoteAuthor": "Prof Ramesh Babu, Founder",
-    "founderImage": "/images/doctor1.png"
-  },
   "aboutCaseStudies": {
     "title": "Clinical Success & Case Studies",
     "subtitle": "Verified cases demonstrating recovery and significant quality-of-life improvements using Herbal Chemotherapy (HCT) and Nutrition Therapy (NT).",
@@ -264,6 +236,34 @@
         "description": "A rare success case of a heart failure patient from Hyderabad suffering from Neck Cancer who achieved complete cure/remission in 3 months of supportive therapy."
       }
     ]
+  },
+  "aboutHero": {
+    "badge": "About Cancer Herbalist",
+    "headline": "Two Decades of",
+    "headlineAccent": "Healing Through Nature",
+    "subline": "Since 2012 Cancer Herbalist has been a trusted partner for patients navigating cancer — combining the wisdom of botanical medicine with the rigour of modern integrative oncology to support healing at every level.",
+    "cta1Label": "Book Free Consultation",
+    "cta1Link": "/contact",
+    "cta2Label": "Our Approach",
+    "cta2Link": "/care-programs"
+  },
+  "aboutStory": {
+    "badge": "Our Story",
+    "title": "A Mission Born from Compassion",
+    "paragraphs": [
+      "Cancer Herbalist has emerged as a leading integrative oncology center, combining the symbiotic spirit of science and tradition. Our therapies work on the same molecular pathways studied in modern oncology—incorporating clinical research, receptor concepts, oncogene studies, and epigenetics with premium, standardized herbal extracts.",
+      "Founded by a team of pharmacologists and clinical researchers, we specialize in Herbal Chemotherapy (HCT) and Nutrition Therapy (NT). These protocols are designed to target cancer at its roots—including cancer stem cells and NF-κB pathways—while actively protecting healthy cells and downregulating pro-oncogenes.",
+      "Based in Bangalore, India, and serving patients worldwide, we are dedicated to providing evidence-based botanical support that integrates seamlessly with conventional treatments. We offer hope and real science to patients navigating their cancer journey."
+    ],
+    "highlights": [
+      "Carefully selected herbal medicines as part of a holistic care approach",
+      "Trusted herbal formulations developed through years of clinical practice",
+      "Traditional herbal medicines integrated with supportive patient care",
+      "Quality herbal formulations guided by extensive clinical experience"
+    ],
+    "founderQuote": "Nature holds the answers. We hold the knowledge to translate them into healing.",
+    "founderQuoteAuthor": "Prof Ramesh Babu, Founder",
+    "founderImage": "/images/doctor1.png"
   },
   "aboutMission": {
     "title": "Mission & Vision",

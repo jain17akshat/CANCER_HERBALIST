@@ -27,6 +27,10 @@ import TermsOfService from './pages/TermsOfService';
 import RefundPolicy from './pages/RefundPolicy';
 import NotFound from './pages/NotFound';
 import AdminDashboard from './pages/AdminDashboard';
+import TrackOrder from './pages/TrackOrder';
+import MyOrders from './pages/MyOrders';
+import OrderDetails from './pages/OrderDetails';
+import OrderFAQ from './pages/OrderFAQ';
 import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
@@ -97,6 +101,10 @@ function App() {
                 <Route path="/order-success" element={<OrderSuccess />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/track-order" element={<TrackOrder />} />
+                <Route style={{ contentVisibility: 'auto' }} path="/my-orders" element={<MyOrders />} />
+                <Route path="/order-details/:orderId" element={<OrderDetails />} />
+                <Route path="/faqs" element={<OrderFAQ />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
