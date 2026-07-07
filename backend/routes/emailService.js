@@ -415,6 +415,8 @@ async function sendStatusNotificationEmail(order, status, customerMessage) {
     subject = `⏳ Refund Initiated — ${order.orderId} | Cancer Herbalist`;
   }
 
+  const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+
   try {
     await transporter.sendMail({
       from:    fromAddr,
