@@ -340,6 +340,110 @@ router.post('/admin/orders/:orderId/cancel', async (req, res) => {
 });
 
 /**
+ * POST /api/admin/orders/:orderId/ship
+ * Admin directly triggers AWB allocation, schedules pickup, and generates shipping label + manifest.
+ */
+router.post('/admin/orders/:orderId/ship', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found.' });
+    }
+
+    if (order.orderStatus === ORDER_STATUSES.CANCELLED) {
+      return res.status(400).json({ success: false, error: 'Cannot ship a cancelled order.' });
+    }
+
+    const { 
+      createShiprocketOrder,
+      assignShiprocketAwb, 
+      requestShiprocketPickup, 
+      generateShiprocketLabel, 
+      generateShiprocketManifest 
+    } = require('./shiprocket');
+
+    // 1. Push to Shiprocket if not yet created
+    if (!order.shiprocketOrderId) {
+      console.log(`[admin/ship] Order ${orderId} not on Shiprocket yet. Creating adhoc order...`);
+      const srData = await createShiprocketOrder(order);
+      order.shiprocketOrderId = srData.order_id || srData.id || null;
+      order.shipmentId = srData.shipment_id || null;
+      order.awb = srData.awb_code || null;
+      order.courierName = srData.courier_name || null;
+      order.trackingUrl = srData.tracking_url || null;
+      if (order.awb) order.shipmentStatus = 'AWB_ASSIGNED';
+      saveOrder(order);
+    }
+
+    if (!order.shipmentId) {
+      return res.status(400).json({ success: false, error: 'Failed to associate a Shipment ID with this order on Shiprocket.' });
+    }
+
+    let logMessage = '';
+
+    // 2. Assign AWB if not present
+    if (!order.awb) {
+      console.log(`[admin/ship] Allocating AWB for shipment ${order.shipmentId}`);
+      const awbData = await assignShiprocketAwb(order.shipmentId);
+      const responseObj = awbData.response || {};
+      const dataObj = responseObj.data || {};
+      
+      order.awb = dataObj.awb_code || awbData.awb_code || null;
+      order.courierName = dataObj.courier_name || awbData.courier_name || null;
+      order.trackingUrl = dataObj.tracking_url || awbData.tracking_url || null;
+      if (order.awb) {
+        order.shipmentStatus = 'AWB_ASSIGNED';
+      }
+      logMessage += `AWB Assigned: ${order.awb} via ${order.courierName}. `;
+    }
+
+    // 3. Schedule Pickup
+    console.log(`[admin/ship] Requesting pickup for shipment ${order.shipmentId}`);
+    await requestShiprocketPickup(order.shipmentId);
+    logMessage += `Pickup scheduled. `;
+
+    // 4. Generate Label
+    console.log(`[admin/ship] Generating shipping label for shipment ${order.shipmentId}`);
+    const labelData = await generateShiprocketLabel(order.shipmentId);
+    order.labelUrl = labelData.label_url || (labelData.response && labelData.response.label_url) || null;
+    logMessage += `Label generated. `;
+
+    // 5. Generate Manifest
+    console.log(`[admin/ship] Generating manifest for shipment ${order.shipmentId}`);
+    const manifestData = await generateShiprocketManifest(order.shipmentId);
+    order.manifestUrl = manifestData.manifest_url || (manifestData.response && manifestData.response.manifest_url) || null;
+    logMessage += `Manifest generated. `;
+
+    // Update local database status
+    order.orderStatus = ORDER_STATUSES.SHIPPED;
+    saveOrder(order);
+
+    addOrderEvent(
+      orderId,
+      'SHIPPED',
+      ORDER_STATUSES.SHIPPED,
+      `Order processed and shipped directly from admin panel. ${logMessage}`,
+      { labelUrl: order.labelUrl, manifestUrl: order.manifestUrl, awb: order.awb }
+    );
+
+    // Send shipment confirmation email to customer
+    await sendStatusNotificationEmail(
+      order,
+      ORDER_STATUSES.SHIPPED,
+      `Your order ${orderId} has been processed and shipped via ${order.courierName || 'our courier partner'}. AWB/Tracking number: ${order.awb || 'N/A'}. You can track your shipment using the tracking link.`
+    );
+
+    res.json({ success: true, message: 'Order processed and shipped successfully.', order });
+
+  } catch (err) {
+    console.error('[admin/ship] Shipping processing failed:', err.message);
+    res.status(500).json({ success: false, error: `Shipping processing failed: ${err.message}` });
+  }
+});
+
+/**
  * PUT /api/admin/orders/:orderId/return
  * Approve or reject a return request.
  */

@@ -323,6 +323,23 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleShipOrderDirect = async (orderId) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/ship?key=${secret}`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
+      alert('Order processed and shipped successfully!');
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
   /* ── Auto-refresh every 60s ──────────────────────────────────── */
   useEffect(() => {
     if (!authed) return;
@@ -1445,6 +1462,7 @@ export default function AdminDashboard() {
                     onInitiateRefund={handleInitiateRefund}
                     onSyncRefund={handleSyncRefund}
                     onCancelOrderDirect={handleCancelOrderDirect}
+                    onShipOrderDirect={handleShipOrderDirect}
                     onClose={() => { setSelectedOrder(null); setSelectedOrderDetails(null); }}
                   />
                 ) : (
@@ -3263,7 +3281,7 @@ export default function AdminDashboard() {
   );
 }
 
-function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn, onReceiveReturn, onInitiateRefund, onSyncRefund, onCancelOrderDirect, onClose }) {
+function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn, onReceiveReturn, onInitiateRefund, onSyncRefund, onCancelOrderDirect, onShipOrderDirect, onClose }) {
   const { order, events, refund } = details;
   const [remarks, setRemarks] = React.useState('');
   const [returnRemarks, setReturnRemarks] = React.useState('');
@@ -3308,7 +3326,17 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
         <div>
           <span style={labelStyle}>Payment & Courier</span>
           <p style={{ margin: '4px 0 0', fontWeight: 600 }}>{order.paymentMethod} ({order.paymentStatus})</p>
-          {order.awb && <p style={{ margin: '2px 0 0', color: '#38bed5', fontWeight: 600 }}>AWB: {order.awb}</p>}
+          {order.awb && <p style={{ margin: '2px 0 0', color: '#0891b2', fontWeight: 600 }}>AWB: {order.awb} ({order.courierName || 'Shiprocket'})</p>}
+          {order.labelUrl && (
+            <a href={order.labelUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-block', color: '#16a34a', fontWeight: 600, fontSize: '11px', textDecoration: 'none', marginTop: '4px', marginRight: '8px' }}>
+              📄 Print Label
+            </a>
+          )}
+          {order.manifestUrl && (
+            <a href={order.manifestUrl} target="_blank" rel="noreferrer" style={{ display: 'inline-block', color: '#0f3460', fontWeight: 600, fontSize: '11px', textDecoration: 'none', marginTop: '4px' }}>
+              📋 Print Manifest
+            </a>
+          )}
         </div>
       </div>
 
@@ -3515,6 +3543,36 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
         {/* No action active */}
         {!['REQUESTED', 'APPROVED', 'INITIATED', 'PROCESSED', 'FAILED'].includes(order.refundStatus) && order.cancellationStatus !== 'REQUESTED' && order.returnStatus !== 'REQUESTED' && order.orderStatus !== 'RETURN_PICKUP_SCHEDULED' && (
           <p style={{ margin: 0, fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>No pending administrative action for this order.</p>
+        )}
+
+        {/* Direct Ship Button (Available for confirmed/placed orders that are not shipped, delivered, or cancelled, and don't have a pending cancellation request) */}
+        {!['CANCELLED', 'SHIPPED', 'DELIVERED', 'OUT_FOR_DELIVERY', 'RTO_INITIATED', 'RTO_DELIVERED'].includes(order.orderStatus) && order.cancellationStatus !== 'REQUESTED' && (
+          <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
+            <button
+              onClick={() => {
+                if (window.confirm('Are you sure you want to request AWB assignment, schedule courier pickup, and generate labels/manifests for this order?')) {
+                  onShipOrderDirect(order.orderId);
+                }
+              }}
+              style={{
+                width: '100%',
+                background: '#1a6e52',
+                color: '#fff',
+                border: 'none',
+                padding: '10px',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '12.5px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
+            >
+              🚀 Ship Order (Auto AWB, Label & Manifest)
+            </button>
+          </div>
         )}
 
         {/* Direct Cancel Button (Available for confirmed/placed orders that are not shipped, delivered, or cancelled, and don't have a pending cancellation request) */}

@@ -214,9 +214,105 @@ async function cancelShiprocketOrder(shiprocketOrderId) {
   return data;
 }
 
+async function assignShiprocketAwb(shipmentId) {
+  if (!shipmentId) throw new Error('shipmentId is required to assign AWB.');
+  const token = await getAuthToken();
+  const res = await fetch(`${BASE_URL}/courier/assign/awb`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ shipment_id: Number(shipmentId) }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401) {
+      _cachedToken    = null;
+      _tokenExpiresAt = 0;
+    }
+    throw new Error(`Shiprocket AWB assignment failed (${res.status}): ${JSON.stringify(data)}`);
+  }
+  return data;
+}
+
+async function requestShiprocketPickup(shipmentId) {
+  if (!shipmentId) throw new Error('shipmentId is required to request pickup.');
+  const token = await getAuthToken();
+  const res = await fetch(`${BASE_URL}/courier/generate/pickup`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ shipment_id: [Number(shipmentId)] }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401) {
+      _cachedToken    = null;
+      _tokenExpiresAt = 0;
+    }
+    throw new Error(`Shiprocket pickup request failed (${res.status}): ${JSON.stringify(data)}`);
+  }
+  return data;
+}
+
+async function generateShiprocketLabel(shipmentId) {
+  if (!shipmentId) throw new Error('shipmentId is required to generate label.');
+  const token = await getAuthToken();
+  const res = await fetch(`${BASE_URL}/courier/generate/label`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ shipment_id: [Number(shipmentId)] }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401) {
+      _cachedToken    = null;
+      _tokenExpiresAt = 0;
+    }
+    throw new Error(`Shiprocket label generation failed (${res.status}): ${JSON.stringify(data)}`);
+  }
+  return data;
+}
+
+async function generateShiprocketManifest(shipmentId) {
+  if (!shipmentId) throw new Error('shipmentId is required to generate manifest.');
+  const token = await getAuthToken();
+  const res = await fetch(`${BASE_URL}/manifests/generate`, {
+    method:  'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ shipment_id: [Number(shipmentId)] }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401) {
+      _cachedToken    = null;
+      _tokenExpiresAt = 0;
+    }
+    throw new Error(`Shiprocket manifest generation failed (${res.status}): ${JSON.stringify(data)}`);
+  }
+  return data;
+}
+
 module.exports = { 
   createShiprocketOrder, 
   getShiprocketTrackingByShipment, 
   getShiprocketTrackingByAwb,
-  cancelShiprocketOrder
+  cancelShiprocketOrder,
+  assignShiprocketAwb,
+  requestShiprocketPickup,
+  generateShiprocketLabel,
+  generateShiprocketManifest
 };
