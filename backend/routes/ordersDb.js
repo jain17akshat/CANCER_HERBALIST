@@ -103,15 +103,20 @@ async function syncFromSheets(force = false) {
       fetchSheet('orderEvents')
     ]);
     
-    cachedOrders = orders;
-    cachedRefunds = refunds;
-    cachedEvents = events;
+    // Filter out empty rows (e.g. if the user cleared cells directly in Google Sheets)
+    const validOrders = (orders || []).filter(o => o && o.orderId && String(o.orderId).trim());
+    const validRefunds = (refunds || []).filter(r => r && r.refundId && String(r.refundId).trim());
+    const validEvents = (events || []).filter(e => e && e.orderId && String(e.orderId).trim());
+
+    cachedOrders = validOrders;
+    cachedRefunds = validRefunds;
+    cachedEvents = validEvents;
     lastSyncTime = Date.now();
     
     // Backup cache to local files (will fail gracefully on Vercel)
-    writeJSON(ORDERS_FILE, orders);
-    writeJSON(REFUNDS_FILE, refunds);
-    writeJSON(EVENTS_FILE, events);
+    writeJSON(ORDERS_FILE, validOrders);
+    writeJSON(REFUNDS_FILE, validRefunds);
+    writeJSON(EVENTS_FILE, validEvents);
     
     console.log('[ordersDb] Successfully synced latest data from Google Sheets.');
     return true;

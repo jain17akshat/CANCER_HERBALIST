@@ -269,9 +269,10 @@ async function syncAppointmentsFromSheets(force = false) {
     if (!res.ok) throw new Error(`Status ${res.status}`);
     const data = await res.json();
     if (data.success) {
-      cachedAppointments = data.rows;
+      const validAppts = (data.rows || []).filter(a => a && a.apptId && String(a.apptId).trim());
+      cachedAppointments = validAppts;
       appointmentStore.length = 0;
-      appointmentStore.push(...data.rows);
+      appointmentStore.push(...validAppts);
       lastApptSyncTime = Date.now();
       return true;
     }
