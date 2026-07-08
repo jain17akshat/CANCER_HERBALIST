@@ -251,6 +251,12 @@ async function requestShiprocketPickup(shipmentId) {
 
   const data = await res.json();
   if (!res.ok) {
+    // "Already in Pickup Queue" is not an error — the pickup is already scheduled, continue.
+    const msg = (data.message || '').toLowerCase();
+    if (res.status === 400 && msg.includes('already in pickup queue')) {
+      console.log(`[Shiprocket] Pickup already queued for shipment ${shipmentId}. Continuing...`);
+      return data;
+    }
     if (res.status === 401) {
       _cachedToken    = null;
       _tokenExpiresAt = 0;
