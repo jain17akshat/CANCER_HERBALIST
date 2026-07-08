@@ -16,7 +16,9 @@ const {
   getEventsByOrderId,
   getRefundByOrderId,
   saveRefund,
-  syncFromSheets
+  syncFromSheets,
+  deleteOrder,
+  clearAllOrders
 } = require('./ordersDb');
 const { ORDER_STATUSES, ORDER_STATUS_LABELS } = require('./orderStatuses');
 const { sendStatusNotificationEmail } = require('./emailService');
@@ -804,6 +806,85 @@ router.post('/admin/orders/:orderId/refund/sync', async (req, res) => {
   } catch (err) {
     console.error('[admin/refund/sync]', err.message);
     res.status(500).json({ success: false, error: 'Failed to sync refund status.' });
+  }
+});
+
+/**
+ * DELETE /api/admin/orders/:orderId
+ * Delete a single order from the cache and Google Sheets.
+ */
+router.delete('/admin/orders/:orderId', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const success = deleteOrder(orderId);
+    if (success) {
+      res.json({ success: true, message: 'Order deleted successfully.' });
+    } else {
+      res.status(404).json({ success: false, error: 'Order not found.' });
+    }
+  } catch (err) {
+    console.error('[admin/deleteOrder]', err.message);
+    res.status(500).json({ success: false, error: 'Failed to delete order.' });
+  }
+});
+
+/**
+ * DELETE /api/admin/orders
+ * Delete all orders from the cache and Google Sheets.
+ */
+router.delete('/admin/orders', async (req, res) => {
+  try {
+    clearAllOrders();
+    res.json({ success: true, message: 'All orders deleted successfully.' });
+  } catch (err) {
+    console.error('[admin/deleteAllOrders]', err.message);
+    res.status(500).json({ success: false, error: 'Failed to delete all orders.' });
+  }
+});
+
+/**
+ * PUT /api/admin/orders/:orderId/edit
+ * Edit details of an order (name, phone, address, state, status, etc.).
+ */
+router.put('/admin/orders/:orderId/edit', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = getOrderById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found.' });
+    }
+
+    // Update allowable fields
+    const editableFields = [
+      'customerName', 'phone', 'email', 'address', 'city', 'state', 'pincode',
+      'productName', 'quantity', 'unitPrice', 'orderAmount', 'paymentMethod',
+      'paymentStatus', 'orderStatus', 'shipmentStatus', 'awb', 'courierName'
+    ];
+
+    let changed = false;
+    editableFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        let newVal = req.body[field];
+        if (field === 'quantity' || field === 'unitPrice' || field === 'orderAmount') {
+          newVal = Number(newVal);
+        }
+        if (order[field] !== newVal) {
+          order[field] = newVal;
+          changed = true;
+        }
+      }
+    });
+
+    if (changed) {
+      order.updatedAt = new Date().toISOString();
+      saveOrder(order);
+      addOrderEvent(orderId, 'STATUS_UPDATE', order.orderStatus, 'Order details updated by administrator.');
+    }
+
+    res.json({ success: true, message: 'Order updated successfully.', order });
+  } catch (err) {
+    console.error('[admin/editOrder]', err.message);
+    res.status(500).json({ success: false, error: 'Failed to edit order.' });
   }
 });
 

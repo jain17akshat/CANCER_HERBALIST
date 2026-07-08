@@ -352,6 +352,63 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm(`Are you sure you want to permanently delete order ${orderId}? This will remove it from Google Sheets and your database.`)) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}?key=${secret}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Delete failed.');
+      alert('Order deleted successfully!');
+      setSelectedOrder(null);
+      setSelectedOrderDetails(null);
+      fetchOrders(secret);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleDeleteAllOrders = async () => {
+    const confirmation = prompt('WARNING: This will permanently delete ALL orders from your database and Google Sheets. Type "DELETE ALL" to confirm:');
+    if (confirmation !== 'DELETE ALL') {
+      alert('Deletion cancelled. Confirmation text did not match.');
+      return;
+    }
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders?key=${secret}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Delete failed.');
+      alert('All orders deleted successfully!');
+      setSelectedOrder(null);
+      setSelectedOrderDetails(null);
+      fetchOrders(secret);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleEditOrder = async (orderId, updatedFields) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}/edit?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFields)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Update failed.');
+      fetchOrders(secret);
+      if (selectedOrder && selectedOrder.orderId === orderId) {
+        fetchOrderDetails(orderId);
+      }
+    } catch (err) {
+      alert(`Error updating order: ${err.message}`);
+      throw err;
+    }
+  };
+
   /* ── Auto-refresh every 60s ──────────────────────────────────── */
   useEffect(() => {
     if (!authed) return;
@@ -1437,6 +1494,19 @@ export default function AdminDashboard() {
                 <option value="DELIVERED">Delivered</option>
               </select>
 
+              <button
+                onClick={handleDeleteAllOrders}
+                style={{
+                  padding: '10px 16px', borderRadius: '10px', border: '1.5px solid #fecaca',
+                  background: '#fef2f2', color: '#dc2626', fontWeight: 600, fontSize: '13.5px',
+                  cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; }}
+              >
+                🗑️ Delete All
+              </button>
+
               {ordersLoading && <span style={{ fontSize: '12px', color: '#94a3b8' }}>Loading...</span>}
             </div>
 
@@ -1514,6 +1584,8 @@ export default function AdminDashboard() {
                     onSyncRefund={handleSyncRefund}
                     onCancelOrderDirect={handleCancelOrderDirect}
                     onShipOrderDirect={handleShipOrderDirect}
+                    onDeleteOrder={handleDeleteOrder}
+                    onEditOrder={handleEditOrder}
                     onClose={() => { setSelectedOrder(null); setSelectedOrderDetails(null); }}
                   />
                 ) : (
@@ -3380,7 +3452,7 @@ export default function AdminDashboard() {
   );
 }
 
-function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn, onReceiveReturn, onInitiateRefund, onSyncRefund, onCancelOrderDirect, onShipOrderDirect, onClose }) {
+function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn, onReceiveReturn, onInitiateRefund, onSyncRefund, onCancelOrderDirect, onShipOrderDirect, onDeleteOrder, onEditOrder, onClose }) {
   const { order, events, refund } = details;
   const [remarks, setRemarks] = React.useState('');
   const [returnRemarks, setReturnRemarks] = React.useState('');
@@ -3388,7 +3460,253 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
   const [manualTxnId, setManualTxnId] = React.useState('');
   const [manualMethod, setManualMethod] = React.useState('UPI');
 
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editForm, setEditForm] = React.useState({
+    customerName: order.customerName || '',
+    phone: order.phone || '',
+    email: order.email || '',
+    address: order.address || '',
+    city: order.city || '',
+    state: order.state || '',
+    pincode: order.pincode || '',
+    productName: order.productName || '',
+    quantity: order.quantity || 1,
+    orderAmount: order.orderAmount || 0,
+    paymentMethod: order.paymentMethod || 'COD / Bank Transfer',
+    paymentStatus: order.paymentStatus || 'COD_PENDING',
+    orderStatus: order.orderStatus || 'PENDING',
+    shipmentStatus: order.shipmentStatus || '',
+    awb: order.awb || '',
+    courierName: order.courierName || ''
+  });
+
+  React.useEffect(() => {
+    setEditForm({
+      customerName: order.customerName || '',
+      phone: order.phone || '',
+      email: order.email || '',
+      address: order.address || '',
+      city: order.city || '',
+      state: order.state || '',
+      pincode: order.pincode || '',
+      productName: order.productName || '',
+      quantity: order.quantity || 1,
+      orderAmount: order.orderAmount || 0,
+      paymentMethod: order.paymentMethod || 'COD / Bank Transfer',
+      paymentStatus: order.paymentStatus || 'COD_PENDING',
+      orderStatus: order.orderStatus || 'PENDING',
+      shipmentStatus: order.shipmentStatus || '',
+      awb: order.awb || '',
+      courierName: order.courierName || ''
+    });
+    setIsEditing(false);
+  }, [order]);
+
   const labelStyle = { fontSize: '11px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', display: 'block', marginBottom: '4px' };
+
+  if (isEditing) {
+    return (
+      <div style={{ background: '#fff', border: '1.5px solid #1a6e5230', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '15px', color: '#0f172a', fontWeight: 700 }}>Edit Order Details</h3>
+            <span style={{ fontSize: '12px', color: '#64748b' }}>{order.orderId}</span>
+          </div>
+          <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#94a3b8' }}>×</button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12.5px' }}>
+          <div>
+            <label style={labelStyle}>Customer Name</label>
+            <input
+              type="text"
+              value={editForm.customerName}
+              onChange={e => setEditForm({ ...editForm, customerName: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Phone Number</label>
+            <input
+              type="text"
+              value={editForm.phone}
+              onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px', fontSize: '12.5px' }}>
+          <div>
+            <label style={labelStyle}>Email Address</label>
+            <input
+              type="email"
+              value={editForm.email}
+              onChange={e => setEditForm({ ...editForm, email: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px', fontSize: '12.5px' }}>
+          <div>
+            <label style={labelStyle}>Shipping Address</label>
+            <input
+              type="text"
+              value={editForm.address}
+              onChange={e => setEditForm({ ...editForm, address: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', fontSize: '12.5px' }}>
+          <div>
+            <label style={labelStyle}>City</label>
+            <input
+              type="text"
+              value={editForm.city}
+              onChange={e => setEditForm({ ...editForm, city: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>State</label>
+            <input
+              type="text"
+              value={editForm.state}
+              onChange={e => setEditForm({ ...editForm, state: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Pincode</label>
+            <input
+              type="text"
+              value={editForm.pincode}
+              onChange={e => setEditForm({ ...editForm, pincode: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '8px', fontSize: '12.5px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+          <div>
+            <label style={labelStyle}>Product Name</label>
+            <input
+              type="text"
+              value={editForm.productName}
+              onChange={e => setEditForm({ ...editForm, productName: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Quantity</label>
+            <input
+              type="number"
+              value={editForm.quantity}
+              onChange={e => setEditForm({ ...editForm, quantity: Number(e.target.value) })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Total Amount (₹)</label>
+            <input
+              type="number"
+              value={editForm.orderAmount}
+              onChange={e => setEditForm({ ...editForm, orderAmount: Number(e.target.value) })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12.5px' }}>
+          <div>
+            <label style={labelStyle}>Payment Method</label>
+            <input
+              type="text"
+              value={editForm.paymentMethod}
+              onChange={e => setEditForm({ ...editForm, paymentMethod: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', boxSizing: 'border-box' }}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Payment Status</label>
+            <select
+              value={editForm.paymentStatus}
+              onChange={e => setEditForm({ ...editForm, paymentStatus: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px' }}
+            >
+              <option value="PAID">PAID</option>
+              <option value="COD_PENDING">COD_PENDING</option>
+              <option value="REFUNDED">REFUNDED</option>
+              <option value="FAILED">FAILED</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12.5px' }}>
+          <div>
+            <label style={labelStyle}>Order Status</label>
+            <select
+              value={editForm.orderStatus}
+              onChange={e => setEditForm({ ...editForm, orderStatus: e.target.value })}
+              style={{ width: '100%', padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px' }}
+            >
+              <option value="ORDER_PLACED">Order Placed</option>
+              <option value="ORDER_CONFIRMED">Order Confirmed</option>
+              <option value="SHIPPED">Shipped</option>
+              <option value="DELIVERED">Delivered</option>
+              <option value="CANCELLED">Cancelled</option>
+              <option value="RETURN_REQUESTED">Return Requested</option>
+              <option value="RETURN_APPROVED">Return Approved</option>
+              <option value="REFUND_APPROVED">Refund Approved</option>
+              <option value="REFUND_PROCESSED">Refund Processed</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Courier / AWB</label>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <input
+                type="text"
+                placeholder="Courier"
+                value={editForm.courierName}
+                onChange={e => setEditForm({ ...editForm, courierName: e.target.value })}
+                style={{ flex: 1, padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', minWidth: 0, boxSizing: 'border-box' }}
+              />
+              <input
+                type="text"
+                placeholder="AWB"
+                value={editForm.awb}
+                onChange={e => setEditForm({ ...editForm, awb: e.target.value })}
+                style={{ flex: 1.5, padding: '8px', border: '1px solid #cbd5e1', borderRadius: '8px', minWidth: 0, boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+          <button
+            onClick={async () => {
+              try {
+                await onEditOrder(order.orderId, editForm);
+                setIsEditing(false);
+              } catch (err) {}
+            }}
+            style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+          >
+            💾 Save Changes
+          </button>
+          <button
+            onClick={() => setIsEditing(false)}
+            style={{ flex: 1, background: '#64748b', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ background: '#fff', border: '1.5px solid #1a6e5230', borderRadius: '16px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -3398,6 +3716,27 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
           <span style={{ fontSize: '12px', color: '#64748b' }}>{order.orderId}</span>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: '#94a3b8' }}>×</button>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', marginTop: '-8px' }}>
+        <button
+          onClick={() => setIsEditing(true)}
+          style={{
+            flex: 1, background: '#3b82f6', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px',
+            fontWeight: 600, fontSize: '12.5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+          }}
+        >
+          ✏️ Edit Order
+        </button>
+        <button
+          onClick={() => onDeleteOrder(order.orderId)}
+          style={{
+            flex: 1, background: '#dc2626', color: '#fff', border: 'none', padding: '8px', borderRadius: '8px',
+            fontWeight: 600, fontSize: '12.5px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+          }}
+        >
+          🗑️ Delete Order
+        </button>
       </div>
 
       {/* Summary grid */}

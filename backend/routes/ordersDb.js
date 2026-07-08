@@ -279,6 +279,79 @@ function updateOrderStatus(orderId, status, customerMessage, eventType = 'STATUS
   return order;
 }
 
+async function deleteFromSheets(sheetName, idVal) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return;
+  try {
+    const sheetUrl = new URL(url);
+    sheetUrl.searchParams.append('action', 'deleteRow');
+    sheetUrl.searchParams.append('sheet', sheetName);
+    
+    let idKey = 'orderId';
+    if (sheetName === 'appointments') idKey = 'apptId';
+    else if (sheetName === 'refunds') idKey = 'refundId';
+    else if (sheetName === 'orderEvents') idKey = 'eventId';
+    
+    sheetUrl.searchParams.append(idKey, idVal);
+    
+    const res = await fetch(sheetUrl.toString());
+    if (!res.ok) console.warn(`[ordersDb] Sheets delete returned status ${res.status}`);
+  } catch (err) {
+    console.warn('[ordersDb] Error deleting from Sheets:', err.message);
+  }
+}
+
+async function clearSheets(sheetName) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return;
+  try {
+    const sheetUrl = new URL(url);
+    sheetUrl.searchParams.append('action', 'clearSheet');
+    sheetUrl.searchParams.append('sheet', sheetName);
+    
+    const res = await fetch(sheetUrl.toString());
+    if (!res.ok) console.warn(`[ordersDb] Sheets clear returned status ${res.status}`);
+  } catch (err) {
+    console.warn('[ordersDb] Error clearing Sheets:', err.message);
+  }
+}
+
+function deleteOrder(orderId) {
+  initCache();
+  const index = cachedOrders.findIndex(o => o.orderId === orderId);
+  if (index >= 0) {
+    cachedOrders.splice(index, 1);
+    writeJSON(ORDERS_FILE, cachedOrders);
+    
+    // Also delete any events for this order in local cache
+    cachedEvents = cachedEvents.filter(e => e.orderId !== orderId);
+    writeJSON(EVENTS_FILE, cachedEvents);
+    
+    // Sync to Sheets
+    deleteFromSheets('orders', orderId);
+    return true;
+  }
+  return false;
+}
+
+function clearAllOrders() {
+  initCache();
+  cachedOrders = [];
+  writeJSON(ORDERS_FILE, cachedOrders);
+  
+  cachedEvents = [];
+  writeJSON(EVENTS_FILE, cachedEvents);
+  
+  cachedRefunds = [];
+  writeJSON(REFUNDS_FILE, cachedRefunds);
+  
+  // Sync to Sheets
+  clearSheets('orders');
+  clearSheets('orderEvents');
+  clearSheets('refunds');
+  return true;
+}
+
 module.exports = {
   getOrders,
   saveOrder,
@@ -294,5 +367,7 @@ module.exports = {
   getEventsByOrderId,
   addOrderEvent,
   updateOrderStatus,
-  syncFromSheets
+  syncFromSheets,
+  deleteOrder,
+  clearAllOrders
 };

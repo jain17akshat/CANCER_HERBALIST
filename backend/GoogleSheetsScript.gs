@@ -100,6 +100,14 @@ function doGet(e) {
     return updateRow(sheet, e.parameter);
   }
   
+  if (action === 'deleteRow') {
+    return deleteRow(sheet, e.parameter);
+  }
+  
+  if (action === 'clearSheet') {
+    return clearSheet(sheet);
+  }
+  
   // Default action: Append row (backward compatible with existing appends)
   // Determine correct sheet if not explicitly specified
   if (!e.parameter.sheet) {
@@ -277,5 +285,50 @@ function updateRow(sheet, params) {
   }
   
   return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Row updated successfully' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function deleteRow(sheet, params) {
+  var sheetName = sheet.getName();
+  var idKey = 'orderId';
+  if (sheetName === 'appointments') idKey = 'apptId';
+  else if (sheetName === 'refunds') idKey = 'refundId';
+  else if (sheetName === 'orderEvents') idKey = 'eventId';
+  
+  var idVal = params[idKey];
+  if (!idVal) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Missing ID parameter: ' + idKey }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  var dataRange = sheet.getDataRange();
+  var values = dataRange.getValues();
+  var headers = values[0];
+  var mappedIdKey = KEY_MAP[idKey] || idKey;
+  var idColIdx = headers.indexOf(mappedIdKey);
+  
+  if (idColIdx === -1) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'ID column not found' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  for (var i = 1; i < values.length; i++) {
+    if (String(values[i][idColIdx]).trim() === String(idVal).trim()) {
+      sheet.deleteRow(i + 1);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Row deleted successfully' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Row not found' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function clearSheet(sheet) {
+  var lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    sheet.deleteRows(2, lastRow - 1);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Sheet cleared successfully' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
