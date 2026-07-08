@@ -52,6 +52,16 @@ router.get('/admin/orders', async (req, res) => {
     const { search, orderStatus, paymentStatus, shipmentStatus, refundStatus } = req.query;
     let orders = getOrders();
 
+    // Deduplicate by orderId — keep the most recently updated record
+    const deduped = new Map();
+    for (const o of orders) {
+      const existing = deduped.get(o.orderId);
+      if (!existing || new Date(o.updatedAt || 0) > new Date(existing.updatedAt || 0)) {
+        deduped.set(o.orderId, o);
+      }
+    }
+    orders = Array.from(deduped.values());
+
     // 1. Filtering
     if (orderStatus) {
       orders = orders.filter(o => o.orderStatus === orderStatus);

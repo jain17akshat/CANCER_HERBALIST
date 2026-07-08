@@ -108,7 +108,17 @@ async function syncFromSheets(force = false) {
     const validRefunds = (refunds || []).filter(r => r && r.refundId && String(r.refundId).trim());
     const validEvents = (events || []).filter(e => e && e.orderId && String(e.orderId).trim());
 
-    cachedOrders = validOrders;
+    // Deduplicate orders by orderId — keep the most recently updated record
+    const orderMap = new Map();
+    for (const o of validOrders) {
+      const existing = orderMap.get(o.orderId);
+      if (!existing || new Date(o.updatedAt || 0) > new Date(existing.updatedAt || 0)) {
+        orderMap.set(o.orderId, o);
+      }
+    }
+    const dedupedOrders = Array.from(orderMap.values());
+
+    cachedOrders = dedupedOrders;
     cachedRefunds = validRefunds;
     cachedEvents = validEvents;
     lastSyncTime = Date.now();
