@@ -72,13 +72,13 @@ const seoData = {
     }
   },
   '/doctors': {
-    title: 'Our Medical Experts & Practitioners | Cancer Herbalist',
+    title: 'Our Team | Cancer Herbalist',
     description: 'Meet our team of experienced practitioners and researchers led by Prof. Ramesh Babu, dedicated to safe, integrative cancer support.',
     keywords: 'cancer herbalist doctors, medical team, herbal specialists, prof ramesh babu team',
     schema: {
       '@context': 'https://schema.org',
       '@type': 'MedicalWebPage',
-      'name': 'Our Medical Experts & Practitioners'
+      'name': 'Our Team'
     }
   },
   '/testimonials': {
