@@ -1137,34 +1137,35 @@ export default function ProductDetail() {
     starCounts[starIdx]++;
   });
 
-  useEffect(() => {
-    const checkDynamic = async () => {
-      let apiSucceeded = false;
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
-        const data = await res.json();
-        if (data.success && data.products) {
-          apiSucceeded = true;
-          const found = data.products.find(p => p.id === Number(id));
-          if (found) {
-            setProduct(found);
-          } else {
-            setProduct(null);
-          }
-        }
-      } catch (e) {
-        console.warn('Failed to load dynamic product:', e);
-      }
-
-      if (!apiSucceeded) {
-        const foundStatic = products.find(p => p.id === Number(id));
-        if (foundStatic) {
-          setProduct(foundStatic);
-        }
-      }
-    };
-    checkDynamic();
-  }, [id]);
+  // ⚠️ TESTING ONLY — dynamic fetch disabled so local ₹10 price on Cap CH95 shows.
+  // Re-enable after live payment test is done.
+  // useEffect(() => {
+  //   const checkDynamic = async () => {
+  //     let apiSucceeded = false;
+  //     try {
+  //       const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
+  //       const data = await res.json();
+  //       if (data.success && data.products) {
+  //         apiSucceeded = true;
+  //         const found = data.products.find(p => p.id === Number(id));
+  //         if (found) {
+  //           setProduct(found);
+  //         } else {
+  //           setProduct(null);
+  //         }
+  //       }
+  //     } catch (e) {
+  //       console.warn('Failed to load dynamic product:', e);
+  //     }
+  //     if (!apiSucceeded) {
+  //       const foundStatic = products.find(p => p.id === Number(id));
+  //       if (foundStatic) {
+  //         setProduct(foundStatic);
+  //       }
+  //     }
+  //   };
+  //   checkDynamic();
+  // }, [id]);
 
   useEffect(() => {
     if (!product) return;
