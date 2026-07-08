@@ -1,6 +1,7 @@
 /**
  * ordersDb.js
- * JSON file-based database manager for orders, refunds, and orderEvents.
+ * JSON file-based database manager for orders, refunds, and orderEvents,
+ * with real-time automatic synchronization to Google Sheets.
  */
 
 const fs   = require('fs');
@@ -15,6 +16,13 @@ const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
 const REFUNDS_FILE = path.join(DATA_DIR, 'refunds.json');
 const EVENTS_FILE = path.join(DATA_DIR, 'orderEvents.json');
 
+// In-memory cache variables for serverless context
+let cachedOrders = null;
+let cachedRefunds = null;
+let cachedEvents = null;
+let lastSyncTime = 0;
+const SYNC_COOLDOWN_MS = 5000; // 5 seconds cooldown to prevent spamming Google Sheets
+
 // Helper: read file safely
 function readJSON(filePath) {
   try {
@@ -28,13 +36,88 @@ function readJSON(filePath) {
   return [];
 }
 
-// Helper: write file safely
+// Helper: write file safely (fails silently on Vercel read-only filesystem, which is fine since cache is updated)
 function writeJSON(filePath, data) {
   try {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
     return true;
   } catch (err) {
-    console.error(`[ordersDb] Error writing file ${filePath}:`, err.message);
+    // Fail silently or log error — Vercel read-only is expected
+    return false;
+  }
+}
+
+// Initialize memory cache from files if empty
+function initCache() {
+  if (cachedOrders === null) cachedOrders = readJSON(ORDERS_FILE);
+  if (cachedRefunds === null) cachedRefunds = readJSON(REFUNDS_FILE);
+  if (cachedEvents === null) cachedEvents = readJSON(EVENTS_FILE);
+}
+
+// Push updates to Google Sheets in background
+async function syncToSheets(sheetName, rowData) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return;
+  try {
+    const sheetUrl = new URL(url);
+    sheetUrl.searchParams.append('action', 'updateRow');
+    sheetUrl.searchParams.append('sheet', sheetName);
+    
+    Object.entries(rowData).forEach(([k, v]) => {
+      let val = v;
+      if (typeof v === 'object' && v !== null) val = JSON.stringify(v);
+      sheetUrl.searchParams.append(k, String(val ?? ''));
+    });
+    
+    const res = await fetch(sheetUrl.toString());
+    if (!res.ok) console.warn(`[ordersDb] Sheets sync returned status ${res.status}`);
+  } catch (err) {
+    console.warn('[ordersDb] Error syncing to Sheets:', err.message);
+  }
+}
+
+// Pull all latest data from Google Sheets into memory and files
+async function syncFromSheets(force = false) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) {
+    initCache();
+    return false;
+  }
+  
+  const now = Date.now();
+  if (!force && cachedOrders !== null && (now - lastSyncTime < SYNC_COOLDOWN_MS)) {
+    return true; // Use fresh cache
+  }
+  
+  try {
+    const fetchSheet = async (sheetName) => {
+      const res = await fetch(`${url}?action=getRows&sheet=${sheetName}`);
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      const data = await res.json();
+      return data.success ? data.rows : [];
+    };
+    
+    const [orders, refunds, events] = await Promise.all([
+      fetchSheet('orders'),
+      fetchSheet('refunds'),
+      fetchSheet('orderEvents')
+    ]);
+    
+    cachedOrders = orders;
+    cachedRefunds = refunds;
+    cachedEvents = events;
+    lastSyncTime = Date.now();
+    
+    // Backup cache to local files (will fail gracefully on Vercel)
+    writeJSON(ORDERS_FILE, orders);
+    writeJSON(REFUNDS_FILE, refunds);
+    writeJSON(EVENTS_FILE, events);
+    
+    console.log('[ordersDb] Successfully synced latest data from Google Sheets.');
+    return true;
+  } catch (err) {
+    console.error('[ordersDb] Google Sheets sync failed, falling back to local cache/files:', err.message);
+    initCache();
     return false;
   }
 }
@@ -42,52 +125,60 @@ function writeJSON(filePath, data) {
 /* ── Order Database Helpers ───────────────────────────────────────── */
 
 function getOrders() {
-  return readJSON(ORDERS_FILE);
+  initCache();
+  return cachedOrders;
 }
 
 function saveOrder(orderData) {
-  const orders = getOrders();
-  const index = orders.findIndex(o => o.orderId === orderData.orderId);
+  initCache();
+  const index = cachedOrders.findIndex(o => o.orderId === orderData.orderId);
   const now = new Date().toISOString();
+  let updatedOrder;
 
   if (index >= 0) {
-    orders[index] = {
-      ...orders[index],
+    updatedOrder = {
+      ...cachedOrders[index],
       ...orderData,
       updatedAt: now
     };
+    cachedOrders[index] = updatedOrder;
   } else {
-    orders.push({
+    updatedOrder = {
       ...orderData,
       createdAt: orderData.createdAt || now,
       updatedAt: now
-    });
+    };
+    cachedOrders.push(updatedOrder);
   }
 
-  writeJSON(ORDERS_FILE, orders);
-  return orderData;
+  writeJSON(ORDERS_FILE, cachedOrders);
+  
+  // Real-time synchronization to Google Sheets
+  syncToSheets('orders', updatedOrder);
+  
+  return updatedOrder;
 }
 
 function getOrderById(orderId) {
-  const orders = getOrders();
-  return orders.find(o => o.orderId === orderId) || null;
+  initCache();
+  return cachedOrders.find(o => o.orderId === orderId) || null;
 }
 
 function getOrderByShipmentId(shipmentId) {
-  const orders = getOrders();
-  return orders.find(o => String(o.shipmentId) === String(shipmentId)) || null;
+  initCache();
+  return cachedOrders.find(o => String(o.shipmentId) === String(shipmentId)) || null;
 }
 
 function getOrderByAwb(awb) {
-  const orders = getOrders();
-  return orders.find(o => o.awb === awb) || null;
+  initCache();
+  return cachedOrders.find(o => o.awb === awb) || null;
 }
 
 function getOrdersByContact(contact) {
-  const orders = getOrders();
+  initCache();
   const cleanContact = String(contact).trim().toLowerCase();
   
-  return orders.filter(o => 
+  return cachedOrders.filter(o => 
     String(o.phone).trim() === cleanContact || 
     String(o.email).trim().toLowerCase() === cleanContact
   );
@@ -96,57 +187,63 @@ function getOrdersByContact(contact) {
 /* ── Refund Database Helpers ──────────────────────────────────────── */
 
 function getRefunds() {
-  return readJSON(REFUNDS_FILE);
+  initCache();
+  return cachedRefunds;
 }
 
 function saveRefund(refundData) {
-  const refunds = getRefunds();
-  const index = refunds.findIndex(r => r.refundId === refundData.refundId);
+  initCache();
+  const index = cachedRefunds.findIndex(r => r.refundId === refundData.refundId);
   const now = new Date().toISOString();
-
   let finalRefund = { ...refundData };
+
   if (index >= 0) {
-    refunds[index] = {
-      ...refunds[index],
+    cachedRefunds[index] = {
+      ...cachedRefunds[index],
       ...refundData,
       updatedAt: now
     };
-    finalRefund = refunds[index];
+    finalRefund = cachedRefunds[index];
   } else {
     finalRefund.createdAt = now;
     finalRefund.updatedAt = now;
-    refunds.push(finalRefund);
+    cachedRefunds.push(finalRefund);
   }
 
-  writeJSON(REFUNDS_FILE, refunds);
+  writeJSON(REFUNDS_FILE, cachedRefunds);
+  
+  // Sync refund to Google Sheets
+  syncToSheets('refunds', finalRefund);
+  
   return finalRefund;
 }
 
 function getRefundById(refundId) {
-  const refunds = getRefunds();
-  return refunds.find(r => r.refundId === refundId) || null;
+  initCache();
+  return cachedRefunds.find(r => r.refundId === refundId) || null;
 }
 
 function getRefundByOrderId(orderId) {
-  const refunds = getRefunds();
-  return refunds.find(r => r.orderId === orderId) || null;
+  initCache();
+  return cachedRefunds.find(r => r.orderId === orderId) || null;
 }
 
 /* ── Event Database Helpers ───────────────────────────────────────── */
 
 function getEvents() {
-  return readJSON(EVENTS_FILE);
+  initCache();
+  return cachedEvents;
 }
 
 function getEventsByOrderId(orderId) {
-  const events = getEvents();
-  return events
+  initCache();
+  return cachedEvents
     .filter(e => e.orderId === orderId)
     .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 }
 
 function addOrderEvent(orderId, eventType, status, customerMessage, internalMetadata = null) {
-  const events = getEvents();
+  initCache();
   const now = new Date().toISOString();
   
   const event = {
@@ -159,8 +256,12 @@ function addOrderEvent(orderId, eventType, status, customerMessage, internalMeta
     createdAt: now
   };
 
-  events.push(event);
-  writeJSON(EVENTS_FILE, events);
+  cachedEvents.push(event);
+  writeJSON(EVENTS_FILE, cachedEvents);
+  
+  // Sync event to Google Sheets
+  syncToSheets('orderEvents', event);
+  
   return event;
 }
 
@@ -192,5 +293,6 @@ module.exports = {
   getEvents,
   getEventsByOrderId,
   addOrderEvent,
-  updateOrderStatus
+  updateOrderStatus,
+  syncFromSheets
 };

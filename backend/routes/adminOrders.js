@@ -15,7 +15,8 @@ const {
   updateOrderStatus,
   getEventsByOrderId,
   getRefundByOrderId,
-  saveRefund
+  saveRefund,
+  syncFromSheets
 } = require('./ordersDb');
 const { ORDER_STATUSES, ORDER_STATUS_LABELS } = require('./orderStatuses');
 const { sendStatusNotificationEmail } = require('./emailService');
@@ -45,6 +46,7 @@ router.use(checkAdmin);
  */
 router.get('/admin/orders', async (req, res) => {
   try {
+    await syncFromSheets();
     const { search, orderStatus, paymentStatus, shipmentStatus, refundStatus } = req.query;
     let orders = getOrders();
 
@@ -91,6 +93,7 @@ router.get('/admin/orders', async (req, res) => {
 router.get('/admin/orders/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
+    await syncFromSheets();
     const order = getOrderById(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });

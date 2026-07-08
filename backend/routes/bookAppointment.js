@@ -250,9 +250,36 @@ async function saveToSheets(appt) {
   }
 }
 
-/* ── In-memory appointment store (resets on server restart) ─────
-   For production persistence, Sheets is the source of truth.    */
 const appointmentStore = [];
+let cachedAppointments = null;
+let lastApptSyncTime = 0;
+const APPT_SYNC_COOLDOWN_MS = 5000;
+
+async function syncAppointmentsFromSheets(force = false) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return false;
+  
+  const now = Date.now();
+  if (!force && cachedAppointments !== null && (now - lastApptSyncTime < APPT_SYNC_COOLDOWN_MS)) {
+    return true;
+  }
+  
+  try {
+    const res = await fetch(`${url}?action=getRows&sheet=appointments`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    const data = await res.json();
+    if (data.success) {
+      cachedAppointments = data.rows;
+      appointmentStore.length = 0;
+      appointmentStore.push(...data.rows);
+      lastApptSyncTime = Date.now();
+      return true;
+    }
+  } catch (err) {
+    console.error('[bookAppointment] Failed to sync appointments from Google Sheets:', err.message);
+  }
+  return false;
+}
 
 /* ── POST /api/book-appointment ──────────────────────────────── */
 router.post('/book-appointment', async (req, res) => {
@@ -338,11 +365,12 @@ router.post('/book-appointment', async (req, res) => {
 /* ── GET /api/available-slots (public — no auth needed) ──────── */
 // Returns booked slot times for a given appointmentDay string.
 // Used by the Contact form to grey out already-booked slots.
-router.get('/available-slots', (req, res) => {
+router.get('/available-slots', async (req, res) => {
   const { date } = req.query; // partial match on appointmentDay
   if (!date) {
     return res.status(400).json({ success: false, error: 'date query param required.' });
   }
+  await syncAppointmentsFromSheets();
   const booked = appointmentStore
     .filter(a => a.appointmentDay.toLowerCase() === date.toLowerCase())
     .map(a => a.appointmentSlot);
@@ -350,7 +378,7 @@ router.get('/available-slots', (req, res) => {
 });
 
 /* ── GET /api/appointments (Admin dashboard) ─────────────────── */
-router.get('/appointments', (req, res) => {
+router.get('/appointments', async (req, res) => {
   // Simple secret key auth — set ADMIN_SECRET in backend/.env
   const { key, date } = req.query;
   const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
@@ -358,6 +386,7 @@ router.get('/appointments', (req, res) => {
     return res.status(401).json({ success: false, error: 'Unauthorized.' });
   }
 
+  await syncAppointmentsFromSheets();
   let results = [...appointmentStore];
 
   // Optional: filter by date string (partial match on appointmentDay)
