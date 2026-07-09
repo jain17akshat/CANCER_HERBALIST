@@ -31,9 +31,6 @@ export default function OrderSuccess() {
   // Don't render anything while redirecting
   if (!state?.orderId) return null;
 
-  const upiLink = `upi://pay?pa=${import.meta.env.VITE_UPI_ID}&pn=${encodeURIComponent('Cancer Herbalist')}&am=${total}&cu=INR&tn=${encodeURIComponent(`Order ${orderId}`)}`;
-  const qrUrl   = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiLink)}`;
-
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh' }}>
 
@@ -91,49 +88,18 @@ export default function OrderSuccess() {
 
             {paymentMethod === 'online' ? (
               <div style={{
-                background: '#f8fafc', borderRadius: '16px',
+                background: '#f0fdf4', borderRadius: '16px',
                 padding: '24px', margin: '20px auto 28px', maxWidth: '420px',
-                border: '1.5px dashed #cbd5e1', textAlign: 'center',
+                border: '1.5px solid #bbf7d0', textAlign: 'center',
               }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>
-                  Scan QR or Tap to Pay via UPI App
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#166534', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <span>🎉</span> Payment Successful!
                 </h3>
-                <p style={{ fontSize: '12.5px', color: '#475569', marginBottom: '16px' }}>
-                  Amount to Pay:{' '}
-                  <strong style={{ color: PRIMARY, fontSize: '15px' }}>
-                    ₹{Number(total).toLocaleString('en-IN')}
-                  </strong>
+                <p style={{ fontSize: '13.5px', color: '#1e293b', marginBottom: '8px', lineHeight: 1.6 }}>
+                  Your online payment of <strong style={{ color: PRIMARY }}>₹{Number(total).toLocaleString('en-IN')}</strong> has been received and verified.
                 </p>
-
-                {/* QR Code */}
-                <div style={{
-                  background: '#fff', padding: '12px', borderRadius: '12px',
-                  display: 'inline-block', border: '1px solid #e2e8f0', marginBottom: '16px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                }}>
-                  <img src={qrUrl} alt="UPI Payment QR Code"
-                    style={{ width: '180px', height: '180px', display: 'block' }} />
-                </div>
-
-                {/* UPI deep link button */}
-                <div>
-                  <a href={upiLink} style={{
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                    background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`, color: '#fff',
-                    padding: '12px 24px', borderRadius: '10px',
-                    textDecoration: 'none', fontWeight: 700, fontSize: '14.5px',
-                    width: '100%', boxSizing: 'border-box',
-                    boxShadow: `0 4px 12px ${ACCENT}40`,
-                  }}>
-                    📱 Pay via UPI Payment App
-                  </a>
-                </div>
-
-                <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '12px', lineHeight: 1.5 }}>
-                  Supports GPay, PhonePe, Paytm, BHIM & other banking apps.<br />
-                  <span style={{ color: PRIMARY, fontWeight: 600 }}>
-                    Please share the payment receipt screenshot on WhatsApp after paying.
-                  </span>
+                <p style={{ fontSize: '13.5px', color: '#475569', margin: 0, lineHeight: 1.6 }}>
+                  A confirmation has been sent to <strong>{email}</strong>. Our team will start processing your order immediately!
                 </p>
               </div>
             ) : (
@@ -157,7 +123,7 @@ export default function OrderSuccess() {
                 }}
               >
                 <FaWhatsapp />
-                {paymentMethod === 'online' ? 'Confirm Payment on WhatsApp' : 'WhatsApp Us'}
+                {paymentMethod === 'online' ? 'Chat on WhatsApp' : 'WhatsApp Us'}
               </a>
               <button
                 onClick={() => navigate(`/track-order?orderId=${orderId}`)}
