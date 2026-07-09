@@ -50,13 +50,18 @@ router.use(checkAdmin);
  */
 router.get('/admin/orders', async (req, res) => {
   try {
-    // Only hit Google Sheets when admin explicitly requests a refresh (?force=true)
-    // Otherwise use in-memory cache for instant response
     if (req.query.force === 'true') {
+      // Explicit admin refresh — pull from Google Sheets
       await syncFromSheets(true);
     } else {
-      // Initialise cache from local files if not already loaded (first boot)
+      // Initialize cache from local files on first load
       initCache();
+      // On Vercel serverless, local files are empty — if cache is still empty after
+      // initCache, do a Sheets sync so the list isn't blank on cold starts
+      const currentOrders = getOrders();
+      if (!currentOrders || currentOrders.length === 0) {
+        await syncFromSheets();
+      }
     }
 
     const { search, orderStatus, paymentStatus, shipmentStatus, refundStatus } = req.query;
@@ -116,8 +121,17 @@ router.get('/admin/orders', async (req, res) => {
 router.get('/admin/orders/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
-    // Use cache — no blocking Sheets sync needed for detail view
-    const order = getOrderById(orderId);
+
+    // Try cache first (fast path — warm serverless instance)
+    let order = getOrderById(orderId);
+
+    // Cold start or cross-instance miss: cache is empty or order not found — sync from Sheets
+    if (!order) {
+      console.log(`[admin/orders/:orderId] Order ${orderId} not in cache, syncing from Sheets…`);
+      await syncFromSheets(true);
+      order = getOrderById(orderId);
+    }
+
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }

@@ -1609,7 +1609,7 @@ export default function AdminDashboard() {
                             display: 'flex', justifyContent: 'space-between', alignItems: 'center'
                           }}
                         >
-                          <div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                               <strong style={{ fontSize: '14px', color: '#0f172a' }}>{o.orderId}</strong>
                               <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px', background: badgeBg, color: badgeColor }}>
@@ -1622,13 +1622,17 @@ export default function AdminDashboard() {
                             <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#64748b' }}>
                               {o.productName} (Qty: {o.quantity})
                             </p>
+                            <p style={{ margin: '4px 0 0', fontSize: '11.5px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              🕐 {o.orderDate || (o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '—')}
+                            </p>
                           </div>
-                          <div style={{ textAlign: 'right' }}>
+                          <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '12px' }}>
                             <strong style={{ fontSize: '15px', color: '#1a6e52', display: 'block' }}>₹{o.orderAmount}</strong>
-                            <span style={{ fontSize: '11px', color: '#94a3b8' }}>{o.paymentMethod}</span>
+                            <span style={{ fontSize: '11px', color: '#94a3b8', display: 'block' }}>{o.paymentMethod}</span>
                           </div>
                         </div>
                       );
+
                     })
                 )}
               </div>
@@ -3821,6 +3825,9 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
           <span style={labelStyle}>Order Summary</span>
           <p style={{ margin: '4px 0 0', fontWeight: 600 }}>{order.productName}</p>
           <p style={{ margin: '2px 0 0', color: '#64748b' }}>Qty: {order.quantity} • Amt: ₹{order.orderAmount}</p>
+          <p style={{ margin: '4px 0 0', color: '#94a3b8', fontSize: '11.5px' }}>
+            🕐 {order.orderDate || (order.createdAt ? new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '—')}
+          </p>
         </div>
         <div>
           <span style={labelStyle}>Payment & Courier</span>
