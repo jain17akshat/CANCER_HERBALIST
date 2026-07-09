@@ -99,42 +99,40 @@ router.post('/submit-order', async (req, res) => {
     saveOrder(orderRow);
     addOrderEvent(orderId, 'STATUS_UPDATE', ORDER_STATUSES.ORDER_PLACED, 'Your order has been successfully placed. We are preparing it for confirmation.');
 
-    /* ── 3. Execute integrations in parallel (necessary for Vercel serverless environment) ── */
-    const promises = [];
+    /* ── 3. Respond immediately — integrations run in background ──────── */
+    // The order is already saved in memory. Respond to the customer instantly.
+    res.json({
+      success: true,
+      orderId,
+      shiprocketOrderId: null, // will be updated in background
+    });
 
-    // Google Sheets
-    if (process.env.APPS_SCRIPT_URL) {
-      const sheetsPromise = (async () => {
+    /* ── 4. Execute integrations in background (fire-and-forget) ────── */
+    // These run AFTER the response is sent, so the customer isn't waiting.
+    setImmediate(async () => {
+      // Google Sheets
+      if (process.env.APPS_SCRIPT_URL) {
         try {
           const url = new URL(process.env.APPS_SCRIPT_URL);
           Object.entries(orderRow).forEach(([k, v]) =>
             url.searchParams.append(k, String(v ?? ''))
           );
-          const res = await fetch(url.toString());
-          if (!res.ok) console.warn('[submit-order] Sheets returned status:', res.status);
+          const sheetsRes = await fetch(url.toString());
+          if (!sheetsRes.ok) console.warn('[submit-order] Sheets returned status:', sheetsRes.status);
         } catch (e) {
           console.warn('[submit-order] Sheets error:', e.message);
         }
-      })();
-      promises.push(sheetsPromise);
-    }
+      }
 
-    // Shiprocket
-    let shiprocketOrderId = null;
-    let shipmentId = null;
-    let awb = null;
-    let courierName = null;
-    let trackingUrl = null;
-
-    if (process.env.SHIPROCKET_EMAIL && process.env.SHIPROCKET_PASSWORD) {
-      const shiprocketPromise = (async () => {
+      // Shiprocket
+      if (process.env.SHIPROCKET_EMAIL && process.env.SHIPROCKET_PASSWORD) {
         try {
           const srData = await createShiprocketOrder(orderRow);
-          shiprocketOrderId = srData.order_id || srData.id || null;
-          shipmentId = srData.shipment_id || null;
-          awb = srData.awb_code || null;
-          courierName = srData.courier_name || null;
-          trackingUrl = srData.tracking_url || null;
+          const shiprocketOrderId = srData.order_id || srData.id || null;
+          const shipmentId = srData.shipment_id || null;
+          const awb = srData.awb_code || null;
+          const courierName = srData.courier_name || null;
+          const trackingUrl = srData.tracking_url || null;
 
           console.log(`[submit-order] Shiprocket order created: ${shiprocketOrderId}, shipment: ${shipmentId}`);
           
@@ -158,43 +156,35 @@ router.post('/submit-order', async (req, res) => {
             addOrderEvent(orderId, 'SYSTEM_ERROR', ORDER_STATUSES.SHIPMENT_CREATION_FAILED, 'Fulfillment creation failed. Our support team will manually process it.', { error: srErr.message });
           }
         }
-      })();
-      promises.push(shiprocketPromise);
-    } else {
-      console.warn('[submit-order] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
-    }
+      } else {
+        console.warn('[submit-order] SHIPROCKET_EMAIL/PASSWORD not set — skipping Shiprocket.');
+      }
 
-    // Zoho CRM
-    if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_REFRESH_TOKEN) {
-      const zohoPromise = (async () => {
+      // Update order status to CONFIRMED
+      const updatedOrder = getOrderById(orderId);
+      if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
+        updateOrderStatus(orderId, ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been confirmed. We are scheduling it for shipment.');
+      }
+
+      // Zoho CRM
+      if (process.env.ZOHO_CLIENT_ID && process.env.ZOHO_REFRESH_TOKEN) {
         try {
           await pushOrderToZoho(orderRow);
         } catch (err) {
           console.error('[submit-order] Zoho CRM error:', err.message);
         }
-      })();
-      promises.push(zohoPromise);
-    }
+      }
 
-    // Wait for all integrations to finish before sending response (prevent serverless termination)
-    await Promise.all(promises);
-
-    // Update order status to CONFIRMED
-    const updatedOrder = getOrderById(orderId);
-    if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
-      updateOrderStatus(orderId, ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been confirmed. We are scheduling it for shipment.');
-    }
-
-    // Email confirmation (customer + admin) - sent ONLY after backend has successfully processed everything
-    const finalOrder = getOrderById(orderId) || orderRow;
-    await sendOrderConfirmationEmails(finalOrder);
-
-    /* ── 4. Respond ───────────────────────────────────────────────── */
-    res.json({
-      success: true,
-      orderId,
-      shiprocketOrderId,
+      // Email confirmation (customer + admin)
+      try {
+        const finalOrder = getOrderById(orderId) || orderRow;
+        await sendOrderConfirmationEmails(finalOrder);
+      } catch (emailErr) {
+        console.error('[submit-order] Email error:', emailErr.message);
+      }
     });
+
+
 
   } catch (err) {
     console.error('[submit-order]', err.message);

@@ -8,6 +8,7 @@ const express = require('express');
 const router  = express.Router();
 const Razorpay = require('razorpay');
 const { 
+  initCache,
   getOrders, 
   getOrderById, 
   saveOrder, 
@@ -45,10 +46,19 @@ router.use(checkAdmin);
 /**
  * GET /api/admin/orders
  * List all orders with searching, sorting, and filtering.
+ * Add ?force=true to force a fresh sync from Google Sheets.
  */
 router.get('/admin/orders', async (req, res) => {
   try {
-    await syncFromSheets();
+    // Only hit Google Sheets when admin explicitly requests a refresh (?force=true)
+    // Otherwise use in-memory cache for instant response
+    if (req.query.force === 'true') {
+      await syncFromSheets(true);
+    } else {
+      // Initialise cache from local files if not already loaded (first boot)
+      initCache();
+    }
+
     const { search, orderStatus, paymentStatus, shipmentStatus, refundStatus } = req.query;
     let orders = getOrders();
 
@@ -98,6 +108,7 @@ router.get('/admin/orders', async (req, res) => {
   }
 });
 
+
 /**
  * GET /api/admin/orders/:orderId
  * Get single order details with complete event history and refund records.
@@ -105,7 +116,7 @@ router.get('/admin/orders', async (req, res) => {
 router.get('/admin/orders/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
-    await syncFromSheets();
+    // Use cache — no blocking Sheets sync needed for detail view
     const order = getOrderById(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
@@ -121,6 +132,7 @@ router.get('/admin/orders/:orderId', async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to retrieve order details.' });
   }
 });
+
 
 /**
  * PUT /api/admin/orders/:orderId/cancellation

@@ -182,6 +182,14 @@ export default function AdminDashboard() {
   };
 
 
+  // ── Toast notification system (replaces blocking alert() calls) ──
+  const [toasts, setToasts] = useState([]);
+  const showToast = useCallback((message, type = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  }, []);
+
   // ── Orders & Refunds State ──
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
@@ -191,11 +199,14 @@ export default function AdminDashboard() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedOrderDetails, setSelectedOrderDetails] = useState(null);
 
-  const fetchOrders = useCallback(async (key) => {
+  const fetchOrders = useCallback(async (key, force = false) => {
     setOrdersLoading(true);
     setOrdersError('');
     try {
-      const res = await fetch(`${BACKEND_URL}/api/admin/orders?key=${key}`);
+      const url = force
+        ? `${BACKEND_URL}/api/admin/orders?key=${key}&force=true`
+        : `${BACKEND_URL}/api/admin/orders?key=${key}`;
+      const res = await fetch(url);
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch orders.');
       setOrders(data.orders || []);
@@ -229,13 +240,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
-      alert(approved ? 'Cancellation approved successfully!' : 'Cancellation request rejected.');
+      showToast(approved ? 'Cancellation approved successfully!' : 'Cancellation request rejected.');
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -251,13 +262,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
-      alert(approved ? 'Return approved successfully!' : 'Return request rejected.');
+      showToast(approved ? 'Return approved successfully!' : 'Return request rejected.');
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -270,13 +281,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
-      alert(received ? 'Return marked as received. Refund is now approved.' : 'Return marked as failed.');
+      showToast(received ? 'Return marked as received. Refund is now approved.' : 'Return marked as failed.');
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -289,13 +300,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
-      alert('Refund initiated successfully!');
+      showToast('Refund initiated successfully!');
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -306,13 +317,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
-      alert(`Refund status synced: ${data.refund.status}`);
+      showToast(`Refund status synced: ${data.refund.status}`);
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -325,13 +336,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
-      alert('Order successfully cancelled!');
+      showToast('Order successfully cancelled!');
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -342,51 +353,61 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed.');
-      alert('Order processed and shipped successfully!');
+      showToast('Order processed and shipped successfully!');
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
   const handleDeleteOrder = async (orderId) => {
-    if (!window.confirm(`Are you sure you want to permanently delete order ${orderId}? This will remove it from Google Sheets and your database.`)) return;
+    if (!window.confirm(`Permanently delete order ${orderId}?`)) return;
+    // Optimistic UI: remove from state immediately
+    const previousOrders = orders;
+    setOrders(prev => prev.filter(o => o.orderId !== orderId));
+    if (selectedOrder?.orderId === orderId) {
+      setSelectedOrder(null);
+      setSelectedOrderDetails(null);
+    }
     try {
       const res = await fetch(`${BACKEND_URL}/api/admin/orders/${orderId}?key=${secret}`, {
         method: 'DELETE'
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Delete failed.');
-      alert('Order deleted successfully!');
-      setSelectedOrder(null);
-      setSelectedOrderDetails(null);
-      fetchOrders(secret);
+      showToast('Order deleted successfully!');
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      // Rollback on failure
+      setOrders(previousOrders);
+      showToast(`Delete failed: ${err.message}`, 'error');
     }
   };
 
   const handleDeleteAllOrders = async () => {
-    const confirmation = prompt('WARNING: This will permanently delete ALL orders from your database and Google Sheets. Type "DELETE ALL" to confirm:');
+    const confirmation = prompt('WARNING: This will permanently delete ALL orders. Type "DELETE ALL" to confirm:');
     if (confirmation !== 'DELETE ALL') {
-      alert('Deletion cancelled. Confirmation text did not match.');
+      showToast('Deletion cancelled. Confirmation text did not match.', 'error');
       return;
     }
+    // Optimistic UI: clear state immediately
+    const previousOrders = orders;
+    setOrders([]);
+    setSelectedOrder(null);
+    setSelectedOrderDetails(null);
     try {
       const res = await fetch(`${BACKEND_URL}/api/admin/orders?key=${secret}`, {
         method: 'DELETE'
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Delete failed.');
-      alert('All orders deleted successfully!');
-      setSelectedOrder(null);
-      setSelectedOrderDetails(null);
-      fetchOrders(secret);
+      showToast('All orders deleted successfully!');
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      // Rollback on failure
+      setOrders(previousOrders);
+      showToast(`Delete failed: ${err.message}`, 'error');
     }
   };
 
@@ -399,12 +420,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Update failed.');
+      showToast('Order updated successfully!');
       fetchOrders(secret);
       if (selectedOrder && selectedOrder.orderId === orderId) {
         fetchOrderDetails(orderId);
       }
     } catch (err) {
-      alert(`Error updating order: ${err.message}`);
+      showToast(`Error updating order: ${err.message}`, 'error');
       throw err;
     }
   };
@@ -854,6 +876,28 @@ export default function AdminDashboard() {
   ═══════════════════════════════════════════════════════════════ */
   return (
     <div style={{ background: bgMain, minHeight: '100vh', fontFamily: 'Poppins, sans-serif', color: textPrimary, transition: 'background-color 0.2s, color 0.2s' }}>
+
+      {/* ── Toast Notification Overlay ── */}
+      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '10px', pointerEvents: 'none' }}>
+        {toasts.map(toast => (
+          <div key={toast.id} style={{
+            background: toast.type === 'error' ? '#fef2f2' : '#f0fdf4',
+            border: `1.5px solid ${toast.type === 'error' ? '#fca5a5' : '#86efac'}`,
+            color: toast.type === 'error' ? '#b91c1c' : '#15803d',
+            borderRadius: '12px', padding: '12px 18px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            fontSize: '13.5px', fontWeight: 600, maxWidth: '340px',
+            display: 'flex', alignItems: 'center', gap: '10px',
+            animation: 'slideInToast 0.3s ease',
+            pointerEvents: 'auto',
+          }}>
+            <span>{toast.type === 'error' ? '⚠️' : '✅'}</span>
+            {toast.message}
+          </div>
+        ))}
+      </div>
+      <style>{`@keyframes slideInToast { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }`}</style>
+
       <style>{`
         :root {
           --primary-color: ${PRIMARY};
@@ -1181,7 +1225,7 @@ export default function AdminDashboard() {
         </div>
         <div className="admin-header-actions">
           <button 
-            onClick={() => { fetchAppts(secret, filterDate); loadDynamicContent(); }} 
+            onClick={() => { fetchAppts(secret, filterDate); fetchOrders(secret); loadDynamicContent(); }} 
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
@@ -1507,7 +1551,24 @@ export default function AdminDashboard() {
                 🗑️ Delete All
               </button>
 
-              {ordersLoading && <span style={{ fontSize: '12px', color: '#94a3b8' }}>Loading...</span>}
+              <button
+                onClick={() => fetchOrders(secret, true)}
+                disabled={ordersLoading}
+                title="Force pull latest data from Google Sheets"
+                style={{
+                  padding: '10px 16px', borderRadius: '10px', border: `1.5px solid ${PRIMARY}40`,
+                  background: `${PRIMARY}10`, color: PRIMARY, fontWeight: 600, fontSize: '13.5px',
+                  cursor: ordersLoading ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
+                  display: 'flex', alignItems: 'center', gap: '6px', opacity: ordersLoading ? 0.6 : 1
+                }}
+                onMouseEnter={e => { if (!ordersLoading) e.currentTarget.style.background = `${PRIMARY}20`; }}
+                onMouseLeave={e => { e.currentTarget.style.background = `${PRIMARY}10`; }}
+              >
+                <FaSync style={{ fontSize: '12px', animation: ordersLoading ? 'spin 1s linear infinite' : 'none' }} />
+                {ordersLoading ? 'Syncing…' : 'Sync from Sheets'}
+              </button>
+
+              {ordersError && <span style={{ fontSize: '12px', color: '#ef4444' }}>⚠ {ordersError}</span>}
             </div>
 
             {/* Main Orders Grid */}

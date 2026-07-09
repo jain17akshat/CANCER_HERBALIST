@@ -21,7 +21,7 @@ let cachedOrders = null;
 let cachedRefunds = null;
 let cachedEvents = null;
 let lastSyncTime = 0;
-const SYNC_COOLDOWN_MS = 5000; // 5 seconds cooldown to prevent spamming Google Sheets
+const SYNC_COOLDOWN_MS = 30000; // 30 seconds cooldown — use cached data aggressively
 
 // Helper: read file safely
 function readJSON(filePath) {
@@ -368,6 +368,7 @@ function clearAllOrders() {
 }
 
 module.exports = {
+  initCache,
   getOrders,
   saveOrder,
   getOrderById,
