@@ -1489,10 +1489,10 @@ export default function ProductDetail() {
             </div>
 
             {/* CTAs */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
 
-              {/* Primary Actions */}
-              <div style={{ display: 'flex', gap: '8px' }}>
+              {/* Row 1: Add to Cart + Buy Now */}
+              <div className="pd-btn-row">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -1504,10 +1504,10 @@ export default function ProductDetail() {
                     fontWeight: 700, fontSize: '15px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: '8px', fontFamily: 'inherit',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
                   }}
                 >
-                  <FaShoppingCart style={{ fontSize: '16px' }} /> Add to Cart
+                  <FaShoppingCart style={{ fontSize: '16px', flexShrink: 0 }} /> Add to Cart
                 </motion.button>
 
                 <motion.button
@@ -1522,42 +1522,27 @@ export default function ProductDetail() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     gap: '8px', fontFamily: 'inherit',
                     boxShadow: `0 8px 20px ${ACCENT}40`,
-                    transition: 'all 0.2s',
+                    transition: 'all 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
                   }}
                 >
-                  <FaShoppingBag style={{ fontSize: '16px' }} /> Buy Now
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => toggleWishlist(product.id)}
-                  style={{
-                    width: '56px', background: '#fff', border: '2px solid #e2e8f0',
-                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer', color: isInWishlist(product.id) ? '#ef4444' : '#64748b',
-                    fontSize: '22px', transition: 'all 0.2s'
-                  }}
-                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                >
-                  {isInWishlist(product.id) ? <FaHeart /> : <FaRegHeart />}
+                  <FaShoppingBag style={{ fontSize: '16px', flexShrink: 0 }} /> Buy Now
                 </motion.button>
               </div>
 
-              {/* Secondary Actions */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              {/* Row 2: Enquire + WhatsApp + Wishlist */}
+              <div className="pd-btn-row">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setEnquiryOpen(true)}
                   style={{
-                    padding: '14px',
+                    flex: 1, padding: '14px 10px',
                     background: '#f8fafc',
                     color: PRIMARY, border: `1.5px solid ${PRIMARY}`, borderRadius: '12px',
                     fontWeight: 600, fontSize: '14px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontFamily: 'inherit',
-                    transition: 'background 0.2s',
+                    transition: 'background 0.2s', whiteSpace: 'nowrap', overflow: 'hidden',
                   }}
                 >
                   Enquire
@@ -1570,17 +1555,34 @@ export default function ProductDetail() {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    padding: '14px',
+                    flex: 1, padding: '14px 10px',
                     background: '#25d366',
                     color: '#fff', border: 'none', borderRadius: '12px',
                     fontWeight: 600, fontSize: '14px', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '8px', textDecoration: 'none', boxSizing: 'border-box',
+                    gap: '7px', textDecoration: 'none', boxSizing: 'border-box',
                     boxShadow: '0 2px 8px rgba(37,211,102,0.3)',
+                    whiteSpace: 'nowrap', overflow: 'hidden',
                   }}
                 >
-                  <FaWhatsapp style={{ fontSize: '16px' }} /> WhatsApp
+                  <FaWhatsapp style={{ fontSize: '16px', flexShrink: 0 }} /> WhatsApp
                 </motion.a>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => toggleWishlist(product.id)}
+                  style={{
+                    width: '52px', flexShrink: 0,
+                    background: '#fff', border: '2px solid #e2e8f0',
+                    borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', color: isInWishlist(product.id) ? '#ef4444' : '#64748b',
+                    fontSize: '20px', transition: 'all 0.2s', padding: '14px 0',
+                  }}
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  {isInWishlist(product.id) ? <FaHeart /> : <FaRegHeart />}
+                </motion.button>
               </div>
             </div>
 
@@ -1983,6 +1985,19 @@ export default function ProductDetail() {
           }
           .pd-related {
             grid-template-columns: 1fr;
+          }
+        }
+        .pd-btn-row {
+          display: flex;
+          gap: 10px;
+          align-items: stretch;
+        }
+        @media (max-width: 480px) {
+          .pd-btn-row:first-of-type {
+            flex-direction: column;
+          }
+          .pd-btn-row:first-of-type > button {
+            width: 100%;
           }
         }
       `}</style>
