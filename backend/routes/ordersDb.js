@@ -179,6 +179,17 @@ function getOrderById(orderId) {
   return cachedOrders.find(o => o.orderId === orderId) || null;
 }
 
+async function getOrderByIdAsync(orderId) {
+  initCache();
+  let order = cachedOrders.find(o => o.orderId === orderId) || null;
+  if (!order) {
+    console.log(`[ordersDb/getOrderByIdAsync] Order ${orderId} not in cache, syncing from Sheets…`);
+    await syncFromSheets(true);
+    order = cachedOrders.find(o => o.orderId === orderId) || null;
+  }
+  return order;
+}
+
 function getOrderByShipmentId(shipmentId) {
   initCache();
   return cachedOrders.find(o => String(o.shipmentId) === String(shipmentId)) || null;
@@ -309,8 +320,10 @@ async function deleteFromSheets(sheetName, idVal) {
     
     sheetUrl.searchParams.append(idKey, idVal);
     
+    console.log(`[ordersDb] Requesting Sheets delete: ${sheetUrl.toString()}`);
     const res = await fetch(sheetUrl.toString());
-    if (!res.ok) console.warn(`[ordersDb] Sheets delete returned status ${res.status}`);
+    const resText = await res.text();
+    console.log(`[ordersDb] Sheets delete response (status ${res.status}):`, resText);
   } catch (err) {
     console.warn('[ordersDb] Error deleting from Sheets:', err.message);
   }
@@ -324,8 +337,10 @@ async function clearSheets(sheetName) {
     sheetUrl.searchParams.append('action', 'clearSheet');
     sheetUrl.searchParams.append('sheet', sheetName);
     
+    console.log(`[ordersDb] Requesting Sheets clear: ${sheetUrl.toString()}`);
     const res = await fetch(sheetUrl.toString());
-    if (!res.ok) console.warn(`[ordersDb] Sheets clear returned status ${res.status}`);
+    const resText = await res.text();
+    console.log(`[ordersDb] Sheets clear response (status ${res.status}):`, resText);
   } catch (err) {
     console.warn('[ordersDb] Error clearing Sheets:', err.message);
   }
@@ -333,7 +348,15 @@ async function clearSheets(sheetName) {
 
 async function deleteOrder(orderId) {
   initCache();
-  const index = cachedOrders.findIndex(o => o.orderId === orderId);
+  let index = cachedOrders.findIndex(o => o.orderId === orderId);
+  
+  // Cold start fallback: if order is not in cache, pull from Sheets first
+  if (index === -1) {
+    console.log(`[ordersDb/deleteOrder] Order ${orderId} not in cache, syncing from Sheets…`);
+    await syncFromSheets(true);
+    index = cachedOrders.findIndex(o => o.orderId === orderId);
+  }
+
   if (index >= 0) {
     cachedOrders.splice(index, 1);
     writeJSON(ORDERS_FILE, cachedOrders);
@@ -375,6 +398,7 @@ module.exports = {
   getOrders,
   saveOrder,
   getOrderById,
+  getOrderByIdAsync,
   getOrderByShipmentId,
   getOrderByAwb,
   getOrdersByContact,

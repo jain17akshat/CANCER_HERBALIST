@@ -11,6 +11,7 @@ const {
   initCache,
   getOrders, 
   getOrderById, 
+  getOrderByIdAsync,
   saveOrder, 
   addOrderEvent, 
   updateOrderStatus,
@@ -122,15 +123,8 @@ router.get('/admin/orders/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    // Try cache first (fast path — warm serverless instance)
-    let order = getOrderById(orderId);
-
-    // Cold start or cross-instance miss: cache is empty or order not found — sync from Sheets
-    if (!order) {
-      console.log(`[admin/orders/:orderId] Order ${orderId} not in cache, syncing from Sheets…`);
-      await syncFromSheets(true);
-      order = getOrderById(orderId);
-    }
+    // Try cache first with cold-start fallback sync
+    let order = await getOrderByIdAsync(orderId);
 
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
@@ -157,7 +151,7 @@ router.put('/admin/orders/:orderId/cancellation', async (req, res) => {
     const { orderId } = req.params;
     const { approved, remarks, rejectionReason } = req.body;
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }
@@ -296,7 +290,7 @@ router.post('/admin/orders/:orderId/cancel', async (req, res) => {
     const { orderId } = req.params;
     const { remarks } = req.body;
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }
@@ -388,7 +382,7 @@ router.post('/admin/orders/:orderId/ship', async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }
@@ -493,7 +487,7 @@ router.put('/admin/orders/:orderId/return', async (req, res) => {
     const { orderId } = req.params;
     const { approved, physicalReturnRequired, remarks, rejectionReason } = req.body;
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }
@@ -589,7 +583,7 @@ router.put('/admin/orders/:orderId/return/receive', async (req, res) => {
     const { orderId } = req.params;
     const { received, remarks } = req.body;
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) return res.status(404).json({ success: false, error: 'Order not found.' });
 
     if (order.returnStatus !== 'APPROVED' || order.orderStatus !== ORDER_STATUSES.RETURN_PICKUP_SCHEDULED) {
@@ -655,7 +649,7 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
     const { orderId } = req.params;
     const { manualTxnId, manualMethod } = req.body;
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) return res.status(404).json({ success: false, error: 'Order not found.' });
 
     const refund = getRefundByOrderId(orderId);
@@ -783,7 +777,7 @@ router.post('/admin/orders/:orderId/refund/sync', async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) return res.status(404).json({ success: false, error: 'Order not found.' });
 
     const refund = getRefundByOrderId(orderId);
@@ -887,7 +881,7 @@ router.delete('/admin/orders', async (req, res) => {
 router.put('/admin/orders/:orderId/edit', async (req, res) => {
   try {
     const { orderId } = req.params;
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }

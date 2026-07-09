@@ -6,7 +6,7 @@ const { createShiprocketOrder }         = require('./shiprocket');
 const { validateOrderAmount }           = require('./priceList');
 const { pushOrderToZoho }               = require('./zoho');
 const { sendOrderConfirmationEmails }   = require('./emailService');
-const { saveOrder, addOrderEvent, updateOrderStatus, getOrderById } = require('./ordersDb');
+const { saveOrder, addOrderEvent, updateOrderStatus, getOrderById, getOrderByIdAsync } = require('./ordersDb');
 const { ORDER_STATUSES } = require('./orderStatuses');
 
 /* Razorpay SDK — for fetching order amount post-payment */
@@ -152,7 +152,7 @@ router.post('/verify-payment', async (req, res) => {
           console.log(`[verify-payment] Shiprocket order created: ${shiprocketOrderId}, shipment: ${shipmentId}`);
           
           // Update DB with Shiprocket details
-          const order = getOrderById(orderId);
+          const order = await getOrderByIdAsync(orderId);
           if (order) {
             order.shiprocketOrderId = shiprocketOrderId;
             order.shipmentId = shipmentId;
@@ -164,7 +164,7 @@ router.post('/verify-payment', async (req, res) => {
           }
         } catch (srErr) {
           console.error('[verify-payment] Shiprocket error:', srErr.message);
-          const order = getOrderById(orderId);
+          const order = await getOrderByIdAsync(orderId);
           if (order) {
             order.orderStatus = ORDER_STATUSES.SHIPMENT_CREATION_FAILED;
             saveOrder(order);
@@ -193,13 +193,13 @@ router.post('/verify-payment', async (req, res) => {
     await Promise.all(promises);
 
     // Update order status to CONFIRMED
-    const updatedOrder = getOrderById(orderId);
+    const updatedOrder = await getOrderByIdAsync(orderId);
     if (updatedOrder && updatedOrder.orderStatus !== ORDER_STATUSES.SHIPMENT_CREATION_FAILED) {
       updateOrderStatus(orderId, ORDER_STATUSES.ORDER_CONFIRMED, 'Your order has been confirmed. We are scheduling it for shipment.');
     }
 
     // Email confirmation (customer + admin) - sent ONLY after backend has successfully processed everything
-    const finalOrder = getOrderById(orderId) || orderRow;
+    const finalOrder = await getOrderByIdAsync(orderId) || orderRow;
     await sendOrderConfirmationEmails(finalOrder);
 
     /* ── 4. Respond success ─────────────────────────────────────── */

@@ -8,6 +8,7 @@ const router  = express.Router();
 const Razorpay = require('razorpay');
 const { 
   getOrderById, 
+  getOrderByIdAsync,
   getOrdersByContact, 
   getEventsByOrderId, 
   getRefundByOrderId,
@@ -36,7 +37,7 @@ router.post('/orders/track', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Please provide both Order ID and Phone/Email.' });
     }
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found. Please verify details.' });
     }
@@ -84,7 +85,7 @@ router.post('/orders/cancel', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing required cancellation fields.' });
     }
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }
@@ -149,7 +150,7 @@ router.post('/orders/return', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing required return request fields.' });
     }
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }
@@ -209,7 +210,7 @@ router.post('/orders/retry-payment', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Order ID and contact details are required.' });
     }
 
-    const order = getOrderById(orderId);
+    const order = await getOrderByIdAsync(orderId);
     if (!order) {
       return res.status(404).json({ success: false, error: 'Order not found.' });
     }
