@@ -848,11 +848,12 @@ router.post('/admin/orders/:orderId/refund/sync', async (req, res) => {
 /**
  * DELETE /api/admin/orders/:orderId
  * Delete a single order from the cache and Google Sheets.
+ * Awaits the Sheets deletion to ensure it completes before responding.
  */
 router.delete('/admin/orders/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
-    const success = deleteOrder(orderId);
+    const success = await deleteOrder(orderId);
     if (success) {
       res.json({ success: true, message: 'Order deleted successfully.' });
     } else {
@@ -867,10 +868,11 @@ router.delete('/admin/orders/:orderId', async (req, res) => {
 /**
  * DELETE /api/admin/orders
  * Delete all orders from the cache and Google Sheets.
+ * Awaits all Sheets clears to ensure completion before responding.
  */
 router.delete('/admin/orders', async (req, res) => {
   try {
-    clearAllOrders();
+    await clearAllOrders();
     res.json({ success: true, message: 'All orders deleted successfully.' });
   } catch (err) {
     console.error('[admin/deleteAllOrders]', err.message);

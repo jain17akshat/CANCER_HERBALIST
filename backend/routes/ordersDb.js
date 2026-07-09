@@ -331,7 +331,7 @@ async function clearSheets(sheetName) {
   }
 }
 
-function deleteOrder(orderId) {
+async function deleteOrder(orderId) {
   initCache();
   const index = cachedOrders.findIndex(o => o.orderId === orderId);
   if (index >= 0) {
@@ -342,14 +342,14 @@ function deleteOrder(orderId) {
     cachedEvents = cachedEvents.filter(e => e.orderId !== orderId);
     writeJSON(EVENTS_FILE, cachedEvents);
     
-    // Sync to Sheets
-    deleteFromSheets('orders', orderId);
+    // Await Sheets deletion so it completes before the serverless function terminates
+    await deleteFromSheets('orders', orderId);
     return true;
   }
   return false;
 }
 
-function clearAllOrders() {
+async function clearAllOrders() {
   initCache();
   cachedOrders = [];
   writeJSON(ORDERS_FILE, cachedOrders);
@@ -360,12 +360,15 @@ function clearAllOrders() {
   cachedRefunds = [];
   writeJSON(REFUNDS_FILE, cachedRefunds);
   
-  // Sync to Sheets
-  clearSheets('orders');
-  clearSheets('orderEvents');
-  clearSheets('refunds');
+  // Await all Sheets clears in parallel
+  await Promise.all([
+    clearSheets('orders'),
+    clearSheets('orderEvents'),
+    clearSheets('refunds'),
+  ]);
   return true;
 }
+
 
 module.exports = {
   initCache,

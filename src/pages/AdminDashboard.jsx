@@ -365,7 +365,7 @@ export default function AdminDashboard() {
 
   const handleDeleteOrder = async (orderId) => {
     if (!window.confirm(`Permanently delete order ${orderId}?`)) return;
-    // Optimistic UI: remove from state immediately
+    // Optimistic UI: remove from state immediately for instant feedback
     const previousOrders = orders;
     setOrders(prev => prev.filter(o => o.orderId !== orderId));
     if (selectedOrder?.orderId === orderId) {
@@ -378,7 +378,9 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Delete failed.');
-      showToast('Order deleted successfully!');
+      showToast('Order deleted! Syncing with Sheets…');
+      // Force-sync from Sheets to confirm deletion and remove any stale cache
+      await fetchOrders(secret, true);
     } catch (err) {
       // Rollback on failure
       setOrders(previousOrders);
@@ -392,7 +394,7 @@ export default function AdminDashboard() {
       showToast('Deletion cancelled. Confirmation text did not match.', 'error');
       return;
     }
-    // Optimistic UI: clear state immediately
+    // Optimistic UI: clear state immediately for instant feedback
     const previousOrders = orders;
     setOrders([]);
     setSelectedOrder(null);
@@ -403,7 +405,9 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Delete failed.');
-      showToast('All orders deleted successfully!');
+      showToast('All orders deleted! Syncing with Sheets…');
+      // Force-sync from Sheets to confirm all deletions completed
+      await fetchOrders(secret, true);
     } catch (err) {
       // Rollback on failure
       setOrders(previousOrders);
