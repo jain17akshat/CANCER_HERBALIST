@@ -1437,7 +1437,7 @@ export default function ProductDetail() {
                 { icon: <FaTruck />, label: 'Free Delivery' },
                 { icon: <FaUndo />, label: '7-Day Returns' },
                 { icon: <FaShieldAlt />, label: 'FSSAI Certified' },
-                { icon: <FaAward />, label: 'Doctor Formulated' },
+                { icon: <FaAward />, label: 'Drug Discovery Scientist Formulated' },
               ].map((t, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', gap: '5px',

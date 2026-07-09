@@ -90,7 +90,7 @@ export default function Store() {
 
         {/* Trust badges */}
         <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
-          {['100% Natural', 'No Side Effects', 'Doctor Formulated', 'Free Consultation Included'].map(b => (
+          {['100% Natural', 'No Side Effects', 'Drug Discovery Scientist Formulated', 'Free Consultation Included'].map(b => (
             <div key={b} style={{
               background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: '50px', padding: '6px 16px', fontSize: '13px', fontWeight: 500,
