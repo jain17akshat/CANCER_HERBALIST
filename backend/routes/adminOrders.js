@@ -690,12 +690,21 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
       }
 
       try {
-        console.log(`[admin/refund] Calling Razorpay refund API for payment ID: ${order.razorpayPaymentId}`);
+        console.log(`[admin/refund] Checking payment status on Razorpay for payment ID: ${order.razorpayPaymentId}`);
+        const paymentDetails = await razorpay.payments.fetch(order.razorpayPaymentId);
         
+        if (paymentDetails && paymentDetails.status === 'authorized') {
+          console.log(`[admin/refund] Payment is in 'authorized' status. Capturing payment of ₹${order.orderAmount} first...`);
+          await razorpay.payments.capture(order.razorpayPaymentId, paymentDetails.amount, 'INR');
+          console.log(`[admin/refund] Payment captured successfully.`);
+        }
+
+        console.log(`[admin/refund] Calling Razorpay refund API for payment ID: ${order.razorpayPaymentId}`);
         const rzRefund = await razorpay.payments.refund(order.razorpayPaymentId, {
           amount: Math.round(Number(refund.amount) * 100), // paise
           notes: { orderId, refundId: refund.refundId }
         });
+
 
         // Update refund state
         refund.paymentGatewayRefundId = rzRefund.id;
@@ -724,10 +733,11 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
         res.json({ success: true, message: 'Razorpay refund initiated successfully.', refund });
 
       } catch (rzErr) {
-        console.error('[admin/refund] Razorpay Refund Error:', rzErr.message);
+        const errorMsg = rzErr.error?.description || rzErr.message || 'Unknown Razorpay error';
+        console.error('[admin/refund] Razorpay Refund Error:', errorMsg);
         refund.status = 'FAILED';
         refund.failedAt = new Date().toISOString();
-        refund.failureReason = rzErr.message;
+        refund.failureReason = errorMsg;
         saveRefund(refund);
 
         order.refundStatus = 'FAILED';
@@ -738,12 +748,13 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
           orderId, 
           'REFUND', 
           ORDER_STATUSES.REFUND_FAILED, 
-          `Razorpay refund failed: ${rzErr.message}`,
-          { error: rzErr.message }
+          `Razorpay refund failed: ${errorMsg}`,
+          { error: errorMsg }
         );
 
-        res.status(500).json({ success: false, error: `Razorpay refund failed: ${rzErr.message}` });
+        res.status(500).json({ success: false, error: `Razorpay refund failed: ${errorMsg}` });
       }
+
     } else {
       /* ── COD / Manual Refund Processing ── */
       if (!manualTxnId || !manualMethod) {
