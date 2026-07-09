@@ -4086,7 +4086,7 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
           </div>
         )}
 
-        {/* Direct Cancel Button (Available for confirmed/placed orders that are not shipped, delivered, or cancelled, and don't have a pending cancellation request) */}
+        {/* Direct Cancel Button */}
         {!['CANCELLED', 'SHIPPED', 'DELIVERED', 'OUT_FOR_DELIVERY', 'RTO_INITIATED', 'RTO_DELIVERED'].includes(order.orderStatus) && order.cancellationStatus !== 'REQUESTED' && (
           <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
             <button
@@ -4113,6 +4113,42 @@ function OrderDetailViewPanel({ details, onApproveCancellation, onApproveReturn,
               }}
             >
               ❌ Cancel Order (Remove from Shiprocket)
+            </button>
+          </div>
+        )}
+
+        {/* Admin Direct Refund — for any PAID prepaid order without an active/completed refund */}
+        {order.paymentStatus === 'PAID' &&
+         order.paymentMethod?.toLowerCase().includes('online') &&
+         !['APPROVED', 'INITIATED', 'PROCESSING', 'PROCESSED'].includes(order.refundStatus) && (
+          <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #e2e8f0' }}>
+            <p style={{ margin: '0 0 8px', fontSize: '11.5px', color: '#7c3aed', fontWeight: 600 }}>💸 Manual Refund Override (Admin)</p>
+            <p style={{ margin: '0 0 10px', fontSize: '11px', color: '#64748b' }}>
+              Directly approve &amp; initiate a Razorpay refund for this order without requiring a customer return/cancel request.
+            </p>
+            <button
+              onClick={() => {
+                if (window.confirm(`Initiate Razorpay refund of ₹${order.orderAmount} for order ${order.orderId}? This will immediately credit the customer.`)) {
+                  onInitiateRefund(order.orderId);
+                }
+              }}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                color: '#fff',
+                border: 'none',
+                padding: '10px',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '12.5px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
+            >
+              💰 Initiate Refund — ₹{order.orderAmount} via Razorpay
             </button>
           </div>
         )}

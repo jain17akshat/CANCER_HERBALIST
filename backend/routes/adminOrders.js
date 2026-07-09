@@ -644,9 +644,31 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
     const order = await getOrderByIdAsync(orderId);
     if (!order) return res.status(404).json({ success: false, error: 'Order not found.' });
 
-    const refund = getRefundByOrderId(orderId);
+    let refund = getRefundByOrderId(orderId);
+
+    // Admin direct refund: if no refund record exists, auto-create one (approved)
     if (!refund) {
-      return res.status(400).json({ success: false, error: 'No approved refund request exists for this order.' });
+      // Require that the order was actually paid before allowing a direct refund
+      if (order.paymentStatus !== 'PAID') {
+        return res.status(400).json({ success: false, error: 'No approved refund request exists for this order and the order is not marked PAID.' });
+      }
+      const now = new Date().toISOString();
+      refund = {
+        refundId: `RF-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+        orderId,
+        amount: order.orderAmount,
+        method: order.paymentMethod.toLowerCase().includes('online') ? 'Razorpay' : 'Manual',
+        status: 'APPROVED',
+        reason: 'Admin Direct Refund Override',
+        approvedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      };
+      saveRefund(refund);
+      order.refundStatus = 'APPROVED';
+      saveOrder(order);
+      addOrderEvent(orderId, 'REFUND', ORDER_STATUSES.REFUND_APPROVED,
+        `Admin manually approved refund of ₹${order.orderAmount} (direct override).`);
     }
 
     if (refund.status === 'PROCESSED' || refund.status === 'PROCESSING') {
@@ -659,6 +681,7 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
     }
 
     const isPrepaid = order.paymentMethod.toLowerCase().includes('online');
+
 
     if (isPrepaid) {
       /* ── Razorpay Refund Initiation ── */
