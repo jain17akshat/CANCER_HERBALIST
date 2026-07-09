@@ -365,6 +365,10 @@ async function deleteOrder(orderId) {
     cachedEvents = cachedEvents.filter(e => e.orderId !== orderId);
     writeJSON(EVENTS_FILE, cachedEvents);
     
+    // Reset sync timestamp so the next admin load forces a fresh pull from Sheets.
+    // This prevents the deleted order from reappearing in other serverless instances.
+    lastSyncTime = 0;
+    
     // Await Sheets deletion so it completes before the serverless function terminates
     await deleteFromSheets('orders', orderId);
     return true;
@@ -382,6 +386,9 @@ async function clearAllOrders() {
   
   cachedRefunds = [];
   writeJSON(REFUNDS_FILE, cachedRefunds);
+  
+  // Reset sync timestamp so the next admin load always pulls fresh data
+  lastSyncTime = 0;
   
   // Await all Sheets clears in parallel
   await Promise.all([

@@ -77,7 +77,7 @@ function doGet(e) {
   } catch (err) {
     try {
       ss = SpreadsheetApp.getActiveSpreadsheet();
-    } catch (e) {}
+    } catch (e2) {}
   }
   
   if (!ss) {
@@ -93,7 +93,7 @@ function doGet(e) {
   }
   
   if (action === 'getRows') {
-    return getRows(sheet);
+    return getRows(sheet, ss);
   }
   
   if (action === 'updateRow') {
@@ -101,7 +101,7 @@ function doGet(e) {
   }
   
   if (action === 'deleteRow') {
-    return deleteRow(sheet, e.parameter);
+    return deleteRow(sheet, e.parameter, ss);
   }
   
   if (action === 'clearSheet') {
@@ -142,7 +142,20 @@ function normalizeSheetName(name) {
   return name;
 }
 
-function getRows(sheet) {
+function getRows(sheet, ss) {
+  // Load the list of deleted order IDs so we never return them
+  var deletedIds = {};
+  if (ss && sheet.getName() === 'orders') {
+    var delSheet = ss.getSheetByName('deletedOrders');
+    if (delSheet && delSheet.getLastRow() > 1) {
+      var delData = delSheet.getDataRange().getValues();
+      for (var d = 1; d < delData.length; d++) {
+        var did = String(delData[d][0]).trim();
+        if (did) deletedIds[did] = true;
+      }
+    }
+  }
+
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) {
     return ContentService.createTextOutput(JSON.stringify({ success: true, rows: [] }))
@@ -169,6 +182,12 @@ function getRows(sheet) {
       var dbKey = REVERSE_KEY_MAP[headers[j]] || headers[j];
       row[dbKey] = val;
     }
+    
+    // Skip orders that have been deleted
+    if (sheet.getName() === 'orders' && row.orderId && deletedIds[String(row.orderId).trim()]) {
+      continue;
+    }
+    
     rows.push(row);
   }
   
@@ -288,7 +307,7 @@ function updateRow(sheet, params) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function deleteRow(sheet, params) {
+function deleteRow(sheet, params, ss) {
   var sheetName = sheet.getName();
   var idKey = 'orderId';
   if (sheetName === 'appointments') idKey = 'apptId';
@@ -304,23 +323,53 @@ function deleteRow(sheet, params) {
   var dataRange = sheet.getDataRange();
   var values = dataRange.getValues();
   var headers = values[0];
+  
+  // Try mapped key first (e.g. 'Order ID'), then raw key (e.g. 'orderId') as fallback
   var mappedIdKey = KEY_MAP[idKey] || idKey;
   var idColIdx = headers.indexOf(mappedIdKey);
-  
   if (idColIdx === -1) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'ID column not found' }))
-      .setMimeType(ContentService.MimeType.JSON);
+    idColIdx = headers.indexOf(idKey); // raw key fallback
   }
   
-  for (var i = 1; i < values.length; i++) {
+  if (idColIdx === -1) {
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: false, 
+      error: 'ID column not found (tried: ' + mappedIdKey + ', ' + idKey + ')' 
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  var deleted = false;
+  // Iterate in reverse so row index doesn't shift after deletion
+  for (var i = values.length - 1; i >= 1; i--) {
     if (String(values[i][idColIdx]).trim() === String(idVal).trim()) {
       sheet.deleteRow(i + 1);
-      return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Row deleted successfully' }))
-        .setMimeType(ContentService.MimeType.JSON);
+      deleted = true;
+      break;
+    }
+  }
+
+  // For orders: record to deletedOrders sheet to prevent reappearance on sync
+  if (sheetName === 'orders' && ss) {
+    try {
+      var delSheet = ss.getSheetByName('deletedOrders');
+      if (!delSheet) {
+        delSheet = ss.insertSheet('deletedOrders');
+        delSheet.appendRow(['orderId', 'deletedAt']);
+      }
+      delSheet.appendRow([String(idVal), new Date().toISOString()]);
+    } catch (e) {
+      // Non-fatal — log and continue
+      Logger.log('Could not write to deletedOrders sheet: ' + e.message);
     }
   }
   
-  return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Row not found' }))
+  if (deleted) {
+    return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Row deleted successfully' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  // Row not in sheet but still recorded in deletedOrders — treat as success
+  return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Row not found in sheet (may already be deleted)' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 

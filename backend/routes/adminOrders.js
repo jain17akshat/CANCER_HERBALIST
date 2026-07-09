@@ -51,19 +51,11 @@ router.use(checkAdmin);
  */
 router.get('/admin/orders', async (req, res) => {
   try {
-    if (req.query.force === 'true') {
-      // Explicit admin refresh — pull from Google Sheets
-      await syncFromSheets(true);
-    } else {
-      // Initialize cache from local files on first load
-      initCache();
-      // On Vercel serverless, local files are empty — if cache is still empty after
-      // initCache, do a Sheets sync so the list isn't blank on cold starts
-      const currentOrders = getOrders();
-      if (!currentOrders || currentOrders.length === 0) {
-        await syncFromSheets();
-      }
-    }
+    // Always sync from Sheets on admin list load.
+    // syncFromSheets() has a built-in 30s cooldown so it won't hammer the API on rapid
+    // refreshes, but guarantees stale serverless cache is never used for the admin view.
+    // force=true bypasses the cooldown (e.g. manual "Refresh" button click).
+    await syncFromSheets(req.query.force === 'true');
 
     const { search, orderStatus, paymentStatus, shipmentStatus, refundStatus } = req.query;
     let orders = getOrders();
