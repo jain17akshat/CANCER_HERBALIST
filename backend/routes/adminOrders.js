@@ -713,7 +713,9 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
         saveRefund(refund);
 
         order.refundStatus = 'INITIATED';
-        order.orderStatus = ORDER_STATUSES.REFUND_INITIATED;
+        if (![ORDER_STATUSES.CANCELLED, ORDER_STATUSES.RETURN_APPROVED, ORDER_STATUSES.RETURN_PICKUP_SCHEDULED, ORDER_STATUSES.RETURN_PICKED_UP, ORDER_STATUSES.RETURN_RECEIVED, ORDER_STATUSES.RETURN_REJECTED].includes(order.orderStatus)) {
+          order.orderStatus = ORDER_STATUSES.REFUND_INITIATED;
+        }
         saveOrder(order);
 
         addOrderEvent(
@@ -741,7 +743,9 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
         saveRefund(refund);
 
         order.refundStatus = 'FAILED';
-        order.orderStatus = ORDER_STATUSES.REFUND_FAILED;
+        if (![ORDER_STATUSES.CANCELLED, ORDER_STATUSES.RETURN_APPROVED, ORDER_STATUSES.RETURN_PICKUP_SCHEDULED, ORDER_STATUSES.RETURN_PICKED_UP, ORDER_STATUSES.RETURN_RECEIVED, ORDER_STATUSES.RETURN_REJECTED].includes(order.orderStatus)) {
+          order.orderStatus = ORDER_STATUSES.REFUND_FAILED;
+        }
         saveOrder(order);
 
         addOrderEvent(
@@ -769,7 +773,9 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
       saveRefund(refund);
 
       order.refundStatus = 'PROCESSED';
-      order.orderStatus = ORDER_STATUSES.REFUND_PROCESSED;
+      if (![ORDER_STATUSES.CANCELLED, ORDER_STATUSES.RETURN_APPROVED, ORDER_STATUSES.RETURN_PICKUP_SCHEDULED, ORDER_STATUSES.RETURN_PICKED_UP, ORDER_STATUSES.RETURN_RECEIVED, ORDER_STATUSES.RETURN_REJECTED].includes(order.orderStatus)) {
+        order.orderStatus = ORDER_STATUSES.REFUND_PROCESSED;
+      }
       saveOrder(order);
 
       addOrderEvent(
@@ -824,7 +830,9 @@ router.post('/admin/orders/:orderId/refund/sync', async (req, res) => {
       saveRefund(refund);
 
       order.refundStatus = 'PROCESSED';
-      order.orderStatus = ORDER_STATUSES.REFUND_PROCESSED;
+      if (![ORDER_STATUSES.CANCELLED, ORDER_STATUSES.RETURN_APPROVED, ORDER_STATUSES.RETURN_PICKUP_SCHEDULED, ORDER_STATUSES.RETURN_PICKED_UP, ORDER_STATUSES.RETURN_RECEIVED, ORDER_STATUSES.RETURN_REJECTED].includes(order.orderStatus)) {
+        order.orderStatus = ORDER_STATUSES.REFUND_PROCESSED;
+      }
       saveOrder(order);
 
       addOrderEvent(
@@ -846,7 +854,9 @@ router.post('/admin/orders/:orderId/refund/sync', async (req, res) => {
       saveRefund(refund);
 
       order.refundStatus = 'FAILED';
-      order.orderStatus = ORDER_STATUSES.REFUND_FAILED;
+      if (![ORDER_STATUSES.CANCELLED, ORDER_STATUSES.RETURN_APPROVED, ORDER_STATUSES.RETURN_PICKUP_SCHEDULED, ORDER_STATUSES.RETURN_PICKED_UP, ORDER_STATUSES.RETURN_RECEIVED, ORDER_STATUSES.RETURN_REJECTED].includes(order.orderStatus)) {
+        order.orderStatus = ORDER_STATUSES.REFUND_FAILED;
+      }
       saveOrder(order);
 
       addOrderEvent(

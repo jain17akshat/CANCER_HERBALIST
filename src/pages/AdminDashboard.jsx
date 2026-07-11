@@ -1615,11 +1615,26 @@ export default function AdminDashboard() {
                           }}
                         >
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
                               <strong style={{ fontSize: '14px', color: '#0f172a' }}>{o.orderId}</strong>
                               <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px', background: badgeBg, color: badgeColor }}>
                                 {status || '—'}
                               </span>
+                              {o.refundStatus && (
+                                <span style={{ 
+                                  fontSize: '10px', 
+                                  fontWeight: 700, 
+                                  padding: '2px 8px', 
+                                  borderRadius: '20px', 
+                                  background: o.refundStatus === 'PROCESSED' ? '#f0fdf4' : o.refundStatus === 'FAILED' ? '#fef2f2' : '#fffbeb', 
+                                  color: o.refundStatus === 'PROCESSED' ? '#16a34a' : o.refundStatus === 'FAILED' ? '#dc2626' : '#d97706',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '3px'
+                                }}>
+                                  💸 Refund: {o.refundStatus}
+                                </span>
+                              )}
                             </div>
                             <p style={{ margin: 0, fontSize: '13px', color: '#334155' }}>
                               {o.customerName} • {o.phone}
@@ -1637,7 +1652,6 @@ export default function AdminDashboard() {
                           </div>
                         </div>
                       );
-
                     })
                 )}
               </div>

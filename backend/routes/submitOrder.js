@@ -3,6 +3,7 @@ const router  = express.Router();
 const { createShiprocketOrder }         = require('./shiprocket');
 const { validateOrderAmount }           = require('./priceList');
 const { pushOrderToZoho }               = require('./zoho');
+const { pushOrderToZohoBooks }          = require('./zohoBooks');
 const { sendOrderConfirmationEmails }   = require('./emailService');
 const { saveOrder, addOrderEvent, updateOrderStatus, getOrderById, getOrderByIdAsync } = require('./ordersDb');
 const { ORDER_STATUSES } = require('./orderStatuses');
@@ -172,6 +173,15 @@ router.post('/submit-order', async (req, res) => {
           await pushOrderToZoho(orderRow);
         } catch (err) {
           console.error('[submit-order] Zoho CRM error:', err.message);
+        }
+      }
+
+      // Zoho Books
+      if (process.env.ZOHO_BOOKS_ORGANIZATION_ID) {
+        try {
+          await pushOrderToZohoBooks(orderRow);
+        } catch (err) {
+          console.error('[submit-order] Zoho Books error:', err.message);
         }
       }
 

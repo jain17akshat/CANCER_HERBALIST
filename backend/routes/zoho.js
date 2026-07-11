@@ -14,10 +14,10 @@
  */
 
 const ZOHO_ACCOUNTS_URL = 'https://accounts.zoho.in/oauth/v2/token';
-const ZOHO_API_BASE     = 'https://www.zohoapis.in/crm/v2';
+const ZOHO_API_BASE = 'https://www.zohoapis.in/crm/v2';
 
 /* ── In-memory access token cache (expires every 1 hour) ─────────────── */
-let _accessToken    = null;
+let _accessToken = null;
 let _tokenExpiresAt = 0;
 
 /**
@@ -38,8 +38,8 @@ async function getAccessToken() {
   }
 
   const params = new URLSearchParams({
-    grant_type:    'refresh_token',
-    client_id:     ZOHO_CLIENT_ID,
+    grant_type: 'refresh_token',
+    client_id: ZOHO_CLIENT_ID,
     client_secret: ZOHO_CLIENT_SECRET,
     refresh_token: ZOHO_REFRESH_TOKEN,
   });
@@ -51,7 +51,7 @@ async function getAccessToken() {
     throw new Error(`Zoho token refresh failed: ${data.error || res.status}`);
   }
 
-  _accessToken    = data.access_token;
+  _accessToken = data.access_token;
   _tokenExpiresAt = now + (data.expires_in || 3600) * 1000; // typically 1 hour
 
   console.log('[Zoho] Access token refreshed.');
@@ -119,17 +119,17 @@ async function upsertContact(orderRow, token) {
   const lastName = rest.join(' ') || '-';
 
   const contactData = {
-    First_Name:  firstName,
-    Last_Name:   lastName,
-    Phone:       String(orderRow.phone),
-    Email:       orderRow.email || '',
-    Mailing_Street:  orderRow.address || '',
-    Mailing_City:    orderRow.city    || '',
-    Mailing_State:   orderRow.state   || '',
-    Mailing_Zip:     String(orderRow.pincode || ''),
+    First_Name: firstName,
+    Last_Name: lastName,
+    Phone: String(orderRow.phone),
+    Email: orderRow.email || '',
+    Mailing_Street: orderRow.address || '',
+    Mailing_City: orderRow.city || '',
+    Mailing_State: orderRow.state || '',
+    Mailing_Zip: String(orderRow.pincode || ''),
     Mailing_Country: 'India',
-    Lead_Source:     'Cancer Herbalist Store',
-    Description:    `Customer from Cancer Herbalist online store.`,
+    Lead_Source: 'Cancer Herbalist Store',
+    Description: `Customer from Cancer Herbalist online store.`,
   };
 
   if (existingId) {
@@ -171,14 +171,14 @@ async function upsertContact(orderRow, token) {
  */
 async function createDeal(orderRow, contactId, token) {
   const isOnline = String(orderRow.paymentMethod || '').toLowerCase().includes('online') ||
-                   String(orderRow.paymentMethod || '').toLowerCase().includes('razorpay');
+    String(orderRow.paymentMethod || '').toLowerCase().includes('razorpay');
 
   const dealData = {
-    Deal_Name:    `Order ${orderRow.orderId} — ${orderRow.productName}`,
-    Amount:       Number(orderRow.orderAmount) || 0,
-    Stage:        isOnline ? 'Closed Won' : 'Proposal/Price Quote', // COD pending = Proposal
-    Lead_Source:  'Cancer Herbalist Store',
-    Description:  [
+    Deal_Name: `Order ${orderRow.orderId} — ${orderRow.productName}`,
+    Amount: Number(orderRow.orderAmount) || 0,
+    Stage: isOnline ? 'Closed Won' : 'Proposal/Price Quote', // COD pending = Proposal
+    Lead_Source: 'Cancer Herbalist Store',
+    Description: [
       `Order ID: ${orderRow.orderId}`,
       `Product: ${orderRow.productName}`,
       `Quantity: ${orderRow.quantity}`,
@@ -217,9 +217,9 @@ async function createDeal(orderRow, contactId, token) {
  * @returns {Promise<{ contactId, dealId }>}
  */
 async function pushOrderToZoho(orderRow) {
-  const token     = await getAccessToken();
+  const token = await getAccessToken();
   const contactId = await upsertContact(orderRow, token);
-  const dealId    = await createDeal(orderRow, contactId, token);
+  const dealId = await createDeal(orderRow, contactId, token);
   return { contactId, dealId };
 }
 

@@ -5,6 +5,7 @@ const Razorpay = require('razorpay');
 const { createShiprocketOrder }         = require('./shiprocket');
 const { validateOrderAmount }           = require('./priceList');
 const { pushOrderToZoho }               = require('./zoho');
+const { pushOrderToZohoBooks }          = require('./zohoBooks');
 const { sendOrderConfirmationEmails }   = require('./emailService');
 const { saveOrder, addOrderEvent, updateOrderStatus, getOrderById, getOrderByIdAsync } = require('./ordersDb');
 const { ORDER_STATUSES } = require('./orderStatuses');
@@ -187,6 +188,18 @@ router.post('/verify-payment', async (req, res) => {
         }
       })();
       promises.push(zohoPromise);
+    }
+
+    // Zoho Books
+    if (process.env.ZOHO_BOOKS_ORGANIZATION_ID) {
+      const zohoBooksPromise = (async () => {
+        try {
+          await pushOrderToZohoBooks(orderRow);
+        } catch (err) {
+          console.error('[verify-payment] Zoho Books error:', err.message);
+        }
+      })();
+      promises.push(zohoBooksPromise);
     }
 
     // Wait for all integrations to finish before sending response (prevent serverless termination)
