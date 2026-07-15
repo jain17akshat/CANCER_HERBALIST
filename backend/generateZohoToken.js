@@ -20,14 +20,28 @@ function askQuestion(query) {
 }
 
 async function main() {
-  console.log('🌿 --- Zoho OAuth Refresh Token Generator (India Server) --- 🌿\n');
+  console.log('🌿 --- Zoho OAuth Refresh Token Generator (India Server — zoho.in) --- 🌿\n');
   console.log('Steps to get the required values:');
   console.log('1. Go to Zoho API Console: https://api-console.zoho.in');
   console.log('2. Click on your registered Client (e.g. "Self Client").');
-  console.log('3. Under "Generate Code" tab, enter scope:');
-  console.log('   ZohoCRM.modules.contacts.ALL,ZohoCRM.modules.deals.ALL,ZohoBooks.fullaccess.ALL');
-  console.log('4. Select "10 Minutes" duration and click GENERATE.');
+  console.log('3. Under "Generate Code" tab, enter ALL of the following scopes');
+  console.log('   (paste this entire line into the Scope field):');
+  console.log('');
+  console.log('   ZohoCRM.modules.contacts.ALL,ZohoCRM.modules.deals.ALL,ZohoCRM.modules.Events.ALL,ZohoBooks.fullaccess.ALL,ZohoSign.documents.ALL,ZohoCampaigns.contact.ALL,Desk.tickets.ALL,Desk.contacts.READ');
+  console.log('');
+  console.log('   What each scope does:');
+  console.log('   • ZohoCRM.modules.contacts.ALL  → Create/update patient contacts in CRM');
+  console.log('   • ZohoCRM.modules.deals.ALL     → Create order deals in CRM');
+  console.log('   • ZohoCRM.modules.Events.ALL    → Create appointment events/meetings in CRM');
+  console.log('   • ZohoBooks.fullaccess.ALL      → Create invoices and record payments in Books');
+  console.log('   • ZohoSign.documents.ALL        → Send consent forms for e-signature');
+  console.log('   • ZohoCampaigns.contact.ALL     → Subscribe patients to newsletter');
+  console.log('   • Desk.tickets.ALL              → Create and manage support tickets');
+  console.log('   • Desk.contacts.READ            → Read Desk contact info');
+  console.log('');
+  console.log('4. Select "No Expiry" (or "10 Minutes" for one-time use) and click GENERATE.');
   console.log('5. Copy the generated Grant Code and paste below.\n');
+
 
   try {
     const clientId = (await askQuestion('Enter ZOHO_CLIENT_ID: ')).trim();

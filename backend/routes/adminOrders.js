@@ -31,14 +31,23 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// Admin auth check matching dynamicContent.js
+const { checkAuthLockout, recordAuthFailure, recordAuthSuccess } = require('../middleware/authRateLimiter');
+
+// Admin auth check matching dynamicContent.js with exponential backoff rate limiting
 const checkAdmin = (req, res, next) => {
-  const key = req.query.key || req.headers['x-admin-key'];
-  const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
-  if (key !== adminSecret) {
-    return res.status(401).json({ success: false, error: 'Unauthorized.' });
-  }
-  next();
+  checkAuthLockout(req, res, () => {
+    const key = req.query.key || req.headers['x-admin-key'];
+    const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+    const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+
+    if (key !== adminSecret) {
+      recordAuthFailure(ip);
+      return res.status(401).json({ success: false, error: 'Unauthorized.' });
+    }
+
+    recordAuthSuccess(ip);
+    next();
+  });
 };
 
 // Mount admin auth check on all routes in this file

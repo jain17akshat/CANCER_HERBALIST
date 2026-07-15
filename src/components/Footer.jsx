@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaLeaf, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt,
@@ -21,6 +21,7 @@ const quickLinks = [
   { label: 'Testimonials',      to: '/testimonials' },
   { label: 'Blog & Articles',   to: '/blog' },
   { label: 'Contact Us',        to: '/contact' },
+  { label: 'Support Centre',    to: '/support' },
 ];
 
 const socials = [
@@ -50,6 +51,36 @@ export default function Footer() {
     whatsapp: '918884588835',
     timings: 'Mon–Sat, 9 AM–6 PM',
     address: 'Bangalore, India'
+  };
+
+  const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+  const [nlEmail, setNlEmail] = useState('');
+  const [nlName, setNlName]   = useState('');
+  const [nlStatus, setNlStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+  const [nlMsg, setNlMsg]     = useState('');
+
+  const handleNewsletter = async (e) => {
+    e.preventDefault();
+    if (!nlEmail) return;
+    setNlStatus('loading');
+    try {
+      const res  = await fetch(`${BACKEND_URL}/api/zoho-campaigns/subscribe`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email: nlEmail, name: nlName }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNlStatus('success');
+        setNlMsg(data.message || 'Thank you for subscribing!');
+        setNlEmail(''); setNlName('');
+      } else {
+        throw new Error(data.error || 'Subscription failed.');
+      }
+    } catch (err) {
+      setNlStatus('error');
+      setNlMsg(err.message);
+    }
   };
 
   return (
@@ -209,10 +240,46 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* ── Col 4: CTAs ── */}
+          {/* ── Col 4: Newsletter + CTAs ── */}
           <div>
-            {colHead('Get In Touch')}
-            <p style={{ color: WHITE60, fontSize: '13px', lineHeight: '1.8', marginBottom: '24px' }}>
+            {colHead('Stay Connected')}
+
+            {/* Newsletter Box */}
+            <div style={{ background: 'rgba(56,190,213,0.08)', border: '1px solid rgba(56,190,213,0.22)', borderRadius: '14px', padding: '18px', marginBottom: '20px' }}>
+              <p style={{ color: WHITE80, fontWeight: 700, fontSize: '13.5px', marginBottom: '6px' }}>📧 Health Newsletter</p>
+              <p style={{ color: WHITE60, fontSize: '12px', lineHeight: '1.7', marginBottom: '14px' }}>Cancer care tips, herbal insights & clinic updates — straight to your inbox.</p>
+
+              {nlStatus === 'success' ? (
+                <div style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '10px', padding: '12px', textAlign: 'center' }}>
+                  <p style={{ color: '#4ade80', fontSize: '13px', margin: 0, fontWeight: 600 }}>✅ {nlMsg}</p>
+                </div>
+              ) : (
+                <form onSubmit={handleNewsletter}>
+                  <input
+                    type="text"
+                    placeholder="Your name (optional)"
+                    value={nlName}
+                    onChange={(e) => setNlName(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', marginBottom: '8px', fontFamily: 'Poppins, sans-serif' }}
+                  />
+                  <input
+                    type="email"
+                    placeholder="your@email.com *"
+                    value={nlEmail}
+                    onChange={(e) => setNlEmail(e.target.value)}
+                    required
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#fff', fontSize: '13px', outline: 'none', boxSizing: 'border-box', marginBottom: '10px', fontFamily: 'Poppins, sans-serif' }}
+                  />
+                  {nlStatus === 'error' && <p style={{ color: '#f87171', fontSize: '11.5px', marginBottom: '8px' }}>⚠ {nlMsg}</p>}
+                  <button type="submit" disabled={nlStatus === 'loading'}
+                    style={{ width: '100%', background: ACCENT, color: '#fff', border: 'none', padding: '11px', borderRadius: '8px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', opacity: nlStatus === 'loading' ? 0.7 : 1 }}>
+                    {nlStatus === 'loading' ? 'Subscribing…' : 'Subscribe →'}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            <p style={{ color: WHITE60, fontSize: '13px', lineHeight: '1.8', marginBottom: '16px' }}>
               Ready to start your healing journey? Book a free consultation with our senior practitioners today.
             </p>
 

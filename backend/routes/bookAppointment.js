@@ -8,9 +8,10 @@
  *   → Returns all appointments (or filtered by date) for the admin dashboard
  */
 
-const express    = require('express');
+const express = require('express');
 const nodemailer = require('nodemailer');
-const router     = express.Router();
+const { validateSchema } = require('../utils/validateSchema');
+const router = express.Router();
 
 /* ── Gmail transporter ───────────────────────────────────────────── */
 function createTransporter() {
@@ -206,7 +207,7 @@ function buildAdminEmailHtml(data) {
       </table>
     </div>
     <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 32px;display:flex;gap:12px;text-align:center;">
-      <a href="https://wa.me/91${String(phone).replace(/\D/g,'')}"
+      <a href="https://wa.me/91${String(phone).replace(/\D/g, '')}"
         style="display:inline-block;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;margin-right:8px;">
         WhatsApp Patient
       </a>
@@ -228,18 +229,18 @@ async function saveToSheets(appt) {
     const sheetUrl = new URL(url);
     // prefix keys so the Apps Script can route to an Appointments sheet
     const row = {
-      type:            'APPOINTMENT',
-      apptId:          appt.apptId,
-      name:            appt.name,
-      phone:           appt.phone,
-      email:           appt.email,
-      treatment:       appt.treatment,
-      stage:           appt.stage || '',
-      message:         appt.message || '',
-      appointmentDay:  appt.appointmentDay,
+      type: 'APPOINTMENT',
+      apptId: appt.apptId,
+      name: appt.name,
+      phone: appt.phone,
+      email: appt.email,
+      treatment: appt.treatment,
+      stage: appt.stage || '',
+      message: appt.message || '',
+      appointmentDay: appt.appointmentDay,
       appointmentSlot: appt.appointmentSlot,
-      bookedAt:        appt.bookedAt,
-      status:          'Confirmed',
+      bookedAt: appt.bookedAt,
+      status: 'Confirmed',
     };
     Object.entries(row).forEach(([k, v]) => sheetUrl.searchParams.append(k, String(v ?? '')));
     const res = await fetch(sheetUrl.toString());
@@ -258,12 +259,12 @@ const APPT_SYNC_COOLDOWN_MS = 5000;
 async function syncAppointmentsFromSheets(force = false) {
   const url = process.env.APPS_SCRIPT_URL;
   if (!url) return false;
-  
+
   const now = Date.now();
   if (!force && cachedAppointments !== null && (now - lastApptSyncTime < APPT_SYNC_COOLDOWN_MS)) {
     return true;
   }
-  
+
   try {
     const res = await fetch(`${url}?action=getRows&sheet=appointments`);
     if (!res.ok) throw new Error(`Status ${res.status}`);
@@ -282,21 +283,29 @@ async function syncAppointmentsFromSheets(force = false) {
   return false;
 }
 
+const bookAppointmentSchema = {
+  name: { type: 'string', required: true, min: 2, max: 100, format: 'name' },
+  phone: { type: 'string', required: true, format: 'phone' },
+  email: { type: 'string', required: true, format: 'email', max: 100 },
+  treatment: { type: 'string', required: true, min: 2, max: 100 },
+  stage: { type: 'string', required: false, min: 1, max: 50 },
+  message: { type: 'string', required: false, min: 0, max: 1000 },
+  appointmentDay: { type: 'string', required: true, min: 2, max: 100 },
+  appointmentSlot: { type: 'string', required: true, min: 2, max: 100 },
+};
+
 /* ── POST /api/book-appointment ──────────────────────────────── */
 router.post('/book-appointment', async (req, res) => {
+  const validationError = validateSchema(req.body, bookAppointmentSchema);
+  if (validationError) {
+    return res.status(400).json({ success: false, error: validationError });
+  }
+
   const {
     name, phone, email,
     treatment, stage, message,
     appointmentDay, appointmentSlot,
   } = req.body;
-
-  // Basic validation
-  if (!name || !phone || !email || !treatment || !appointmentDay || !appointmentSlot) {
-    return res.status(400).json({ success: false, error: 'Missing required fields.' });
-  }
-  if (!/\S+@\S+\.\S+/.test(email)) {
-    return res.status(400).json({ success: false, error: 'Invalid email address.' });
-  }
 
   // ── Slot conflict check ──────────────────────────────────
   const conflict = appointmentStore.find(a =>
@@ -310,7 +319,7 @@ router.post('/book-appointment', async (req, res) => {
     });
   }
 
-  const apptId   = `APT-${Date.now()}-${Math.random().toString(36).slice(2,5).toUpperCase()}`;
+  const apptId = `APT-${Date.now()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   const bookedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
   const appt = { apptId, name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot, bookedAt };
@@ -326,7 +335,7 @@ router.post('/book-appointment', async (req, res) => {
   }
 
   const adminEmail = process.env.ADMIN_EMAIL || 'cancerherbalist@gmail.com';
-  const fromAddr   = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+  const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
 
   const data = { name, phone, email, treatment, stage, message, appointmentDay, appointmentSlot };
 
@@ -334,20 +343,20 @@ router.post('/book-appointment', async (req, res) => {
     await Promise.all([
       // 1. Patient confirmation
       transporter.sendMail({
-        from:    fromAddr,
-        to:      email,
+        from: fromAddr,
+        to: email,
         subject: `✅ Appointment Confirmed — ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
-        text:    `Dear ${name},\n\nYour consultation appointment has been confirmed.\n\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\n\nOur doctor will call you at your registered number at the booked time.\nQuestions? WhatsApp: +91 88845 88835\n\n— Cancer Herbalist Team`,
-        html:    buildPatientEmailHtml(data),
+        text: `Dear ${name},\n\nYour consultation appointment has been confirmed.\n\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\n\nOur doctor will call you at your registered number at the booked time.\nQuestions? WhatsApp: +91 88845 88835\n\n— Cancer Herbalist Team`,
+        html: buildPatientEmailHtml(data),
       }),
 
       // 2. Admin notification
       transporter.sendMail({
-        from:    fromAddr,
-        to:      adminEmail,
+        from: fromAddr,
+        to: adminEmail,
         subject: `📅 New Appointment: ${name} — ${appointmentDay} ${appointmentSlot}`,
-        text:    `New Appointment Booked\nPatient: ${name}\nPhone: ${phone}\nEmail: ${email}\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\nStage: ${stage || 'N/A'}\nMessage: ${message || 'None'}`,
-        html:    buildAdminEmailHtml(data),
+        text: `New Appointment Booked\nPatient: ${name}\nPhone: ${phone}\nEmail: ${email}\nDate: ${appointmentDay}\nTime: ${appointmentSlot}\nConsultation: ${treatment}\nStage: ${stage || 'N/A'}\nMessage: ${message || 'None'}`,
+        html: buildAdminEmailHtml(data),
       }),
 
       // 3. Save to Google Sheets
@@ -378,14 +387,26 @@ router.get('/available-slots', async (req, res) => {
   res.json({ success: true, bookedSlots: booked });
 });
 
+// Admin auth check middleware with exponential backoff rate limiting
+const checkAdmin = (req, res, next) => {
+  checkAuthLockout(req, res, () => {
+    const key = req.query.key || req.headers['x-admin-key'];
+    const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
+    const ip = req.ip || req.connection?.remoteAddress || 'unknown';
+
+    if (key !== adminSecret) {
+      recordAuthFailure(ip);
+      return res.status(401).json({ success: false, error: 'Unauthorized.' });
+    }
+
+    recordAuthSuccess(ip);
+    next();
+  });
+};
+
 /* ── GET /api/appointments (Admin dashboard) ─────────────────── */
-router.get('/appointments', async (req, res) => {
-  // Simple secret key auth — set ADMIN_SECRET in backend/.env
-  const { key, date } = req.query;
-  const adminSecret = process.env.ADMIN_SECRET || 'ch-admin-2024';
-  if (key !== adminSecret) {
-    return res.status(401).json({ success: false, error: 'Unauthorized.' });
-  }
+router.get('/appointments', checkAdmin, async (req, res) => {
+  const { date } = req.query;
 
   await syncAppointmentsFromSheets();
   let results = [...appointmentStore];

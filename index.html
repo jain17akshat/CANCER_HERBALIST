@@ -31,5 +31,23 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <!-- ── Zoho SalesIQ Live Chat Widget ─────────────────────────────────── -->
+    <!-- To activate: set VITE_ZOHO_SALESIQ_CODE in your .env / Vercel env vars -->
+    <!-- Get the code from: Zoho SalesIQ → Settings → Websites → Install Code     -->
+    <!-- Copy ONLY the widgetcode= value (the long alphanumeric string)           -->
+    <script type="text/javascript">
+      (function() {
+        var widgetCode = '%VITE_ZOHO_SALESIQ_CODE%';
+        if (!widgetCode || widgetCode === '%VITE_ZOHO_SALESIQ_CODE%' || widgetCode === '') return;
+        var $zoho = window.$zoho || {};
+        $zoho.salesiq = $zoho.salesiq || { widgetcode: widgetCode, values: {}, ready: function(){} };
+        window.$zoho = $zoho;
+        var d = document, s = d.createElement('script');
+        s.type = 'text/javascript'; s.id = 'zsiqscript'; s.defer = true;
+        s.src = 'https://salesiq.zoho.in/widget';
+        var t = d.getElementsByTagName('script')[0];
+        t.parentNode.insertBefore(s, t);
+      })();
+    </script>
   </body>
 </html>

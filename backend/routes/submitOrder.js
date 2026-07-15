@@ -8,6 +8,24 @@ const { sendOrderConfirmationEmails }   = require('./emailService');
 const { saveOrder, addOrderEvent, updateOrderStatus, getOrderById, getOrderByIdAsync } = require('./ordersDb');
 const { ORDER_STATUSES } = require('./orderStatuses');
 
+const { validateSchema } = require('../utils/validateSchema');
+
+const submitOrderSchema = {
+  customerName: { type: 'string', required: true, min: 2, max: 100, format: 'name' },
+  phone: { type: 'string', required: true, format: 'phone' },
+  email: { type: 'string', required: false, format: 'email', max: 100 },
+  address: { type: 'string', required: true, min: 5, max: 250 },
+  city: { type: 'string', required: true, min: 2, max: 100 },
+  state: { type: 'string', required: true, min: 2, max: 100 },
+  pincode: { type: 'string', required: true, format: 'pincode' },
+  productName: { type: 'string', required: true, min: 2, max: 100 },
+  productId: { type: 'string', required: true, min: 2, max: 50 },
+  quantity: { type: 'number', required: true, integer: true, min: 1, max: 10 },
+  unitPrice: { type: 'number', required: true, min: 0 },
+  orderAmount: { type: 'number', required: true, min: 0 },
+  paymentMethod: { type: 'string', required: true, min: 2, max: 50 },
+};
+
 /**
  * POST /api/submit-order
  *
@@ -26,6 +44,11 @@ const { ORDER_STATUSES } = require('./orderStatuses');
  */
 router.post('/submit-order', async (req, res) => {
   try {
+    const validationError = validateSchema(req.body, submitOrderSchema);
+    if (validationError) {
+      return res.status(400).json({ success: false, error: validationError });
+    }
+
     const {
       customerName, phone, email,
       address, city, state, pincode,
@@ -33,31 +56,6 @@ router.post('/submit-order', async (req, res) => {
       quantity, unitPrice, orderAmount,
       paymentMethod,
     } = req.body;
-
-    /* ── 1. Validate required fields ──────────────────────────────── */
-    if (!customerName || !phone || !address || !orderAmount) {
-      return res.status(400).json({
-        success: false,
-        error: 'Missing required order fields.',
-      });
-    }
-
-    // Phone: exactly 10 digits
-    if (!/^\d{10}$/.test(String(phone).trim())) {
-      return res.status(400).json({ success: false, error: 'Invalid phone number. Must be 10 digits.' });
-    }
-    // Pincode: exactly 6 digits (if provided)
-    if (pincode && !/^\d{6}$/.test(String(pincode).trim())) {
-      return res.status(400).json({ success: false, error: 'Invalid pincode. Must be 6 digits.' });
-    }
-    // Email: basic format check (if provided)
-    if (email && !/\S+@\S+\.\S+/.test(String(email).trim())) {
-      return res.status(400).json({ success: false, error: 'Invalid email address.' });
-    }
-    // customerName: no script tags
-    if (/<[^>]*>/.test(customerName)) {
-      return res.status(400).json({ success: false, error: 'Invalid characters in name.' });
-    }
 
     /* ── 1b. Server-side price validation (prevents price tampering) ── */
     const priceCheck = validateOrderAmount(productId, quantity, orderAmount);

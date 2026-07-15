@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp,
   FaClock, FaCalendarAlt, FaCheckCircle, FaSpinner,
@@ -404,6 +405,19 @@ export default function Contact() {
                 <button onClick={reset} style={{ background: ACCENT, color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
                   Book Another Appointment
                 </button>
+
+                {/* ── Sign Consent Form CTA ── */}
+                <div style={{ marginTop: '20px', background: 'linear-gradient(135deg,#f0fdf4,#eff6ff)', border: `1.5px solid ${ACCENT}33`, borderRadius: '16px', padding: '20px' }}>
+                  <p style={{ color: '#0f172a', fontWeight: 700, fontSize: '14px', marginBottom: '8px' }}>✍️ Next Step: Sign Your Consent Form</p>
+                  <p style={{ color: '#64748b', fontSize: '13px', lineHeight: '1.7', marginBottom: '14px' }}>To complete your appointment, please sign our digital consent form. It takes less than 2 minutes.</p>
+                  <Link
+                    to={`/consent?name=${encodeURIComponent(formData.name)}&email=${encodeURIComponent(formData.email)}&phone=${encodeURIComponent(formData.phone)}&treatment=${encodeURIComponent(formData.treatment)}`}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: ACCENT, color: '#fff', padding: '12px 24px', borderRadius: '10px', textDecoration: 'none', fontWeight: 700, fontSize: '13.5px' }}
+                  >
+                    🖊 Sign Consent Form
+                  </Link>
+                  <p style={{ color: '#94a3b8', fontSize: '11.5px', marginTop: '10px', margin: '10px 0 0' }}>You will receive a digitally signed copy in your email via Zoho Sign.</p>
+                </div>
               </div>
             )}
           </div>

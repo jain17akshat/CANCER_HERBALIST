@@ -1,5 +1,6 @@
 const express  = require('express');
 const Razorpay = require('razorpay');
+const { validateSchema } = require('../utils/validateSchema');
 const router   = express.Router();
 
 /* Initialize once with your keys from .env */
@@ -7,6 +8,16 @@ const razorpay = new Razorpay({
   key_id:     process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
+
+// Create Order Schema
+const createOrderSchema = {
+  amount: { type: 'number', required: true, min: 1, max: 200000 },
+  productName: { type: 'string', required: true, min: 2, max: 100 },
+  productId: { type: 'string', required: true, min: 2, max: 50 },
+  customerName: { type: 'string', required: true, min: 2, max: 100, format: 'name' },
+  phone: { type: 'string', required: true, format: 'phone' },
+  email: { type: 'string', required: false, format: 'email', max: 100 },
+};
 
 /**
  * POST /api/create-order
@@ -16,14 +27,12 @@ const razorpay = new Razorpay({
  */
 router.post('/create-order', async (req, res) => {
   try {
-    const { amount, productName, productId, customerName, phone, email } = req.body;
+    const validationError = validateSchema(req.body, createOrderSchema);
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
 
-    if (!amount || Number(amount) <= 0) {
-      return res.status(400).json({ error: 'Invalid order amount.' });
-    }
-    if (Number(amount) > 200000) {
-      return res.status(400).json({ error: 'Order amount exceeds the maximum allowed limit.' });
-    }
+    const { amount, productName, productId, customerName, phone, email } = req.body;
 
     const options = {
       amount:   Math.round(Number(amount) * 100), // paise

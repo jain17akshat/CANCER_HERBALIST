@@ -14,6 +14,9 @@ const dynamicContentRoute  = require('./routes/dynamicContent');
 const orderActionsRoute    = require('./routes/orderActions');
 const adminOrdersRoute     = require('./routes/adminOrders');
 const shiprocketWebhookRoute = require('./routes/shiprocketWebhook');
+const zohoSignRoute          = require('./routes/zohoSign');
+const zohoCampaignsRoute     = require('./routes/zohoCampaigns');
+const zohoDeskRoute          = require('./routes/zohoDesk');
 
 const app  = express();
 app.set('trust proxy', 1); // Trust Vercel's proxy for accurate rate limiting and to prevent ValidationErrors
@@ -49,23 +52,36 @@ const isLocalRequest = (req) => {
   return ip.includes('127.0.0.1') || ip.includes('::1') || ip.includes('localhost');
 };
 
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500,                 // Increased threshold to accommodate admin dashboard polling
+const rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
+
+// Moderate limits on public endpoints
+const publicLimiter = rateLimit({
+  windowMs: rateLimitWindowMs,
+  max: Number(process.env.RATE_LIMIT_MAX_PUBLIC) || 500,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: isLocalRequest,
+  skip: (req) => isLocalRequest(req) || req.path.startsWith('/admin') || req.path === '/appointments',
   message: { error: 'Too many requests. Please try again later.' },
 });
 
-// Tighter limit on order creation to prevent Razorpay quota abuse
+// Tighter limit on order creation/submission
 const orderLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 30,
+  windowMs: rateLimitWindowMs,
+  max: Number(process.env.RATE_LIMIT_MAX_CHECKOUT) || 10,
   standardHeaders: true,
   legacyHeaders: false,
   skip: isLocalRequest,
   message: { error: 'Too many order requests. Please wait before trying again.' },
+});
+
+// Looser limits on authenticated admin dashboard actions
+const adminLimiter = rateLimit({
+  windowMs: rateLimitWindowMs,
+  max: Number(process.env.RATE_LIMIT_MAX_ADMIN) || 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: isLocalRequest,
+  message: { error: 'Too many admin dashboard requests. Please try again later.' },
 });
 
 /* ── Body parser ────────────────────────────────────────────── */
@@ -81,7 +97,9 @@ app.get('/api/health', (_req, res) =>
 );
 
 /* ── Routes ─────────────────────────────────────────────────── */
-app.use('/api', apiLimiter);
+app.use('/api', publicLimiter);
+app.use('/api/admin', adminLimiter);
+app.use('/api/appointments', adminLimiter);
 app.use('/api/create-order', orderLimiter);
 app.use('/api/submit-order', orderLimiter);
 app.use('/api', createOrderRoute);
@@ -93,6 +111,9 @@ app.use('/api', dynamicContentRoute);
 app.use('/api', orderActionsRoute);
 app.use('/api', adminOrdersRoute);
 app.use('/api', shiprocketWebhookRoute);
+app.use('/api', zohoSignRoute);
+app.use('/api', zohoCampaignsRoute);
+app.use('/api', zohoDeskRoute);
 
 /* ── Start ──────────────────────────────────────────────────── */
 app.listen(PORT, () => {
@@ -115,9 +136,12 @@ app.listen(PORT, () => {
 
   const zohoMissing = !process.env.ZOHO_CLIENT_ID || !process.env.ZOHO_REFRESH_TOKEN;
   if (zohoMissing) {
-    console.warn('⚠️   ZOHO_CLIENT_ID / ZOHO_REFRESH_TOKEN not set — orders will NOT be pushed to Zoho CRM.');
+    console.warn('⚠️   ZOHO_CLIENT_ID / ZOHO_REFRESH_TOKEN not set — Zoho integrations disabled.');
   } else {
-    console.log('✅  Zoho CRM credentials found.');
+    console.log('✅  Zoho CRM / Books / Sign credentials found.');
+    if (!process.env.ZOHO_SIGN_TEMPLATE_ID)      console.warn('⚠️   ZOHO_SIGN_TEMPLATE_ID not set — consent form signing disabled.');
+    if (!process.env.ZOHO_CAMPAIGNS_LIST_KEY)    console.warn('⚠️   ZOHO_CAMPAIGNS_LIST_KEY not set — newsletter subscription disabled.');
+    if (!process.env.ZOHO_DESK_ORG_ID)           console.warn('⚠️   ZOHO_DESK_ORG_ID not set — support ticket creation disabled.');
   }
 
   if (process.env.RAZORPAY_KEY_ID?.startsWith('rzp_test_')) {
