@@ -115,7 +115,19 @@ app.use('/api', zohoSignRoute);
 app.use('/api', zohoCampaignsRoute);
 app.use('/api', zohoDeskRoute);
 
-/* ── Start ──────────────────────────────────────────────────── */
+/* ── Global error handler (must be LAST middleware) ─────────── */
+// Catches any error thrown in async route handlers (e.g. unexpected throws
+// that bypass per-route try/catch). Returns JSON instead of Express HTML.
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('[server] Unhandled error:', err.message, err.stack);
+  res.status(err.status || 500).json({
+    success: false,
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error.' : err.message,
+  });
+});
+
+
 app.listen(PORT, () => {
   console.log(`\n✅  Cancer Herbalist API running on port ${PORT}`);
 

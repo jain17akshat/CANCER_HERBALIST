@@ -11,6 +11,7 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const { validateSchema } = require('../utils/validateSchema');
+const { checkAuthLockout, recordAuthFailure, recordAuthSuccess } = require('../middleware/authRateLimiter');
 const router = express.Router();
 
 /* ── Gmail transporter ───────────────────────────────────────────── */
@@ -380,11 +381,16 @@ router.get('/available-slots', async (req, res) => {
   if (!date) {
     return res.status(400).json({ success: false, error: 'date query param required.' });
   }
-  await syncAppointmentsFromSheets();
-  const booked = appointmentStore
-    .filter(a => a.appointmentDay.toLowerCase() === date.toLowerCase())
-    .map(a => a.appointmentSlot);
-  res.json({ success: true, bookedSlots: booked });
+  try {
+    await syncAppointmentsFromSheets();
+    const booked = appointmentStore
+      .filter(a => a.appointmentDay.toLowerCase() === date.toLowerCase())
+      .map(a => a.appointmentSlot);
+    res.json({ success: true, bookedSlots: booked });
+  } catch (err) {
+    console.error('[bookAppointment] /available-slots error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to fetch available slots.' });
+  }
 });
 
 // Admin auth check middleware with exponential backoff rate limiting
@@ -407,21 +413,25 @@ const checkAdmin = (req, res, next) => {
 /* ── GET /api/appointments (Admin dashboard) ─────────────────── */
 router.get('/appointments', checkAdmin, async (req, res) => {
   const { date } = req.query;
+  try {
+    await syncAppointmentsFromSheets();
+    let results = [...appointmentStore];
 
-  await syncAppointmentsFromSheets();
-  let results = [...appointmentStore];
+    // Optional: filter by date string (partial match on appointmentDay)
+    if (date) {
+      results = results.filter(a =>
+        a.appointmentDay.toLowerCase().includes(date.toLowerCase())
+      );
+    }
 
-  // Optional: filter by date string (partial match on appointmentDay)
-  if (date) {
-    results = results.filter(a =>
-      a.appointmentDay.toLowerCase().includes(date.toLowerCase())
-    );
+    // Sort by slot time
+    results.sort((a, b) => a.appointmentSlot.localeCompare(b.appointmentSlot));
+
+    res.json({ success: true, count: results.length, appointments: results });
+  } catch (err) {
+    console.error('[bookAppointment] /appointments error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to fetch appointments.', detail: err.message });
   }
-
-  // Sort by slot time
-  results.sort((a, b) => a.appointmentSlot.localeCompare(b.appointmentSlot));
-
-  res.json({ success: true, count: results.length, appointments: results });
 });
 
 module.exports = router;

@@ -66,7 +66,7 @@ function App() {
     <ContentProvider>
       <CartProvider>
         <WishlistProvider>
-          <Router>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <ScrollToTop />
           <SEO />
           <div
