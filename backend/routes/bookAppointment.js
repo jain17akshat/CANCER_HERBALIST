@@ -410,6 +410,54 @@ const checkAdmin = (req, res, next) => {
   });
 };
 
+async function updateRowInSheets(appt) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return;
+  try {
+    const sheetUrl = new URL(url);
+    sheetUrl.searchParams.append('action', 'updateRow');
+    sheetUrl.searchParams.append('sheet', 'appointments');
+    
+    const row = {
+      apptId: appt.apptId,
+      name: appt.name,
+      phone: appt.phone,
+      email: appt.email,
+      treatment: appt.treatment,
+      stage: appt.stage || '',
+      message: appt.message || '',
+      appointmentDay: appt.appointmentDay,
+      appointmentSlot: appt.appointmentSlot,
+      bookedAt: appt.bookedAt,
+      status: appt.status || 'Confirmed',
+    };
+    Object.entries(row).forEach(([k, v]) => sheetUrl.searchParams.append(k, String(v ?? '')));
+    
+    const res = await fetch(sheetUrl.toString());
+    if (!res.ok) console.warn('[bookAppointment] Sheets update returned status:', res.status);
+    else console.log('[bookAppointment] Appointment updated in Google Sheets.');
+  } catch (e) {
+    console.warn('[bookAppointment] Sheets update error:', e.message);
+  }
+}
+
+async function deleteRowFromSheets(apptId) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return;
+  try {
+    const sheetUrl = new URL(url);
+    sheetUrl.searchParams.append('action', 'deleteRow');
+    sheetUrl.searchParams.append('sheet', 'appointments');
+    sheetUrl.searchParams.append('apptId', apptId);
+    
+    const res = await fetch(sheetUrl.toString());
+    if (!res.ok) console.warn('[bookAppointment] Sheets delete returned status:', res.status);
+    else console.log('[bookAppointment] Appointment deleted from Google Sheets.');
+  } catch (e) {
+    console.warn('[bookAppointment] Sheets delete error:', e.message);
+  }
+}
+
 /* ── GET /api/appointments (Admin dashboard) ─────────────────── */
 router.get('/appointments', checkAdmin, async (req, res) => {
   const { date } = req.query;
@@ -431,6 +479,126 @@ router.get('/appointments', checkAdmin, async (req, res) => {
   } catch (err) {
     console.error('[bookAppointment] /appointments error:', err.message);
     res.status(500).json({ success: false, error: 'Failed to fetch appointments.', detail: err.message });
+  }
+});
+
+/* ── DELETE /api/appointments/:apptId (Admin only) ─────────── */
+router.delete('/appointments/:apptId', checkAdmin, async (req, res) => {
+  const { apptId } = req.params;
+  try {
+    await syncAppointmentsFromSheets();
+    const idx = appointmentStore.findIndex(a => a.apptId === apptId);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Appointment not found.' });
+    }
+    
+    // Remove from local cache
+    appointmentStore.splice(idx, 1);
+    lastApptSyncTime = 0;
+    
+    // Delete from Sheets
+    await deleteRowFromSheets(apptId);
+    
+    res.json({ success: true, message: 'Appointment cancelled successfully.' });
+  } catch (err) {
+    console.error('[bookAppointment] DELETE error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to cancel appointment.' });
+  }
+});
+
+/* ── PUT /api/appointments/:apptId (Admin only) ────────────── */
+router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
+  const { apptId } = req.params;
+  const { appointmentDay, appointmentSlot } = req.body;
+  
+  try {
+    await syncAppointmentsFromSheets();
+    const idx = appointmentStore.findIndex(a => a.apptId === apptId);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Appointment not found.' });
+    }
+    
+    const currentAppt = appointmentStore[idx];
+    
+    // Conflict check if date or slot is changing
+    if (appointmentDay !== currentAppt.appointmentDay || appointmentSlot !== currentAppt.appointmentSlot) {
+      const conflict = appointmentStore.find(a =>
+        a.apptId !== apptId &&
+        a.appointmentDay === appointmentDay &&
+        a.appointmentSlot === appointmentSlot
+      );
+      if (conflict) {
+        return res.status(409).json({
+          success: false,
+          error: `The ${appointmentSlot} slot on ${appointmentDay} is already booked.`,
+        });
+      }
+    }
+    
+    // Update local cache
+    const updatedAppt = {
+      ...currentAppt,
+      appointmentDay,
+      appointmentSlot,
+    };
+    appointmentStore[idx] = updatedAppt;
+    lastApptSyncTime = 0;
+    
+    // Sync to Sheets
+    await updateRowInSheets(updatedAppt);
+    
+    res.json({ success: true, appointment: updatedAppt });
+  } catch (err) {
+    console.error('[bookAppointment] PUT error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to reschedule appointment.' });
+  }
+});
+
+/* ── POST /api/appointments/block (Admin only) ──────────────── */
+router.post('/appointments/block', checkAdmin, async (req, res) => {
+  const { appointmentDay, appointmentSlot } = req.body;
+  
+  try {
+    await syncAppointmentsFromSheets();
+    
+    // Conflict check
+    const conflict = appointmentStore.find(a =>
+      a.appointmentDay === appointmentDay &&
+      a.appointmentSlot === appointmentSlot
+    );
+    if (conflict) {
+      return res.status(409).json({
+        success: false,
+        error: `The ${appointmentSlot} slot on ${appointmentDay} is already booked/blocked.`,
+      });
+    }
+    
+    const apptId = `BLK-${Date.now()}`;
+    const bookedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    const appt = {
+      apptId,
+      name: '[BLOCKED]',
+      phone: '—',
+      email: '—',
+      treatment: 'Blocked Slot',
+      stage: 'N/A',
+      message: 'Blocked by Admin',
+      appointmentDay,
+      appointmentSlot,
+      bookedAt,
+      status: 'Confirmed'
+    };
+    
+    appointmentStore.push(appt);
+    lastApptSyncTime = 0;
+    
+    // Save to Sheets
+    await saveToSheets(appt);
+    
+    res.json({ success: true, appointment: appt });
+  } catch (err) {
+    console.error('[bookAppointment] block error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to block slot.' });
   }
 });
 

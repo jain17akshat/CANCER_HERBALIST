@@ -1009,7 +1009,7 @@ export default function ProductDetail() {
   const [activeImg, setActiveImg] = useState(0);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const { wishlist, toggleWishlist, isInWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, cartCount, setIsCartOpen } = useCart();
 
   // ── Real-time Shipping Estimate ──
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, shipToday: true });
@@ -1260,14 +1260,90 @@ export default function ProductDetail() {
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: 'Poppins, sans-serif' }}>
 
-      {/* Breadcrumb */}
+      {/* Breadcrumb / Top Store Bar */}
       <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '12px 24px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#64748b' }}>
-          <Link to="/" style={{ color: '#64748b', textDecoration: 'none' }}>Home</Link>
-          <span>›</span>
-          <Link to="/store" style={{ color: '#64748b', textDecoration: 'none' }}>Store</Link>
-          <span>›</span>
-          <span style={{ color: '#0f172a', fontWeight: 600 }}>{product.name}</span>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '12px'
+        }}>
+          {/* Breadcrumbs Left */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#64748b' }}>
+            <Link to="/" style={{ color: '#64748b', textDecoration: 'none' }}>Home</Link>
+            <span>›</span>
+            <Link to="/store" style={{ color: '#64748b', textDecoration: 'none' }}>Store</Link>
+            <span>›</span>
+            <span style={{ color: '#0f172a', fontWeight: 600 }}>{product.name}</span>
+          </div>
+
+          {/* Cart & Wishlist Right */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              onClick={() => navigate('/wishlist')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: '#fff',
+                border: '1.5px solid #ef4444',
+                color: '#ef4444',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+              onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            >
+              <FaHeart style={{ fontSize: '12px' }} /> Wishlist
+            </button>
+
+            <button
+              onClick={() => setIsCartOpen(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: PRIMARY,
+                border: 'none',
+                color: '#fff',
+                padding: '7px 14px',
+                borderRadius: '8px',
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#14533d'}
+              onMouseLeave={e => e.currentTarget.style.background = PRIMARY}
+            >
+              <FaShoppingBag style={{ fontSize: '12px' }} /> Cart 
+              {cartCount > 0 && (
+                <span style={{
+                  background: '#ef4444',
+                  color: '#fff',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  borderRadius: '50%',
+                  width: '16px',
+                  height: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px solid #fff',
+                  marginLeft: '2px'
+                }}>
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

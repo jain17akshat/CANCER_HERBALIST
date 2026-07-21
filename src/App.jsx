@@ -17,6 +17,9 @@ import StoryDetail from './pages/StoryDetail';
 import ServiceDetail from './pages/ServiceDetail';
 import PatientEducation from './pages/PatientEducation';
 import TCellsVsNKCells from './pages/TCellsVsNKCells';
+import IntegrativeTherapies from './pages/IntegrativeTherapies';
+import PersonalizedTreatmentPlansPage from './pages/PersonalizedTreatmentPlans';
+import PatientResourcesPage from './pages/PatientResources';
 import Store from './pages/Store';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
@@ -99,6 +102,9 @@ function App() {
                   <Route path="/services/:id" element={<ServiceDetail />} />
                   <Route path="/patient-education" element={<PatientEducation />} />
                   <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
+                  <Route path="/integrative-therapies" element={<IntegrativeTherapies />} />
+                  <Route path="/personalized-treatment-plans" element={<PersonalizedTreatmentPlansPage />} />
+                  <Route path="/patient-resources" element={<PatientResourcesPage />} />
                   <Route path="/store" element={<Store />} />
                   <Route path="/store/:id" element={<ProductDetail />} />
                   <Route path="/checkout" element={<Checkout />} />

@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FaBriefcaseMedical, FaQuestionCircle, FaDownload,
-  FaPlaneDeparture, FaGlobeAmericas
+  FaPlaneDeparture, FaGlobeAmericas, FaArrowRight
 } from 'react-icons/fa';
 
 const TEAL = '#0f4c5c';
@@ -141,6 +142,31 @@ export default function PatientResources() {
                   </div>
                 </motion.div>
               ))}
+
+              <div style={{ marginTop: '12px' }}>
+                <Link 
+                  to="/patient-resources" 
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: TEAL,
+                    textDecoration: 'none',
+                    fontWeight: '700',
+                    fontSize: '14.5px',
+                    border: `1.5px solid ${TEAL}`,
+                    padding: '12px 24px',
+                    borderRadius: '50px',
+                    background: '#fff',
+                    transition: 'all 0.25s ease',
+                    boxShadow: '0 4px 12px rgba(15, 76, 92, 0.05)'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = LIGHT_BG; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
+                >
+                  Explore All Patient Resources <FaArrowRight style={{ fontSize: '12px' }} />
+                </Link>
+              </div>
             </div>
 
             {/* Right side travel map globe illustration image */}

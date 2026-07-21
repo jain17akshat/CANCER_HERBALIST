@@ -185,7 +185,7 @@ export default function IntegrativeTherapies() {
               
               <div style={{ marginTop: '12px' }}>
                 <Link
-                  to="/treatment-methods"
+                  to="/integrative-therapies"
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -209,7 +209,7 @@ export default function IntegrativeTherapies() {
                     e.currentTarget.style.boxShadow = '0 4px 14px rgba(26, 110, 82, 0.3)';
                   }}
                 >
-                  Learn About Our Methods <FaArrowRight />
+                  Explore All 9 Therapies <FaArrowRight />
                 </Link>
               </div>
             </div>

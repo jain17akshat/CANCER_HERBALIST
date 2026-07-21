@@ -15,14 +15,10 @@ const THEMES = {
 };
 
 const TIME_SLOTS = [
-  '09:00 AM - 10:00 AM',
-  '10:00 AM - 11:00 AM',
   '11:00 AM - 12:00 PM',
   '12:00 PM - 01:00 PM',
   '02:00 PM - 03:00 PM',
   '03:00 PM - 04:00 PM',
-  '04:00 PM - 05:00 PM',
-  '05:00 PM - 06:00 PM',
 ];
 
 function todayLabel() {
@@ -61,6 +57,37 @@ export default function AdminDashboard() {
   const [filterDate, setFilterDate] = useState('today');
   const [selectedAppt, setSelected] = useState(null);
   const [slotViewDate, setSlotViewDate] = useState(null); // date string for the slot grid
+
+  // Reschedule state
+  const [rescheduleDate, setRescheduleDate] = useState('');
+  const [rescheduleSlot, setRescheduleSlot] = useState('');
+  const [isEditingReschedule, setIsEditingReschedule] = useState(false);
+
+  useEffect(() => {
+    if (selectedAppt) {
+      setIsEditingReschedule(false);
+      setRescheduleSlot(selectedAppt.appointmentSlot);
+      try {
+        const d = new Date(selectedAppt.appointmentDay);
+        if (!isNaN(d.getTime())) {
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          setRescheduleDate(`${yyyy}-${mm}-${dd}`);
+        } else {
+          setRescheduleDate('');
+        }
+      } catch {
+        setRescheduleDate('');
+      }
+    }
+  }, [selectedAppt]);
+
+  const formatRescheduleDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  };
 
   // ── Website Content Management State ──
   const { content: globalContent, updateContent: saveGlobalContent, refreshContent } = useContent();
@@ -183,6 +210,76 @@ export default function AdminDashboard() {
     setAuthed(false);
     setSecret('');
     setAppts([]);
+  };
+
+  /* ── Cancel Appointment ────────────────────────────────── */
+  const handleCancelAppointment = async (apptId) => {
+    if (!window.confirm('Are you sure you want to cancel this appointment?')) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/appointments/${apptId}?key=${secret}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to cancel.');
+      showToast('✅ Appointment cancelled successfully.');
+      setSelected(null);
+      fetchAppts(secret, filterDate);
+    } catch (err) {
+      showToast(`Error: ${err.message}`, 'error');
+    }
+  };
+
+  /* ── Reschedule Appointment ────────────────────────────── */
+  const handleRescheduleAppointment = async (apptId, newDay, newSlot) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/appointments/${apptId}?key=${secret}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appointmentDay: newDay, appointmentSlot: newSlot }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to reschedule.');
+      showToast('📅 Appointment rescheduled successfully!');
+      setSelected(null);
+      fetchAppts(secret, filterDate);
+    } catch (err) {
+      showToast(`Error: ${err.message}`, 'error');
+    }
+  };
+
+  /* ── Block Slot ────────────────────────────────────────── */
+  const handleBlockSlot = async (day, slot) => {
+    if (!window.confirm(`Block the ${slot} slot on ${day}?`)) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/appointments/block?key=${secret}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appointmentDay: day, appointmentSlot: slot }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to block slot.');
+      showToast('🔒 Slot blocked successfully.');
+      fetchAppts(secret, filterDate);
+    } catch (err) {
+      showToast(`Error: ${err.message}`, 'error');
+    }
+  };
+
+  /* ── Unblock Slot ──────────────────────────────────────── */
+  const handleUnblockSlot = async (apptId) => {
+    if (!window.confirm('Unblock this slot?')) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/appointments/${apptId}?key=${secret}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to unblock.');
+      showToast('🔓 Slot unblocked successfully.');
+      setSelected(null);
+      fetchAppts(secret, filterDate);
+    } catch (err) {
+      showToast(`Error: ${err.message}`, 'error');
+    }
   };
 
 
@@ -1450,26 +1547,32 @@ export default function AdminDashboard() {
               </p>
               <div className="slot-grid">
                 {TIME_SLOTS.map(slot => {
-                  // Slot grid always shows today's bookings
                   const booked = slotGridBooked.has(slot);
                   const appt   = slotGridAppts.find(a => a.appointmentSlot === slot);
+                  const isBlocked = booked && appt?.name === '[BLOCKED]';
                   return (
                     <div
                       key={slot}
-                      title={booked ? `${appt?.name} — ${appt?.treatment}` : 'Available'}
-                      onClick={() => booked && setSelected(appt)}
+                      title={booked ? (isBlocked ? 'Blocked Slot' : `${appt?.name} — ${appt?.treatment}`) : 'Click to Block Slot'}
+                      onClick={() => {
+                        if (booked) {
+                          setSelected(appt);
+                        } else {
+                          handleBlockSlot(slotGridDate, slot);
+                        }
+                      }}
                       style={{
                         padding: '8px 10px', borderRadius: '8px', fontSize: '11px', fontWeight: 600,
-                        textAlign: 'center', cursor: booked ? 'pointer' : 'default',
-                        background: booked ? '#fee2e2' : '#f0fdf4',
-                        color:      booked ? '#b91c1c' : '#15803d',
-                        border:     `1.5px solid ${booked ? '#fca5a5' : '#86efac'}`,
+                        textAlign: 'center', cursor: 'pointer',
+                        background: isBlocked ? '#e2e8f0' : booked ? '#fee2e2' : '#f0fdf4',
+                        color:      isBlocked ? '#475569' : booked ? '#b91c1c' : '#15803d',
+                        border:     `1.5px solid ${isBlocked ? '#cbd5e1' : booked ? '#fca5a5' : '#86efac'}`,
                         transition: 'all 0.15s',
                       }}
                     >
                       {slot}<br />
-                      <span style={{ fontSize: '9px', opacity: 0.8 }}>
-                        {booked ? `🔴 ${appt?.name?.split(' ')[0]}` : '🟢 Free'}
+                      <span style={{ fontSize: '9px', fontWeight: 700, opacity: 0.8 }}>
+                        {booked ? (isBlocked ? '🔒 BLOCKED' : `🔴 ${appt?.name?.split(' ')[0]}`) : '🟢 FREE (Block)'}
                       </span>
                     </div>
                   );
@@ -1523,23 +1626,131 @@ export default function AdminDashboard() {
                   </div>
                 ))}
                 <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                  <a href={`https://wa.me/91${String(selectedAppt.phone).replace(/\D/g,'')}`}
-                    target="_blank" rel="noreferrer"
-                    style={{
-                      flex: 1, background: '#25d366', color: '#fff', padding: '10px',
-                      borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
-                      fontSize: '12px', textAlign: 'center',
-                    }}>
-                    <FaWhatsapp /> WhatsApp
-                  </a>
-                  <a href={`tel:${selectedAppt.phone}`}
-                    style={{
-                      flex: 1, background: PRIMARY, color: '#fff', padding: '10px',
-                      borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
-                      fontSize: '12px', textAlign: 'center',
-                    }}>
-                    📞 Call
-                  </a>
+                  {selectedAppt.name === '[BLOCKED]' ? (
+                    <button
+                      onClick={() => handleUnblockSlot(selectedAppt.apptId)}
+                      style={{
+                        width: '100%', background: PRIMARY, color: '#fff', border: 'none',
+                        padding: '12px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
+                        fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                      }}
+                    >
+                      🔓 Unblock Slot
+                    </button>
+                  ) : (
+                    <>
+                      <div style={{ width: '100%' }}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <a href={`https://wa.me/91${String(selectedAppt.phone).replace(/\D/g,'')}`}
+                            target="_blank" rel="noreferrer"
+                            style={{
+                              flex: 1, background: '#25d366', color: '#fff', padding: '10px',
+                              borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
+                              fontSize: '12px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                            }}>
+                            <FaWhatsapp /> WhatsApp
+                          </a>
+                          <a href={`tel:${selectedAppt.phone}`}
+                            style={{
+                              flex: 1, background: PRIMARY, color: '#fff', padding: '10px',
+                              borderRadius: '10px', textDecoration: 'none', fontWeight: 700,
+                              fontSize: '12px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                            }}>
+                            📞 Call
+                          </a>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                          <button
+                            onClick={() => setIsEditingReschedule(!isEditingReschedule)}
+                            style={{
+                              flex: 1, background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#475569',
+                              padding: '10px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
+                              fontSize: '12px'
+                            }}
+                          >
+                            🕒 Reschedule
+                          </button>
+                          <button
+                            onClick={() => handleCancelAppointment(selectedAppt.apptId)}
+                            style={{
+                              flex: 1, background: '#fee2e2', border: '1px solid #fecaca', color: '#ef4444',
+                              padding: '10px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer',
+                              fontSize: '12px'
+                            }}
+                          >
+                            ❌ Cancel Booking
+                          </button>
+                        </div>
+
+                        {isEditingReschedule && (
+                          <div style={{
+                            marginTop: '16px', padding: '14px', background: '#f8fafc',
+                            borderRadius: '12px', border: '1px solid #cbd5e1'
+                          }}>
+                            <h4 style={{ margin: '0 0 10px', fontSize: '12.5px', color: '#334155' }}>Reschedule Appointment</h4>
+                            
+                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px', textAlign: 'left' }}>Date</label>
+                            <input
+                              type="date"
+                              value={rescheduleDate}
+                              onChange={e => setRescheduleDate(e.target.value)}
+                              style={{
+                                width: '100%', padding: '8px', borderRadius: '6px',
+                                border: '1.5px solid #cbd5e1', marginBottom: '10px', fontSize: '13px',
+                                background: '#fff', color: '#1e293b', boxSizing: 'border-box'
+                              }}
+                            />
+
+                            <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px', textAlign: 'left' }}>Time Slot</label>
+                            <select
+                              value={rescheduleSlot}
+                              onChange={e => setRescheduleSlot(e.target.value)}
+                              style={{
+                                width: '100%', padding: '8px', borderRadius: '6px',
+                                border: '1.5px solid #cbd5e1', marginBottom: '12px', fontSize: '13px',
+                                background: '#fff', color: '#1e293b', boxSizing: 'border-box'
+                              }}
+                            >
+                              {TIME_SLOTS.map(slot => (
+                                <option key={slot} value={slot}>{slot}</option>
+                              ))}
+                            </select>
+
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <button
+                                onClick={() => {
+                                  const newDayFormatted = formatRescheduleDate(rescheduleDate);
+                                  if (!newDayFormatted) {
+                                    showToast('Please select a valid date.', 'error');
+                                    return;
+                                  }
+                                  handleRescheduleAppointment(selectedAppt.apptId, newDayFormatted, rescheduleSlot);
+                                }}
+                                style={{
+                                  flex: 1, background: PRIMARY, color: '#fff', border: 'none',
+                                  padding: '8px', borderRadius: '6px', fontWeight: 600, fontSize: '12px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setIsEditingReschedule(false)}
+                                style={{
+                                  flex: 1, background: '#e2e8f0', border: 'none', color: '#475569',
+                                  padding: '8px', borderRadius: '6px', fontWeight: 600, fontSize: '12px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}

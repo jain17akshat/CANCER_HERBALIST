@@ -12,25 +12,42 @@ const ACCENT = '#38bed5';
 
 // Time slots for each day
 const TIME_SLOTS = [
-  '09:00 AM - 10:00 AM',
-  '10:00 AM - 11:00 AM',
   '11:00 AM - 12:00 PM',
   '12:00 PM - 01:00 PM',
   '02:00 PM - 03:00 PM',
   '03:00 PM - 04:00 PM',
-  '04:00 PM - 05:00 PM',
-  '05:00 PM - 06:00 PM',
 ];
+
+function isSlotInPast(slot) {
+  const parts = slot.split(' - ');
+  const startTimeStr = parts[0];
+  const timeMatch = startTimeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!timeMatch) return false;
+  let hours = parseInt(timeMatch[1], 10);
+  const minutes = parseInt(timeMatch[2], 10);
+  const ampm = timeMatch[3].toUpperCase();
+  if (ampm === 'PM' && hours < 12) hours += 12;
+  if (ampm === 'AM' && hours === 12) hours = 0;
+  const now = new Date();
+  const slotTime = new Date(now);
+  slotTime.setHours(hours, minutes, 0, 0);
+  return now > slotTime;
+}
 
 // Available days Mon–Sat — generates next 30 days
 function getAvailableDays() {
   const days = [];
   const today = new Date();
-  for (let i = 1; i <= 30; i++) {
+  for (let i = 0; i <= 30; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
     const dow = d.getDay(); // 0=Sun,6=Sat
     if (dow !== 0) { // skip Sundays
+      if (i === 0) {
+        // If today, check if all slots have already passed
+        const allPassed = TIME_SLOTS.every(slot => isSlotInPast(slot));
+        if (allPassed) continue;
+      }
       days.push({
         date: d,
         label: d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }),
@@ -40,8 +57,6 @@ function getAvailableDays() {
   }
   return days;
 }
-
-const DAYS = getAvailableDays();
 
 const TREATMENTS = [
   'Free Consultation',
@@ -86,6 +101,7 @@ const labelStyle = {
 };
 
 export default function Contact() {
+  const DAYS = React.useMemo(() => getAvailableDays(), []);
   const { content } = useContent();
   const contactInfo = content?.contact || {
     phone: '+91 88845 88835',
@@ -304,7 +320,7 @@ export default function Contact() {
                   </h2>
                 </div>
                 <p style={{ color: '#64748b', fontSize: '13.5px', marginBottom: '20px' }}>
-                  Available Mon–Sat, 9 AM – 6 PM (Sundays closed)
+                  Available Mon–Sat, 11 AM – 4 PM (Sundays closed)
                 </p>
 
                 {/* Day Picker */}
@@ -331,14 +347,17 @@ export default function Contact() {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
                       {TIME_SLOTS.map((slot) => {
                         const selected = formData.selectedSlot === slot;
-                        const isBooked = bookedSlots.includes(slot);
+                        const isToday = formData.selectedDay && 
+                          new Date(formData.selectedDay.date).toDateString() === new Date().toDateString();
+                        const isPast = isToday && isSlotInPast(slot);
+                        const isBooked = bookedSlots.includes(slot) || isPast;
                         return (
                           <button
                             key={slot}
                             type="button"
                             disabled={isBooked}
                             onClick={() => !isBooked && handleSlotSelect(slot)}
-                            title={isBooked ? 'This slot is already booked' : slot}
+                            title={isPast ? 'This slot has already passed' : isBooked ? 'This slot is already booked' : slot}
                             style={{
                               padding: '10px 4px', borderRadius: '10px',
                               border: `2px solid ${isBooked ? '#e2e8f0' : selected ? ACCENT : '#e2e8f0'}`,
@@ -351,7 +370,11 @@ export default function Contact() {
                             }}
                           >
                             {slot}
-                            {isBooked && <div style={{ fontSize: '9px', fontWeight: 700, color: '#ef4444', textDecoration: 'none', marginTop: '2px' }}>BOOKED</div>}
+                            {isPast ? (
+                              <div style={{ fontSize: '9px', fontWeight: 700, color: '#94a3b8', textDecoration: 'none', marginTop: '2px' }}>PASSED</div>
+                            ) : isBooked ? (
+                              <div style={{ fontSize: '9px', fontWeight: 700, color: '#ef4444', textDecoration: 'none', marginTop: '2px' }}>BOOKED</div>
+                            ) : null}
                           </button>
                         );
                       })}
@@ -447,7 +470,7 @@ export default function Contact() {
                 { icon: <FaLeaf />, text: '100% Natural & Evidence-Based Herbal Protocols' },
                 { icon: <FaUserMd />, text: 'Experienced Integrative Oncology Practitioners' },
                 { icon: <FaCheckCircle />, text: 'Free First Consultation — No Obligation' },
-                { icon: <FaClock />, text: 'Flexible Slots Mon–Sat, 9 AM to 6 PM' },
+                { icon: <FaClock />, text: 'Flexible Slots Mon–Sat, 11 AM to 4 PM' },
                 { icon: <FaEnvelope />, text: 'Instant Email Confirmation After Booking' },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>

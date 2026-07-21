@@ -1,8 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FaUserCheck, FaFileMedical, FaVials, FaAppleAlt,
-  FaHeartbeat, FaClipboardList, FaChartLine, FaUserPlus
+  FaHeartbeat, FaClipboardList, FaChartLine, FaUserPlus,
+  FaArrowRight
 } from 'react-icons/fa';
 
 const ORANGE = '#d97706';
@@ -144,6 +146,31 @@ export default function PersonalizedTreatmentPlans() {
                   </div>
                 </motion.div>
               ))}
+              
+              <div style={{ marginTop: '12px' }}>
+                <Link 
+                  to="/personalized-treatment-plans" 
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: ORANGE,
+                    textDecoration: 'none',
+                    fontWeight: '700',
+                    fontSize: '14.5px',
+                    border: `1.5px solid ${ORANGE}`,
+                    padding: '12px 24px',
+                    borderRadius: '50px',
+                    background: '#fff',
+                    transition: 'all 0.25s ease',
+                    boxShadow: '0 4px 12px rgba(217, 119, 6, 0.05)'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = LIGHT_BG; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
+                >
+                  Learn More about Personalized Plans <FaArrowRight style={{ fontSize: '12px' }} />
+                </Link>
+              </div>
             </div>
 
             {/* Right side clipboard consultation image */}

@@ -12,6 +12,8 @@ const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Care Programs', href: '/care-programs' },
+  { label: 'Integrative Therapies', href: '/integrative-therapies' },
+  { label: 'Personalized Care', href: '/personalized-treatment-plans' },
   { label: 'Our Team', href: '/doctors' },
   { label: 'Stories', href: '/testimonials' },
   {
@@ -20,6 +22,7 @@ const navLinks = [
     children: [
       { label: '📝 Blog', href: '/blog' },
       { label: '🧬 Patient Education', href: '/patient-education' },
+      { label: '📁 Patient Resources', href: '/patient-resources' },
       { label: '🛒 Herbal Store', href: '/store' },
       { label: '📦 Track Order', href: '/track-order' },
       { label: '📋 My Orders', href: '/my-orders' },
@@ -96,6 +99,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+
   return (
     <>
       {/* ─── NAVBAR ─────────────────────────────────────────────────── */}
@@ -132,7 +136,7 @@ export default function Navbar() {
           <motion.div
             whileHover={{ scale: 1.03 }}
             onClick={() => navigate('/')}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}
           >
             <img
               src="/logo2.png"
@@ -198,65 +202,7 @@ export default function Navbar() {
           </nav>
 
           {/* ── Right side ── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {/* <a
-              href="tel:+918884588835"
-              className="ch-phone-link"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                textDecoration: 'none',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: PRIMARY,
-              }}
-            >
-              <FaPhone style={{ fontSize: '11px' }} />
-              +91 8884588835
-            </a> */}
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsCartOpen(true)}
-              style={{
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: '40px', height: '40px', borderRadius: '50%', background: '#f8fafc',
-                color: PRIMARY, transition: 'background 0.2s', position: 'relative'
-              }}
-              className="ch-cart-icon"
-              title="Your Cart"
-            >
-              <FaShoppingBag style={{ fontSize: '18px' }} />
-              {cartCount > 0 && (
-                <span style={{
-                  position: 'absolute', top: '-4px', right: '-4px',
-                  background: '#ef4444', color: '#fff', fontSize: '10px',
-                  fontWeight: 700, borderRadius: '50%', width: '18px', height: '18px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: '2px solid #fff'
-                }}>
-                  {cartCount}
-                </span>
-              )}
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/wishlist')}
-              style={{
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: '40px', height: '40px', borderRadius: '50%', background: '#f1f5f9',
-                color: '#ef4444', transition: 'background 0.2s'
-              }}
-              className="ch-wishlist-icon"
-              title="My Wishlist"
-            >
-              <FaHeart style={{ fontSize: '18px' }} />
-            </motion.div>
-
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
@@ -363,51 +309,7 @@ export default function Navbar() {
                 </motion.div>
               ))}
 
-              <Link
-                to="/wishlist"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: '#ef4444',
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                  fontSize: '15px',
-                  marginTop: '10px',
-                  padding: '10px 14px',
-                  background: '#fef2f2',
-                  borderRadius: '10px'
-                }}
-                onClick={() => setMenuOpen(false)}
-              >
-                <FaHeart style={{ fontSize: '14px' }} />
-                My Wishlist
-              </Link>
 
-              <button
-                onClick={() => { setMenuOpen(false); setIsCartOpen(true); }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: PRIMARY,
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                  fontSize: '15px',
-                  marginTop: '6px',
-                  padding: '10px 14px',
-                  background: '#f1f5f9',
-                  borderRadius: '10px',
-                  border: 'none',
-                  width: '100%',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  justifyContent: 'flex-start'
-                }}
-              >
-                <FaShoppingBag style={{ fontSize: '14px' }} />
-                My Cart {cartCount > 0 && <span style={{ background: '#ef4444', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '50px' }}>{cartCount}</span>}
-              </button>
 
               <motion.a
                 href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`}
@@ -459,7 +361,7 @@ export default function Navbar() {
         .ch-desktop-nav {
           display: flex;
           align-items: center;
-          gap: 2px;
+          gap: 3px;
         }
         .ch-nav-item {
           position: relative;
@@ -468,10 +370,10 @@ export default function Navbar() {
         .ch-nav-btn {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          padding: 8px 13px;
+          gap: 4px;
+          padding: 6px 9px;
           border-radius: 8px;
-          font-size: 14px;
+          font-size: 13.5px;
           font-weight: 500;
           text-decoration: none;
           color: #374151;
@@ -634,7 +536,7 @@ export default function Navbar() {
         }
 
         /* ── Responsive breakpoints ── */
-        @media (max-width: 960px) {
+        @media (max-width: 1200px) {
           .ch-desktop-nav {
             display: none !important;
           }
@@ -649,7 +551,7 @@ export default function Navbar() {
           }
         }
 
-        @media (min-width: 961px) {
+        @media (min-width: 1201px) {
           .ch-mobile-menu {
             display: none !important;
           }
