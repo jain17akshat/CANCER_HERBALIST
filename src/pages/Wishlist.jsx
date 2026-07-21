@@ -9,12 +9,30 @@ import { products } from './ProductDetail'; // Importing products from ProductDe
 const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
 
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
+
 export default function Wishlist() {
   const navigate = useNavigate();
   const { wishlist, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const [allProducts, setAllProducts] = React.useState(products);
 
-  const wishlistProducts = products.filter(p => wishlist.includes(p.id));
+  React.useEffect(() => {
+    const fetchDynamic = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
+        const data = await res.json();
+        if (data.success && data.products) {
+          setAllProducts(data.products);
+        }
+      } catch (err) {
+        console.warn('Error fetching dynamic products:', err);
+      }
+    };
+    fetchDynamic();
+  }, []);
+
+  const wishlistProducts = allProducts.filter(p => wishlist.includes(p.id));
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', padding: '120px 20px 60px', fontFamily: 'Poppins, sans-serif' }}>

@@ -37,22 +37,20 @@ export default function Store() {
   const [search, setSearch] = useState('');
   const [allProducts, setAllProducts] = useState(products);
 
-  // ⚠️ TESTING ONLY — dynamic fetch disabled so local ₹10 price on Cap CH95 shows.
-  // Re-enable after live payment test is done.
-  // React.useEffect(() => {
-  //   const fetchDynamic = async () => {
-  //     try {
-  //       const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
-  //       const data = await res.json();
-  //       if (data.success && data.products) {
-  //         setAllProducts(data.products);
-  //       }
-  //     } catch (err) {
-  //       console.warn('Error fetching dynamic products:', err);
-  //     }
-  //   };
-  //   fetchDynamic();
-  // }, []);
+  React.useEffect(() => {
+    const fetchDynamic = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/dynamic-products`);
+        const data = await res.json();
+        if (data.success && data.products) {
+          setAllProducts(data.products);
+        }
+      } catch (err) {
+        console.warn('Error fetching dynamic products:', err);
+      }
+    };
+    fetchDynamic();
+  }, []);
 
   const filtered = allProducts.filter(p => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory;
