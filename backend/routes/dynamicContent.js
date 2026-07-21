@@ -2,17 +2,29 @@ const express = require('express');
 const router  = express.Router();
 const fs      = require('fs');
 const path    = require('path');
-const priceListModule = require('./priceList');
+const priceListModule  = require('./priceList');
+const { dbRead, dbWrite } = require('../utils/supabaseDb');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+// On Vercel (production), the project filesystem is READ-ONLY.
+// Only /tmp is writable. Use /tmp in production, local data/ in development.
+const IS_VERCEL = !!process.env.VERCEL || process.env.NODE_ENV === 'production';
+const DATA_DIR  = IS_VERCEL
+  ? '/tmp/cancer-herbalist-data'
+  : path.join(__dirname, '..', 'data');
+
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-const PRODUCTS_FILE     = path.join(DATA_DIR, 'products.json');
-const BLOGS_FILE        = path.join(DATA_DIR, 'blogs.json');
-const TESTIMONIALS_FILE = path.join(DATA_DIR, 'testimonials.json');
+const PRODUCTS_FILE        = path.join(DATA_DIR, 'products.json');
+const BLOGS_FILE           = path.join(DATA_DIR, 'blogs.json');
+const TESTIMONIALS_FILE    = path.join(DATA_DIR, 'testimonials.json');
 const WEBSITE_CONTENT_FILE = path.join(DATA_DIR, 'websiteContent.json');
+
+// In-memory cache for website content (survives within one serverless instance).
+// On Vercel, /tmp resets between cold starts but the cache keeps changes alive
+// within a warm instance without requiring a disk read each time.
+let _websiteContentCache = null;
 
 // Helper to read JSON safely
 const readData = (filePath) => {
@@ -27,9 +39,12 @@ const readData = (filePath) => {
   return [];
 };
 
-// Helper to write JSON safely
+// Helper to write JSON safely — always targets the writable DATA_DIR
 const writeData = (filePath, data) => {
   try {
+    // Ensure the directory still exists (can disappear between Vercel invocations)
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
     return true;
   } catch (err) {
@@ -805,372 +820,457 @@ const defaultWebsiteContent = {
   }
 };
 
-// Seed databases if they are missing or do not contain the initial items
-const seedDatabase = () => {
-  // Products Seed
-  let products = readData(PRODUCTS_FILE);
-  let updatedProducts = false;
-  initialProducts.forEach(ip => {
-    if (!products.some(p => p.id === ip.id)) {
-      products.push(ip);
-      updatedProducts = true;
+// Seed databases asynchronously if they are missing or do not contain the initial items
+const seedDatabase = async () => {
+  try {
+    // Products Seed
+    let products = await dbRead('products');
+    if (!products || !Array.isArray(products)) {
+      products = [];
     }
-  });
-  if (updatedProducts) {
-    products.sort((a, b) => a.id - b.id);
-    writeData(PRODUCTS_FILE, products);
-  }
+    let updatedProducts = false;
+    initialProducts.forEach(ip => {
+      if (!products.some(p => p.id === ip.id)) {
+        products.push(ip);
+        updatedProducts = true;
+      }
+    });
+    if (updatedProducts || products.length === 0) {
+      products.sort((a, b) => a.id - b.id);
+      await dbWrite('products', products);
+    }
 
-  // Load prices into memory
-  products.forEach(p => {
-    if (p.id) {
-      priceListModule.PRODUCT_PRICES[p.id] = Number(p.price);
-    }
-  });
+    // Load prices into memory
+    products.forEach(p => {
+      if (p.id) {
+        priceListModule.PRODUCT_PRICES[p.id] = Number(p.price);
+      }
+    });
 
-  // Blogs Seed
-  let blogs = readData(BLOGS_FILE);
-  let updatedBlogs = false;
-  initialBlogs.forEach(ib => {
-    if (!blogs.some(b => b.id === ib.id)) {
-      blogs.push(ib);
-      updatedBlogs = true;
+    // Blogs Seed
+    let blogs = await dbRead('blogs');
+    if (!blogs || !Array.isArray(blogs)) {
+      blogs = [];
     }
-  });
-  if (updatedBlogs) {
-    blogs.sort((a, b) => a.id - b.id);
-    writeData(BLOGS_FILE, blogs);
-  }
+    let updatedBlogs = false;
+    initialBlogs.forEach(ib => {
+      if (!blogs.some(b => b.id === ib.id)) {
+        blogs.push(ib);
+        updatedBlogs = true;
+      }
+    });
+    if (updatedBlogs || blogs.length === 0) {
+      blogs.sort((a, b) => a.id - b.id);
+      await dbWrite('blogs', blogs);
+    }
 
-  // Testimonials Seed
-  let testimonials = readData(TESTIMONIALS_FILE);
-  let updatedTestimonials = false;
-  initialTestimonials.forEach(it => {
-    if (!testimonials.some(t => t.id === it.id || (t.name === it.name && t.text === it.text))) {
-      testimonials.push(it);
-      updatedTestimonials = true;
+    // Testimonials Seed
+    let testimonials = await dbRead('testimonials');
+    if (!testimonials || !Array.isArray(testimonials)) {
+      testimonials = [];
     }
-  });
-  // Ensure all testimonials have an id
-  testimonials = testimonials.map((t, idx) => {
-    if (!t.id) {
-      t.id = 100 + idx;
-      updatedTestimonials = true;
+    let updatedTestimonials = false;
+    initialTestimonials.forEach(it => {
+      if (!testimonials.some(t => t.id === it.id || (t.name === it.name && t.text === it.text))) {
+        testimonials.push(it);
+        updatedTestimonials = true;
+      }
+    });
+    // Ensure all testimonials have an id
+    testimonials = testimonials.map((t, idx) => {
+      if (!t.id) {
+        t.id = 100 + idx;
+        updatedTestimonials = true;
+      }
+      return t;
+    });
+    if (updatedTestimonials || testimonials.length === 0) {
+      await dbWrite('testimonials', testimonials);
     }
-    return t;
-  });
-  if (updatedTestimonials) {
-    writeData(TESTIMONIALS_FILE, testimonials);
-  }
 
-  // Website Content Seed
-  if (!fs.existsSync(WEBSITE_CONTENT_FILE)) {
-    writeData(WEBSITE_CONTENT_FILE, defaultWebsiteContent);
-  } else {
-    // Merge structure in case we add fields later
-    try {
-      const currentContent = JSON.parse(fs.readFileSync(WEBSITE_CONTENT_FILE, 'utf8'));
-      const merged = { ...defaultWebsiteContent, ...currentContent };
-      writeData(WEBSITE_CONTENT_FILE, merged);
-    } catch (e) {
-      writeData(WEBSITE_CONTENT_FILE, defaultWebsiteContent);
+    // Website Content Seed
+    const webContent = await dbRead('website_content');
+    if (!webContent) {
+      await dbWrite('website_content', defaultWebsiteContent);
+    } else {
+      // Merge structure in case we add fields later
+      const merged = { ...defaultWebsiteContent, ...webContent };
+      await dbWrite('website_content', merged);
     }
+  } catch (err) {
+    console.error('[seedDatabase] failed:', err.message);
   }
 };
 
-// Execute seeding
+// Execute seeding asynchronously
 seedDatabase();
 
 /* ── PRODUCTS API ──────────────────────────────────────────────── */
-router.get('/dynamic-products', (req, res) => {
-  const dynamic = readData(PRODUCTS_FILE);
-  res.json({ success: true, products: dynamic });
+router.get('/dynamic-products', async (req, res) => {
+  try {
+    const dynamic = await dbRead('products') || [];
+    res.json({ success: true, products: dynamic });
+  } catch (err) {
+    console.error('[products GET] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to fetch products.' });
+  }
 });
 
-router.post('/dynamic-products', checkAdmin, (req, res) => {
+router.post('/dynamic-products', checkAdmin, async (req, res) => {
   const newProduct = req.body;
   if (!newProduct.name || !newProduct.price) {
     return res.status(400).json({ success: false, error: 'Product name and price are required.' });
   }
 
-  const list = readData(PRODUCTS_FILE);
-  // Auto increment ID (starting from 100 to avoid clash with hardcoded IDs 1-19)
-  const nextId = list.length > 0 ? Math.max(...list.map(p => p.id || 0)) + 1 : 100;
-  
-  const product = {
-    id: nextId,
-    name: newProduct.name,
-    category: newProduct.category || 'Other',
-    price: Number(newProduct.price),
-    originalPrice: Number(newProduct.originalPrice || newProduct.price),
-    rating: Number(newProduct.rating || 5),
-    reviews: Number(newProduct.reviews || 0),
-    images: Array.isArray(newProduct.images) ? newProduct.images : [],
-    color: newProduct.color || '#1a6e52',
-    icon: newProduct.icon || '🌿',
-    badge: newProduct.badge || null,
-    tagline: newProduct.tagline || '',
-    description: newProduct.description || '',
-    benefits: Array.isArray(newProduct.benefits) ? newProduct.benefits : [],
-    ingredients: newProduct.ingredients || '',
-    dosage: newProduct.dosage || '',
-    size: newProduct.size || '',
-    inStock: newProduct.inStock !== false,
-  };
+  try {
+    const list = await dbRead('products') || [];
+    // Auto increment ID (starting from 100 to avoid clash with hardcoded IDs 1-19)
+    const nextId = list.length > 0 ? Math.max(...list.map(p => p.id || 0)) + 1 : 100;
+    
+    const product = {
+      id: nextId,
+      name: newProduct.name,
+      category: newProduct.category || 'Other',
+      price: Number(newProduct.price),
+      originalPrice: Number(newProduct.originalPrice || newProduct.price),
+      rating: Number(newProduct.rating || 5),
+      reviews: Number(newProduct.reviews || 0),
+      images: Array.isArray(newProduct.images) ? newProduct.images : [],
+      color: newProduct.color || '#1a6e52',
+      icon: newProduct.icon || '🌿',
+      badge: newProduct.badge || null,
+      tagline: newProduct.tagline || '',
+      description: newProduct.description || '',
+      benefits: Array.isArray(newProduct.benefits) ? newProduct.benefits : [],
+      ingredients: newProduct.ingredients || '',
+      dosage: newProduct.dosage || '',
+      size: newProduct.size || '',
+      inStock: newProduct.inStock !== false,
+    };
 
-  list.push(product);
-  if (writeData(PRODUCTS_FILE, list)) {
-    priceListModule.PRODUCT_PRICES[product.id] = product.price;
-    res.json({ success: true, product });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+    list.push(product);
+    if (await dbWrite('products', list)) {
+      priceListModule.PRODUCT_PRICES[product.id] = product.price;
+      res.json({ success: true, product });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[products POST] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to save product.' });
   }
 });
 
-router.put('/dynamic-products/:id', checkAdmin, (req, res) => {
+router.put('/dynamic-products/:id', checkAdmin, async (req, res) => {
   const id = Number(req.params.id);
   const updatedProduct = req.body;
   if (!updatedProduct.name || !updatedProduct.price) {
     return res.status(400).json({ success: false, error: 'Product name and price are required.' });
   }
 
-  const list = readData(PRODUCTS_FILE);
-  const idx = list.findIndex(p => p.id === id);
-  if (idx === -1) {
-    return res.status(404).json({ success: false, error: 'Product not found.' });
-  }
+  try {
+    const list = await dbRead('products') || [];
+    const idx = list.findIndex(p => p.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Product not found.' });
+    }
 
-  list[idx] = {
-    ...list[idx],
-    name: updatedProduct.name,
-    category: updatedProduct.category || list[idx].category,
-    price: Number(updatedProduct.price),
-    originalPrice: Number(updatedProduct.originalPrice || updatedProduct.price),
-    rating: Number(updatedProduct.rating || list[idx].rating || 5),
-    reviews: Number(updatedProduct.reviews || list[idx].reviews || 0),
-    images: Array.isArray(updatedProduct.images) ? updatedProduct.images : list[idx].images,
-    color: updatedProduct.color || list[idx].color || '#1a6e52',
-    icon: updatedProduct.icon || list[idx].icon || '🌿',
-    badge: updatedProduct.badge !== undefined ? updatedProduct.badge : list[idx].badge,
-    tagline: updatedProduct.tagline || list[idx].tagline || '',
-    description: updatedProduct.description || list[idx].description || '',
-    benefits: Array.isArray(updatedProduct.benefits) ? updatedProduct.benefits : list[idx].benefits,
-    ingredients: updatedProduct.ingredients || list[idx].ingredients || '',
-    dosage: updatedProduct.dosage || list[idx].dosage || '',
-    size: updatedProduct.size || list[idx].size || '',
-    inStock: updatedProduct.inStock !== undefined ? updatedProduct.inStock : list[idx].inStock,
-  };
+    list[idx] = {
+      ...list[idx],
+      name: updatedProduct.name,
+      category: updatedProduct.category || list[idx].category,
+      price: Number(updatedProduct.price),
+      originalPrice: Number(updatedProduct.originalPrice || updatedProduct.price),
+      rating: Number(updatedProduct.rating || list[idx].rating || 5),
+      reviews: Number(updatedProduct.reviews || list[idx].reviews || 0),
+      images: Array.isArray(updatedProduct.images) ? updatedProduct.images : list[idx].images,
+      color: updatedProduct.color || list[idx].color || '#1a6e52',
+      icon: updatedProduct.icon || list[idx].icon || '🌿',
+      badge: updatedProduct.badge !== undefined ? updatedProduct.badge : list[idx].badge,
+      tagline: updatedProduct.tagline || list[idx].tagline || '',
+      description: updatedProduct.description || list[idx].description || '',
+      benefits: Array.isArray(updatedProduct.benefits) ? updatedProduct.benefits : list[idx].benefits,
+      ingredients: updatedProduct.ingredients || list[idx].ingredients || '',
+      dosage: updatedProduct.dosage || list[idx].dosage || '',
+      size: updatedProduct.size || list[idx].size || '',
+      inStock: updatedProduct.inStock !== undefined ? updatedProduct.inStock : list[idx].inStock,
+    };
 
-  if (writeData(PRODUCTS_FILE, list)) {
-    priceListModule.PRODUCT_PRICES[id] = Number(updatedProduct.price);
-    res.json({ success: true, product: list[idx] });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+    if (await dbWrite('products', list)) {
+      priceListModule.PRODUCT_PRICES[id] = Number(updatedProduct.price);
+      res.json({ success: true, product: list[idx] });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[products PUT] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to update product.' });
   }
 });
 
-router.delete('/dynamic-products/:id', checkAdmin, (req, res) => {
+router.delete('/dynamic-products/:id', checkAdmin, async (req, res) => {
   const id = Number(req.params.id);
-  const list = readData(PRODUCTS_FILE);
-  const filtered = list.filter(p => p.id !== id);
-  if (list.length === filtered.length) {
-    return res.status(404).json({ success: false, error: 'Product not found.' });
-  }
+  try {
+    const list = await dbRead('products') || [];
+    const filtered = list.filter(p => p.id !== id);
+    if (list.length === filtered.length) {
+      return res.status(404).json({ success: false, error: 'Product not found.' });
+    }
 
-  if (writeData(PRODUCTS_FILE, filtered)) {
-    delete priceListModule.PRODUCT_PRICES[id];
-    res.json({ success: true, message: 'Product deleted successfully.' });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+    if (await dbWrite('products', filtered)) {
+      delete priceListModule.PRODUCT_PRICES[id];
+      res.json({ success: true, message: 'Product deleted successfully.' });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[products DELETE] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to delete product.' });
   }
 });
 
 /* ── BLOGS API ────────────────────────────────────────────────── */
-router.get('/dynamic-blogs', (req, res) => {
-  const dynamic = readData(BLOGS_FILE);
-  res.json({ success: true, blogs: dynamic });
+router.get('/dynamic-blogs', async (req, res) => {
+  try {
+    const dynamic = await dbRead('blogs') || [];
+    res.json({ success: true, blogs: dynamic });
+  } catch (err) {
+    console.error('[blogs GET] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to fetch blogs.' });
+  }
 });
 
-router.post('/dynamic-blogs', checkAdmin, (req, res) => {
+router.post('/dynamic-blogs', checkAdmin, async (req, res) => {
   const newBlog = req.body;
   if (!newBlog.title || !newBlog.excerpt) {
     return res.status(400).json({ success: false, error: 'Title and excerpt are required.' });
   }
 
-  const list = readData(BLOGS_FILE);
-  const nextId = list.length > 0 ? Math.max(...list.map(b => b.id || 0)) + 1 : 100;
+  try {
+    const list = await dbRead('blogs') || [];
+    const nextId = list.length > 0 ? Math.max(...list.map(b => b.id || 0)) + 1 : 100;
 
-  const blog = {
-    id: nextId,
-    title: newBlog.title,
-    image: newBlog.image || 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=80',
-    category: newBlog.category || 'Other',
-    author: newBlog.author || 'By Dr. Herbalist',
-    readTime: newBlog.readTime || '5 min read',
-    date: newBlog.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    excerpt: newBlog.excerpt,
-    content: newBlog.content || '',
-  };
+    const blog = {
+      id: nextId,
+      title: newBlog.title,
+      image: newBlog.image || 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=80',
+      category: newBlog.category || 'Other',
+      author: newBlog.author || 'By Dr. Herbalist',
+      readTime: newBlog.readTime || '5 min read',
+      date: newBlog.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      excerpt: newBlog.excerpt,
+      content: newBlog.content || '',
+    };
 
-  list.push(blog);
-  if (writeData(BLOGS_FILE, list)) {
-    res.json({ success: true, blog });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+    list.push(blog);
+    if (await dbWrite('blogs', list)) {
+      res.json({ success: true, blog });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[blogs POST] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to save blog.' });
   }
 });
 
-router.put('/dynamic-blogs/:id', checkAdmin, (req, res) => {
+router.put('/dynamic-blogs/:id', checkAdmin, async (req, res) => {
   const id = Number(req.params.id);
   const updatedBlog = req.body;
   if (!updatedBlog.title || !updatedBlog.excerpt) {
     return res.status(400).json({ success: false, error: 'Title and excerpt are required.' });
   }
 
-  const list = readData(BLOGS_FILE);
-  const idx = list.findIndex(b => b.id === id);
-  if (idx === -1) {
-    return res.status(404).json({ success: false, error: 'Blog not found.' });
-  }
+  try {
+    const list = await dbRead('blogs') || [];
+    const idx = list.findIndex(b => b.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Blog not found.' });
+    }
 
-  list[idx] = {
-    ...list[idx],
-    title: updatedBlog.title,
-    image: updatedBlog.image || list[idx].image,
-    category: updatedBlog.category || list[idx].category,
-    author: updatedBlog.author || list[idx].author,
-    readTime: updatedBlog.readTime || list[idx].readTime,
-    date: updatedBlog.date || list[idx].date,
-    excerpt: updatedBlog.excerpt,
-    content: updatedBlog.content || list[idx].content || '',
-  };
+    list[idx] = {
+      ...list[idx],
+      title: updatedBlog.title,
+      image: updatedBlog.image || list[idx].image,
+      category: updatedBlog.category || list[idx].category,
+      author: updatedBlog.author || list[idx].author,
+      readTime: updatedBlog.readTime || list[idx].readTime,
+      date: updatedBlog.date || list[idx].date,
+      excerpt: updatedBlog.excerpt,
+      content: updatedBlog.content || list[idx].content || '',
+    };
 
-  if (writeData(BLOGS_FILE, list)) {
-    res.json({ success: true, blog: list[idx] });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+    if (await dbWrite('blogs', list)) {
+      res.json({ success: true, blog: list[idx] });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[blogs PUT] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to update blog.' });
   }
 });
 
-router.delete('/dynamic-blogs/:id', checkAdmin, (req, res) => {
+router.delete('/dynamic-blogs/:id', checkAdmin, async (req, res) => {
   const id = Number(req.params.id);
-  const list = readData(BLOGS_FILE);
-  const filtered = list.filter(b => b.id !== id);
-  if (list.length === filtered.length) {
-    return res.status(404).json({ success: false, error: 'Blog not found.' });
-  }
+  try {
+    const list = await dbRead('blogs') || [];
+    const filtered = list.filter(b => b.id !== id);
+    if (list.length === filtered.length) {
+      return res.status(404).json({ success: false, error: 'Blog not found.' });
+    }
 
-  if (writeData(BLOGS_FILE, filtered)) {
-    res.json({ success: true, message: 'Blog deleted successfully.' });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+    if (await dbWrite('blogs', filtered)) {
+      res.json({ success: true, message: 'Blog deleted successfully.' });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[blogs DELETE] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to delete blog.' });
   }
 });
 
 /* ── TESTIMONIALS API ─────────────────────────────────────────── */
-router.get('/dynamic-testimonials', (req, res) => {
-  const dynamic = readData(TESTIMONIALS_FILE);
-  res.json({ success: true, testimonials: dynamic });
+router.get('/dynamic-testimonials', async (req, res) => {
+  try {
+    const dynamic = await dbRead('testimonials') || [];
+    res.json({ success: true, testimonials: dynamic });
+  } catch (err) {
+    console.error('[testimonials GET] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to fetch testimonials.' });
+  }
 });
 
-router.post('/dynamic-testimonials', checkAdmin, (req, res) => {
+router.post('/dynamic-testimonials', checkAdmin, async (req, res) => {
   const newTestimonial = req.body;
   if (!newTestimonial.name || !newTestimonial.text) {
     return res.status(400).json({ success: false, error: 'Name and testimonial text are required.' });
   }
 
-  const list = readData(TESTIMONIALS_FILE);
-  const nextId = list.length > 0 ? Math.max(...list.map(t => t.id || 0)) + 1 : 100;
-  
-  const testimonial = {
-    id: nextId,
-    name: newTestimonial.name,
-    location: newTestimonial.location || 'India',
-    rating: Number(newTestimonial.rating || 5),
-    text: newTestimonial.text,
-    date: newTestimonial.date || 'Recent',
-    videoUrl: newTestimonial.videoUrl || '',
-    thumbnailUrl: newTestimonial.thumbnailUrl || '',
-  };
+  try {
+    const list = await dbRead('testimonials') || [];
+    const nextId = list.length > 0 ? Math.max(...list.map(t => t.id || 0)) + 1 : 100;
+    
+    const testimonial = {
+      id: nextId,
+      name: newTestimonial.name,
+      location: newTestimonial.location || 'India',
+      rating: Number(newTestimonial.rating || 5),
+      text: newTestimonial.text,
+      date: newTestimonial.date || 'Recent',
+      videoUrl: newTestimonial.videoUrl || '',
+      thumbnailUrl: newTestimonial.thumbnailUrl || '',
+    };
 
-  list.push(testimonial);
-  if (writeData(TESTIMONIALS_FILE, list)) {
-    res.json({ success: true, testimonial });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+    list.push(testimonial);
+    if (await dbWrite('testimonials', list)) {
+      res.json({ success: true, testimonial });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[testimonials POST] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to save testimonial.' });
   }
 });
 
-router.put('/dynamic-testimonials/:id', checkAdmin, (req, res) => {
+router.put('/dynamic-testimonials/:id', checkAdmin, async (req, res) => {
   const id = Number(req.params.id);
   const updatedTestimonial = req.body;
   if (!updatedTestimonial.name || !updatedTestimonial.text) {
     return res.status(400).json({ success: false, error: 'Name and testimonial text are required.' });
   }
 
-  const list = readData(TESTIMONIALS_FILE);
-  const idx = list.findIndex(t => t.id === id);
-  if (idx === -1) {
-    return res.status(404).json({ success: false, error: 'Testimonial not found.' });
-  }
-
-  list[idx] = {
-    ...list[idx],
-    name: updatedTestimonial.name,
-    location: updatedTestimonial.location || list[idx].location,
-    rating: Number(updatedTestimonial.rating || list[idx].rating || 5),
-    text: updatedTestimonial.text,
-    date: updatedTestimonial.date || list[idx].date,
-    videoUrl: updatedTestimonial.videoUrl !== undefined ? updatedTestimonial.videoUrl : list[idx].videoUrl,
-    thumbnailUrl: updatedTestimonial.thumbnailUrl !== undefined ? updatedTestimonial.thumbnailUrl : list[idx].thumbnailUrl,
-  };
-
-  if (writeData(TESTIMONIALS_FILE, list)) {
-    res.json({ success: true, testimonial: list[idx] });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
-  }
-});
-
-router.delete('/dynamic-testimonials/:id', checkAdmin, (req, res) => {
-  const id = Number(req.params.id);
-  const list = readData(TESTIMONIALS_FILE);
-  const filtered = list.filter(t => t.id !== id);
-  if (list.length === filtered.length) {
-    return res.status(404).json({ success: false, error: 'Testimonial not found.' });
-  }
-
-  if (writeData(TESTIMONIALS_FILE, filtered)) {
-    res.json({ success: true, message: 'Testimonial deleted successfully.' });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
-  }
-});
-
-/* ── WEBSITE CONTENT API ───────────────────────────────────────── */
-router.get('/website-content', (req, res) => {
   try {
-    if (fs.existsSync(WEBSITE_CONTENT_FILE)) {
-      const data = JSON.parse(fs.readFileSync(WEBSITE_CONTENT_FILE, 'utf8'));
+    const list = await dbRead('testimonials') || [];
+    const idx = list.findIndex(t => t.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, error: 'Testimonial not found.' });
+    }
+
+    list[idx] = {
+      ...list[idx],
+      name: updatedTestimonial.name,
+      location: updatedTestimonial.location || list[idx].location,
+      rating: Number(updatedTestimonial.rating || list[idx].rating || 5),
+      text: updatedTestimonial.text,
+      date: updatedTestimonial.date || list[idx].date,
+      videoUrl: updatedTestimonial.videoUrl !== undefined ? updatedTestimonial.videoUrl : list[idx].videoUrl,
+      thumbnailUrl: updatedTestimonial.thumbnailUrl !== undefined ? updatedTestimonial.thumbnailUrl : list[idx].thumbnailUrl,
+    };
+
+    if (await dbWrite('testimonials', list)) {
+      res.json({ success: true, testimonial: list[idx] });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[testimonials PUT] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to update testimonial.' });
+  }
+});
+
+router.delete('/dynamic-testimonials/:id', checkAdmin, async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    const list = await dbRead('testimonials') || [];
+    const filtered = list.filter(t => t.id !== id);
+    if (list.length === filtered.length) {
+      return res.status(404).json({ success: false, error: 'Testimonial not found.' });
+    }
+
+    if (await dbWrite('testimonials', filtered)) {
+      res.json({ success: true, message: 'Testimonial deleted successfully.' });
+    } else {
+      res.status(500).json({ success: false, error: 'Failed to write to database.' });
+    }
+  } catch (err) {
+    console.error('[testimonials DELETE] Error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to delete testimonial.' });
+  }
+});
+
+/* ── WEBSITE CONTENT API (Supabase-backed) ─────────────────────── */
+router.get('/website-content', async (req, res) => {
+  try {
+    // 1. In-memory cache (warm instance fast path)
+    if (_websiteContentCache) {
+      return res.json({ success: true, content: _websiteContentCache });
+    }
+    // 2. Supabase (or filesystem fallback via dbRead)
+    const data = await dbRead('website_content');
+    if (data) {
+      _websiteContentCache = data;
       return res.json({ success: true, content: data });
     }
+    // 3. Hardcoded defaults — first ever run, nothing saved yet
     return res.json({ success: true, content: defaultWebsiteContent });
   } catch (err) {
-    console.error('Error reading website content:', err);
-    res.status(500).json({ success: false, error: 'Failed to read website content.' });
+    console.error('[website-content GET] Error:', err.message);
+    return res.json({ success: true, content: defaultWebsiteContent });
   }
 });
 
-router.post('/website-content', checkAdmin, (req, res) => {
+router.post('/website-content', checkAdmin, async (req, res) => {
   const newContent = req.body;
   if (!newContent || typeof newContent !== 'object') {
     return res.status(400).json({ success: false, error: 'Invalid content data.' });
   }
-  
-  if (writeData(WEBSITE_CONTENT_FILE, newContent)) {
-    res.json({ success: true, content: newContent });
-  } else {
-    res.status(500).json({ success: false, error: 'Failed to write to file.' });
+  try {
+    // Write to Supabase (persistent across cold starts)
+    const ok = await dbWrite('website_content', newContent);
+    if (!ok) {
+      console.warn('[website-content POST] dbWrite failed.');
+    }
+    // Always update memory cache so next GET is instant
+    _websiteContentCache = newContent;
+    return res.json({ success: true, content: newContent });
+  } catch (err) {
+    console.error('[website-content POST] Error:', err.message);
+    // Still update memory cache so UI is not broken
+    _websiteContentCache = newContent;
+    return res.json({ success: true, content: newContent });
   }
 });
 

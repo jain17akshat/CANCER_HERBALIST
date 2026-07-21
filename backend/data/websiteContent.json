@@ -1,6 +1,6 @@
 {
   "contact": {
-    "phone": "+91 88845 88835",
+    "phone": "+91 88845 8",
     "email": "cancerherbalist@gmail.com",
     "whatsapp": "918884588835",
     "timings": "Mon–Sat, 9 AM–6 PM",
@@ -88,9 +88,9 @@
     {
       "id": 1,
       "badge": "🌿 Natural Cancer Treatment Specialists",
-      "headline": "Fight Cancer Holistically",
-      "headlineAccent": "Holistically",
-      "subline": "Combining ancient herbal wisdom with modern medical knowledge for personalized cancer support.",
+      "headline": "Compassionate, Integrative Cancer Care",
+      "headlineAccent": "Integrative Cancer Care",
+      "subline": "Healing the body. Calming the mind. Nourishing the spirit.",
       "highlights": [
         "Natural Herbal Treatments",
         "Certified Practitioners",
@@ -99,7 +99,7 @@
       ],
       "statValue": "4000+",
       "statLabel": "Patients Supported",
-      "ctaLabel": "Book Free Consultation",
+      "ctaLabel": "Book an Appointment",
       "ctaHref": "/contact",
       "secondaryCtaLabel": "Watch Story",
       "secondaryCtaHref": "/testimonials"
@@ -550,5 +550,91 @@
     "Pain Management",
     "Hormone Imbalances",
     "Weight Changes"
+  ],
+  "doctorsHero": {
+    "badge": "OUR NUTRACEUTICAL TEAM",
+    "title": "Meet Our Expert Team",
+    "subtitle": "Our multidisciplinary team of medical doctors, naturopaths, and botanical researchers is dedicated to providing comprehensive, personalized care for cancer patients."
+  },
+  "doctorsList": [
+    {
+      "id": 1,
+      "name": "Prof. Ramesh Babu",
+      "role": "Pharmacologist — M.Pharm, PhD",
+      "experience": "22 Years Experience",
+      "specialty": "Integrative Pharmacology & Herbal Oncology",
+      "bio": "Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD in Pharmaceutical Sciences, demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.",
+      "image": "/images/doctor1.png"
+    },
+    {
+      "id": 2,
+      "name": "Nutraceutical Team",
+      "role": "Multidisciplinary Research & Care Team",
+      "specialty": "Clinical Nutrition, Herbal Research & Patient Support",
+      "bio": "Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individual's unique needs throughout their treatment journey.",
+      "image": "/images/doctor33.png"
+    }
+  ],
+  "patientEducationHero": {
+    "badge": "Patient Education Centre",
+    "title": "Fight Cancer Better",
+    "subtitle": "Knowledge is your most powerful weapon. Explore easy-to-understand educational guides that help you understand your immune system, nutrition, and mental wellness — everything a cancer warrior needs."
+  },
+  "patientEducationStats": [
+    {
+      "value": "2 Billion+",
+      "label": "T-Cells in Your Body",
+      "icon": "🧬"
+    },
+    {
+      "value": "5–15%",
+      "label": "Of Blood Lymphocytes Are NK Cells",
+      "icon": "🛡️"
+    },
+    {
+      "value": "24/7",
+      "label": "Immune Surveillance",
+      "icon": "🔬"
+    },
+    {
+      "value": "∞",
+      "label": "Capacity to Learn & Adapt",
+      "icon": "❤️"
+    }
+  ],
+  "patientEducationArticles": [
+    {
+      "id": "tcells-vs-nk-cells",
+      "icon": "🛡️",
+      "category": "Immunology",
+      "title": "T-Cells vs NK Cells: Your Body's Cancer-Fighting Warriors",
+      "excerpt": "Discover the two key immune cell types — T-cells and NK cells — that form your body's frontline defense against cancer, and learn how they work together to hunt and destroy malignant cells.",
+      "readTime": "10 min read",
+      "gradient": "linear-gradient(135deg, #0b5b67 0%, #38bed5 100%)",
+      "badge": "🧬 Immune Defence",
+      "disabled": false
+    },
+    {
+      "id": "coming-soon-nutrition",
+      "icon": "🌿",
+      "category": "Nutrition",
+      "title": "Anti-Cancer Nutrition: Foods That Fuel Your Immunity",
+      "excerpt": "Learn which superfoods, herbs, and dietary strategies can support your immune system during and after cancer treatment.",
+      "readTime": "Coming Soon",
+      "gradient": "linear-gradient(135deg, #2ca8be 0%, #e0f7fa 100%)",
+      "badge": "🥦 Diet & Healing",
+      "disabled": true
+    },
+    {
+      "id": "coming-soon-mindset",
+      "icon": "🧠",
+      "category": "Mental Wellness",
+      "title": "The Psychology of Healing: Building a Fighter's Mindset",
+      "excerpt": "Explore evidence-backed mental wellness strategies — from meditation to visualization — that help cancer patients stay resilient and hopeful.",
+      "readTime": "Coming Soon",
+      "gradient": "linear-gradient(135deg, #38bed5 0%, #0b5b67 100%)",
+      "badge": "🧠 Mind & Body",
+      "disabled": true
+    }
   ]
 }
