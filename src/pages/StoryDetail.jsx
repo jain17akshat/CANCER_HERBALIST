@@ -46,7 +46,7 @@ const storyData = {
     ]
   },
   2: {
-    name: '78-Year-Old Patient',
+    name: '78-Year-Old Patient (Shared by Daughter Kusuma)',
     condition: 'Blood Cancer (MDS)',
     status: 'Transfusion-Free & Active',
     videoUrl: 'https://www.youtube.com/embed/t6YiUIBDANk',
@@ -64,7 +64,7 @@ const storyData = {
       },
       {
         heading: 'Approaching Cancer Herbalist',
-        body: `Faced with discontinued conventional options, the patient's family approached the Cancer Herbalist clinic in Bangalore. Our team evaluated her specific hematological panel and organ capacity to draft a customized, non-toxic Herbal Nutraceutical Care Plan designed to stimulate natural blood synthesis and provide cellular protection.`
+        body: `Faced with discontinued conventional options, the patient's family, led by her daughter Kusuma, approached the Cancer Herbalist clinic in Bangalore. Our team evaluated her specific hematological panel and organ capacity to draft a customized, non-toxic Herbal Nutraceutical Care Plan designed to stimulate natural blood synthesis and provide cellular protection.`
       },
       {
         heading: 'Immediate Recovery and Clinical Turnaround',

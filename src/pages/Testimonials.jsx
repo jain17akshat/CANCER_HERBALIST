@@ -48,7 +48,7 @@ Outcome & Progress:
   },
   {
     id: 2,
-    name: '78-Year-Old Patient',
+    name: '78-Year-Old Patient (Shared by Daughter Kusuma)',
     condition: 'Blood Cancer (MDS)',
     status: 'Transfusion-Free & Active',
     title: 'Customized Herbal Nutraceuticals eliminated the need for biweekly blood transfusions.',
@@ -59,13 +59,13 @@ Outcome & Progress:
 - Underwent conventional chemotherapy, which was discontinued due to severe, intolerant side effects.
 
 Intervention:
-- Initiated a personalized Herbal Nutraceutical Care Plan from Cancer Herbalist, Bangalore.
+- The family, lead by the patient's daughter Kusuma, approached Cancer Herbalist, Bangalore for a personalized Herbal Nutraceutical Care Plan.
 
 Clinical Outcomes:
 - Responded immediately within weeks of starting the care plan.
 - Eliminated the need for biweekly blood transfusions entirely.
-- Restored mobility, allowing her to stand and work independently.
-- Drastic reduction in chronic pains, significant improvements in aura, and a greatly enhanced quality of life.`
+- Restored mobility, allowing her to stand on her own legs and work independently.
+- Drastic reduction in chronic pains, significant improvements in physical aura, and a greatly enhanced quality of life.`
   },
   {
     id: 3,
