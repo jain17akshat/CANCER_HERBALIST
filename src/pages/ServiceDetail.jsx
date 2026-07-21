@@ -7,6 +7,9 @@ import {
   FaChevronDown, FaStethoscope, FaExclamationTriangle, FaQuestionCircle,
   FaWhatsapp, FaArrowRight
 } from 'react-icons/fa';
+import IntegrativeTherapies from '../components/IntegrativeTherapies';
+import PersonalizedTreatmentPlans from '../components/PersonalizedTreatmentPlans';
+import PatientResources from '../components/PatientResources';
 
 
 const ACCENT = '#38bed5';
@@ -749,6 +752,14 @@ export default function ServiceDetail() {
             </div>
           </motion.section>
         )}
+
+      </div> {/* Close 1200px container for full-width sections */}
+
+      <IntegrativeTherapies />
+      <PersonalizedTreatmentPlans />
+      <PatientResources />
+
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 20px' }}> {/* Reopen 1200px container */}
 
         {/* Our Integrative Nutritional Support */}
         <motion.section 
