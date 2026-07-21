@@ -224,9 +224,9 @@ export default function AdminDashboard() {
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to fetch details.');
       setSelectedOrderDetails(data);
     } catch (err) {
-      alert(`Error loading details: ${err.message}`);
+      showToast(`Error loading details: ${err.message}`, 'error');
     }
-  }, [secret]);
+  }, [secret, showToast]);
 
   const handleApproveCancellation = async (orderId, approved, remarksOrReason) => {
     try {
@@ -467,6 +467,7 @@ export default function AdminDashboard() {
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to add product.');
       
       setFormStatus('success');
+      showToast('✅ Product added successfully!');
       setProductForm({
         name: '', category: 'Immunity', price: '', originalPrice: '',
         description: '', benefits: '', ingredients: '', dosage: '',
@@ -477,6 +478,7 @@ export default function AdminDashboard() {
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message);
+      showToast(`Failed to add product: ${err.message}`, 'error');
     }
   };
 
@@ -488,15 +490,18 @@ export default function AdminDashboard() {
       const res = await saveGlobalContent(generalForm, secret);
       if (res.success) {
         setFormStatus('success');
+        showToast('🌐 Website content saved! Changes are now live.');
         refreshContent();
         setTimeout(() => setFormStatus(''), 4000);
       } else {
         setFormStatus('error');
         setFormError(res.error || 'Failed to update website copy.');
+        showToast(res.error || 'Failed to update website copy.', 'error');
       }
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message || 'An error occurred while saving.');
+      showToast(err.message || 'An error occurred while saving.', 'error');
     }
   };
 
@@ -518,6 +523,7 @@ export default function AdminDashboard() {
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update product.');
       
       setFormStatus('success');
+      showToast('✅ Product updated successfully!');
       setEditingProduct(null);
       setProductForm({
         name: '', category: 'Immunity', price: '', originalPrice: '',
@@ -529,6 +535,7 @@ export default function AdminDashboard() {
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message);
+      showToast(`Failed to update product: ${err.message}`, 'error');
     }
   };
 
@@ -548,9 +555,10 @@ export default function AdminDashboard() {
           size: '', badge: '', icon: '🌿', color: '#1a6e52'
         });
       }
+      showToast('🗑️ Product deleted successfully.');
       loadDynamicContent();
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error deleting product: ${err.message}`, 'error');
     }
   };
 
@@ -568,6 +576,7 @@ export default function AdminDashboard() {
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to add testimonial.');
       
       setFormStatus('success');
+      showToast('✅ Testimonial added successfully!');
       setTestimonialForm({
         name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
       });
@@ -576,6 +585,7 @@ export default function AdminDashboard() {
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message);
+      showToast(`Failed to add testimonial: ${err.message}`, 'error');
     }
   };
 
@@ -594,6 +604,7 @@ export default function AdminDashboard() {
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update testimonial.');
       
       setFormStatus('success');
+      showToast('✅ Testimonial updated successfully!');
       setEditingTestimonial(null);
       setTestimonialForm({
         name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
@@ -603,6 +614,7 @@ export default function AdminDashboard() {
     } catch (err) {
       setFormStatus('error');
       setFormError(err.message);
+      showToast(`Failed to update testimonial: ${err.message}`, 'error');
     }
   };
 
@@ -620,9 +632,10 @@ export default function AdminDashboard() {
           name: '', location: 'India', rating: 5, text: '', date: 'Recent', videoUrl: '', thumbnailUrl: ''
         });
       }
+      showToast('🗑️ Testimonial deleted successfully.');
       loadDynamicContent();
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error deleting testimonial: ${err.message}`, 'error');
     }
   };
 
@@ -882,25 +895,59 @@ export default function AdminDashboard() {
     <div style={{ background: bgMain, minHeight: '100vh', fontFamily: 'Poppins, sans-serif', color: textPrimary, transition: 'background-color 0.2s, color 0.2s' }}>
 
       {/* ── Toast Notification Overlay ── */}
-      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '10px', pointerEvents: 'none' }}>
+      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, display: 'flex', flexDirection: 'column-reverse', gap: '10px', pointerEvents: 'none', maxWidth: '380px' }}>
         {toasts.map(toast => (
-          <div key={toast.id} style={{
-            background: toast.type === 'error' ? '#fef2f2' : '#f0fdf4',
-            border: `1.5px solid ${toast.type === 'error' ? '#fca5a5' : '#86efac'}`,
-            color: toast.type === 'error' ? '#b91c1c' : '#15803d',
-            borderRadius: '12px', padding: '12px 18px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            fontSize: '13.5px', fontWeight: 600, maxWidth: '340px',
-            display: 'flex', alignItems: 'center', gap: '10px',
-            animation: 'slideInToast 0.3s ease',
-            pointerEvents: 'auto',
-          }}>
-            <span>{toast.type === 'error' ? '⚠️' : '✅'}</span>
-            {toast.message}
+          <div
+            key={toast.id}
+            style={{
+              background: toast.type === 'error' ? '#1e1e1e' : '#0f172a',
+              borderLeft: `4px solid ${toast.type === 'error' ? '#ef4444' : '#22c55e'}`,
+              color: '#f8fafc',
+              borderRadius: '12px',
+              padding: '14px 18px 10px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.35)',
+              fontSize: '13.5px',
+              fontWeight: 600,
+              maxWidth: '380px',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              animation: 'slideInToast 0.35s cubic-bezier(0.22,1,0.36,1)',
+              pointerEvents: 'auto',
+              cursor: 'pointer',
+            }}
+            onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '18px', flexShrink: 0 }}>
+                {toast.type === 'error' ? '❌' : '✅'}
+              </span>
+              <span style={{ flex: 1, lineHeight: 1.4 }}>{toast.message}</span>
+              <span style={{ fontSize: '16px', opacity: 0.5, marginLeft: '4px' }}>×</span>
+            </div>
+            {/* Auto-dismiss progress bar */}
+            <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(255,255,255,0.12)', overflow: 'hidden' }}>
+              <div style={{
+                height: '100%',
+                borderRadius: '2px',
+                background: toast.type === 'error' ? '#ef4444' : '#22c55e',
+                animation: 'toastProgress 4s linear forwards',
+              }} />
+            </div>
           </div>
         ))}
       </div>
-      <style>{`@keyframes slideInToast { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }`}</style>
+      <style>{`
+        @keyframes slideInToast {
+          from { opacity: 0; transform: translateX(60px) scale(0.95); }
+          to   { opacity: 1; transform: translateX(0)   scale(1); }
+        }
+        @keyframes toastProgress {
+          from { width: 100%; }
+          to   { width: 0%; }
+        }
+      `}</style>
 
       <style>{`
         :root {
