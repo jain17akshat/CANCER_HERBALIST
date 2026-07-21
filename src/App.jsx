@@ -37,6 +37,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 import StickyMobileBar from './components/StickyMobileBar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
+import RouteLoader from './components/RouteLoader';
 import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider } from './context/CartContext';
 import { ContentProvider } from './context/ContentContext';
@@ -83,38 +84,40 @@ function App() {
             <Navbar />
 
             <main style={{ flex: 1 }}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/services" element={<Navigate to="/care-programs" replace />} />
-                <Route path="/treatment-methods" element={<TreatmentMethods />} />
-                <Route path="/care-programs" element={<CarePrograms />} />
-                <Route path="/doctors" element={<Doctors />} />
-                <Route path="/testimonials" element={<Testimonials />} />
-                <Route path="/testimonials/:id" element={<StoryDetail />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:id" element={<BlogDetail />} />
-                <Route path="/services/:id" element={<ServiceDetail />} />
-                <Route path="/patient-education" element={<PatientEducation />} />
-                <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
-                <Route path="/store" element={<Store />} />
-                <Route path="/store/:id" element={<ProductDetail />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/order-success" element={<OrderSuccess />} />
-                <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/track-order" element={<TrackOrder />} />
-                <Route style={{ contentVisibility: 'auto' }} path="/my-orders" element={<MyOrders />} />
-                <Route path="/order-details/:orderId" element={<OrderDetails />} />
-                <Route path="/faqs" element={<OrderFAQ />} />
-                <Route path="/consent" element={<ZohoConsent />} />
-                <Route path="/support" element={<Support />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-                <Route path="/refund-policy" element={<RefundPolicy />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <RouteLoader>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/services" element={<Navigate to="/care-programs" replace />} />
+                  <Route path="/treatment-methods" element={<TreatmentMethods />} />
+                  <Route path="/care-programs" element={<CarePrograms />} />
+                  <Route path="/doctors" element={<Doctors />} />
+                  <Route path="/testimonials" element={<Testimonials />} />
+                  <Route path="/testimonials/:id" element={<StoryDetail />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:id" element={<BlogDetail />} />
+                  <Route path="/services/:id" element={<ServiceDetail />} />
+                  <Route path="/patient-education" element={<PatientEducation />} />
+                  <Route path="/patient-education/tcells-vs-nk-cells" element={<TCellsVsNKCells />} />
+                  <Route path="/store" element={<Store />} />
+                  <Route path="/store/:id" element={<ProductDetail />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/order-success" element={<OrderSuccess />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/track-order" element={<TrackOrder />} />
+                  <Route style={{ contentVisibility: 'auto' }} path="/my-orders" element={<MyOrders />} />
+                  <Route path="/order-details/:orderId" element={<OrderDetails />} />
+                  <Route path="/faqs" element={<OrderFAQ />} />
+                  <Route path="/consent" element={<ZohoConsent />} />
+                  <Route path="/support" element={<Support />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms-of-service" element={<TermsOfService />} />
+                  <Route path="/refund-policy" element={<RefundPolicy />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </RouteLoader>
             </main>
 
             <Footer />
