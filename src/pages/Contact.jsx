@@ -12,14 +12,10 @@ const ACCENT = '#38bed5';
 
 // Time slots for each day
 const TIME_SLOTS = [
-  '09:00 AM', '09:30 AM',
-  '10:00 AM', '10:30 AM',
-  '11:00 AM', '11:30 AM',
-  '12:00 PM', '12:30 PM',
-  '02:00 PM', '02:30 PM',
-  '03:00 PM', '03:30 PM',
-  '04:00 PM', '04:30 PM',
-  '05:00 PM', '05:30 PM',
+  '11:00 AM - 12:00 PM',
+  '12:00 PM - 01:00 PM',
+  '02:00 PM - 03:00 PM',
+  '03:00 PM - 04:00 PM',
 ];
 
 // Available days Mon–Sat — generates next 30 days
@@ -328,7 +324,7 @@ export default function Contact() {
                       Select Time Slot for {formData.selectedDay.label} *
                       {slotsLoading && <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: 400, marginLeft: '8px' }}>Loading availability…</span>}
                     </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(80px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
                       {TIME_SLOTS.map((slot) => {
                         const selected = formData.selectedSlot === slot;
                         const isBooked = bookedSlots.includes(slot);
