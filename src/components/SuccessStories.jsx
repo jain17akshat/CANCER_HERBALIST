@@ -6,48 +6,48 @@ import Reviews from './Reviews';
 const caseStudies = [
   {
     id: 'breast',
-    tabTitle: 'Breast Cancer (Stage 3)',
-    patientName: 'Patient S. H.',
-    ageGender: '42, Female',
-    diagnosis: 'Infiltrating Ductal Carcinoma, HER2 Positive',
+    tabTitle: 'Breast Cancer Support',
+    patientName: 'Friend of Nayana Gowda',
+    ageGender: 'Female',
+    diagnosis: 'Breast Cancer (Post-Chemo Integration)',
     duration: '12 Months Support',
     biomarkers: [
-      { metric: 'Immune cell count (NK)', pre: 'Deficient (180)', post: 'Optimized (420)' },
-      { metric: 'Quality-of-Life Score', pre: '35/100', post: '88/100' },
-      { metric: 'Inflammatory Markers (hs-CRP)', pre: '8.4 mg/L', post: '1.2 mg/L' }
+      { metric: 'Treatment Side Effects', pre: 'Severe Chemo Distress', post: 'Relieved / Minimal' },
+      { metric: 'Quality-of-Life Score', pre: 'Poor', post: 'Normalized / Stable' },
+      { metric: 'Treatment Compatibility', pre: 'High Toxicity Risk', post: 'Compatible & Economical' }
     ],
-    protocol: 'Cellular vitality tinctures, active green botanical infusions, custom low-inflammatory dietary guidelines.',
-    clinicalSummary: 'The patient integrated herbal support in combination with her conventional targeted therapy. Biomarker scans showed stable cardiac protection, zero severe fatigue, and complete cellular healing post-resection.',
+    protocol: 'Non-hormonal immune-modulating phytotherapy, vital organ protection extracts, customized dietary guidelines.',
+    clinicalSummary: 'The patient integrated personalized herbal support to mitigate chemotherapy toxicity. The protocol was highly compatible, economical, and helped her achieve complete stability and relief without adverse side effects.',
+  },
+  {
+    id: 'adrenal',
+    tabTitle: 'Pediatric Adrenal Cancer',
+    patientName: 'Sarvesh (Son of Anand Keerthana)',
+    ageGender: '2 Years, Male',
+    diagnosis: 'Adrenal Cancer with bone metastasis (post-chemo/radiotherapy)',
+    duration: '6 Months Support',
+    biomarkers: [
+      { metric: 'Leg Bone Metastasis', pre: 'Active Spread', post: 'Inactive / Stable' },
+      { metric: 'Pain & Swelling', pre: 'Severe / Debilitating', post: 'Fully Resolved' },
+      { metric: 'Body Weight', pre: 'Underweight', post: '+3 kg Gained' }
+    ],
+    protocol: 'Pediatric-safe phytotherapy protocol, bone-supportive herbal extracts, customized easy-to-digest nutrition charts.',
+    clinicalSummary: 'Following conventional surgery, radiotherapy, and chemotherapy, follow-up scans revealed bone metastasis. Within 6 months of starting complementary herbal therapy, the child became highly active, pain-free, bone lesions stabilized as inactive, and he gained 3 kg.',
   },
   {
     id: 'colon',
-    tabTitle: 'Colon Cancer (Stage 4)',
-    patientName: 'Patient R. B.',
-    ageGender: '58, Male',
-    diagnosis: 'Adenocarcinoma with secondary hepatic lesions',
-    duration: '18 Months Support',
+    tabTitle: 'Advanced Colon Cancer',
+    patientName: 'Uncle of Subash Ricardo S',
+    ageGender: 'Male',
+    diagnosis: 'Advanced Colon Cancer (Late-stage Chemotherapy support)',
+    duration: 'Several Months Care',
     biomarkers: [
-      { metric: 'CEA Tumor Marker', pre: '45.0 ng/mL', post: '1.8 ng/mL (Normal)' },
-      { metric: 'Liver Enzyme (ALT)', pre: 'Elevated (110 U/L)', post: 'Normal (32 U/L)' },
-      { metric: 'Weight Stability', pre: '-12kg Loss', post: '+8kg Recovered' }
+      { metric: 'Chemo-induced Distress', pre: 'Severe Fatigue & Pain', post: 'Eased / Manageable' },
+      { metric: 'Digestive Comfort', pre: 'Critical Appetite Loss', post: 'Improved Food Intake' },
+      { metric: 'Quality-of-Life Duration', pre: 'Low Vitality', post: 'Maintained Comfortably' }
     ],
-    protocol: 'Hepatoprotective botanical extracts, gut mucosa barrier-repair powders, organic cellular detox syrups.',
-    clinicalSummary: 'The patient sought complementary care to assist liver regeneration during systemic treatment. Follow-up CT scans demonstrated a reduction in secondary lesions, and blood reports indicated normalized liver function.',
-  },
-  {
-    id: 'blood',
-    tabTitle: 'Blood Cancer (CLL)',
-    patientName: 'Patient K. D.',
-    ageGender: '65, Male',
-    diagnosis: 'Chronic Lymphocytic Leukemia (CLL) - Watch & Wait Phase',
-    duration: '24 Months Support',
-    biomarkers: [
-      { metric: 'White Blood Cell Count', pre: '52,000 /µL', post: '14,500 /µL (Stable)' },
-      { metric: 'Hemoglobin Levels', pre: '10.2 g/dL', post: '13.8 g/dL' },
-      { metric: 'Spleen Dimension', pre: 'Moderate Splenomegaly', post: 'Fully Normalized' }
-    ],
-    protocol: 'Blood-vitality adaptogens, spleen lymphatic-draining concentrates, micro-nutrition support capsules.',
-    clinicalSummary: 'During the clinical "Watch & Wait" window, the patient utilized specific herbal extraction blends. Two years of follow-up reports show stabilized leukocyte graphs, preventing the immediate need for aggressive chemotherapy.',
+    protocol: 'Hepatoprotective liver-safe herbs, digestive comfort extracts, weekly follow-up consultations.',
+    clinicalSummary: 'Integrated the herbal support plan in the very late stages of advanced colon cancer after multiple cycles of chemotherapy. Although the patient later passed away, the protocol provided crucial comfort, support, and pain relief for several months.',
   },
 ];
 

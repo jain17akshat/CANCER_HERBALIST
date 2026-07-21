@@ -12,6 +12,7 @@ import Stats from '../components/Stats';
 import TrustBadges from '../components/TrustBadges';
 import TreatmentProcess from '../components/TreatmentProcess';
 import SuccessStories from '../components/SuccessStories';
+import IntegrativeTherapies from '../components/IntegrativeTherapies';
 import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
@@ -314,117 +315,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══ NEW: Featured Treatments ═══ */}
-      <section
-        className="section-padding"
-        style={{
-          background: 'linear-gradient(180deg, var(--gray-1) 0%, var(--white) 100%)',
-          position: 'relative',
-        }}
-      >
-        <div className="container">
-          <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '56px' }}>
-            <span className="section-badge">
-              <FaFlask /> Advanced Therapeutics
-            </span>
-            <h2 className="section-title">
-              Featured <span>Treatments</span>
-            </h2>
-            <p className="section-subtitle" style={{ margin: '0 auto' }}>
-              Explore our core botanical modalities and complementary therapies designed to support cancer warriors.
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))',
-              gap: '24px',
-            }}
-          >
-            {[
-              {
-                title: 'Herbal Chemotherapy (HCT)',
-                icon: <FaLeaf />,
-                color: '#1a6e52',
-                desc: 'Phytochemical formulations designed to target abnormal pathways, downregulate oncogenes, and inhibit abnormal cell reproduction.',
-              },
-              {
-                title: 'Nutrition Therapy (NT)',
-                icon: <FaAppleAlt />,
-                color: '#e28743',
-                desc: 'Organ-protecting, anti-inflammatory nutritional regimens designed to optimize immunity, starve tumor cells, and prevent cachexia.',
-              },
-              {
-                title: 'Immune Optimization',
-                icon: <FaHeartbeat />,
-                color: '#e056fd',
-                desc: 'Targeted adaptogens and standard immunomodulators that boost Natural Killer (NK) cells and T-cell defense markers.',
-              },
-              {
-                title: 'Medication Screening',
-                icon: <FaShieldAlt />,
-                color: '#38bed5',
-                desc: 'Strict screening protocols to check for drug-herb interactions, ensuring all formulations work safely with conventional chemotherapy.',
-              },
-            ].map((treat, i) => (
-              <motion.div
-                key={treat.title}
-                data-aos="fade-up"
-                data-aos-delay={i * 100}
-                whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
-                style={{
-                  background: 'white',
-                  borderRadius: '24px',
-                  padding: '36px 30px',
-                  boxShadow: 'var(--shadow-md)',
-                  border: '1px solid rgba(56, 190, 213, 0.12)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <div
-                  style={{
-                    width: '56px',
-                    height: '56px',
-                    borderRadius: '14px',
-                    background: `${treat.color}15`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '22px',
-                    color: treat.color,
-                    marginBottom: '22px',
-                  }}
-                >
-                  {treat.icon}
-                </div>
-                <h3
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: 'var(--dark-2)',
-                    marginBottom: '12px',
-                    fontFamily: 'Playfair Display, serif',
-                  }}
-                >
-                  {treat.title}
-                </h3>
-                <p style={{ fontSize: '13.5px', color: 'var(--gray-3)', lineHeight: '1.7', margin: 0 }}>
-                  {treat.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div style={{ textAlign: 'center', marginTop: '48px' }} data-aos="fade-up">
-            <Link to="/treatment-methods" className="btn-primary">
-              Learn About Our Methods <FaArrowRight />
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* ═══ NEW: Integrative Therapies ═══ */}
+      <IntegrativeTherapies />
 
       <TreatmentProcess />
 
