@@ -42,9 +42,9 @@ export const defaultWebsiteContent = {
     {
       id: 1,
       badge: '🌿 Natural Cancer Treatment Specialists',
-      headline: 'Fight Cancer Holistically',
-      headlineAccent: 'Holistically',
-      subline: 'Combining ancient herbal wisdom with modern medical knowledge for personalized cancer support.',
+      headline: 'Compassionate, Integrative Cancer Care',
+      headlineAccent: 'Integrative Cancer Care',
+      subline: 'Healing the body. Calming the mind. Nourishing the spirit.',
       highlights: [
         'Natural Herbal Treatments',
         'Certified Practitioners',
@@ -53,7 +53,7 @@ export const defaultWebsiteContent = {
       ],
       statValue: '4000+',
       statLabel: 'Patients Supported',
-      ctaLabel: 'Book Free Consultation',
+      ctaLabel: 'Book an Appointment',
       ctaHref: '/contact',
       secondaryCtaLabel: 'Watch Story',
       secondaryCtaHref: '/testimonials'

@@ -34,6 +34,13 @@ const servicesData = {
       'Dense breast tissue and history of certain benign breast conditions.',
       'Lifestyle factors including alcohol consumption and high systemic inflammation.'
     ],
+    conventionalTreatments: [
+      { name: 'Surgery', desc: 'Lumpectomy or mastectomy to physically remove tumor tissues and verify lymph node involvement.' },
+      { name: 'Chemotherapy', desc: 'Systemic cytotoxic drugs used to destroy rapidly dividing cancer cells, often before (neoadjuvant) or after (adjuvant) surgery.' },
+      { name: 'Radiation Therapy', desc: 'High-energy X-rays targeted at the breast area to eliminate any microscopic cancer cells remaining after surgery.' },
+      { name: 'Hormone Therapy', desc: 'Estrogen-blocking medications (Tamoxifen, Aromatase Inhibitors) prescribed for hormone-receptor-positive (ER+/PR+) cancers.' },
+      { name: 'Targeted & Immunotherapy', desc: 'Advanced drugs (like Herceptin) targeting specific protein receptors (HER2) or boosting immune-mediated clearance.' }
+    ],
     integrativeSupport: [
       {
         title: 'Herbal Nutritional Support',
@@ -107,6 +114,13 @@ const servicesData = {
       'Inhalation of environmental carcinogens (radon, asbestos, silica, or diesel exhaust).',
       'Pre-existing chronic lung diseases (COPD, pulmonary fibrosis).',
       'Family history of lung diseases or general genetic susceptibility.'
+    ],
+    conventionalTreatments: [
+      { name: 'Surgery', desc: 'Surgical removal of a lung lobe (lobectomy), segment, or the entire lung to excise localized tumors.' },
+      { name: 'Chemotherapy', desc: 'Intravenous drugs targeted at stopping cancer cells throughout the body from dividing, frequently used for advanced stages.' },
+      { name: 'Radiation Therapy', desc: 'Targeted high-energy beams to shrink tumors and treat localized regions, often combined with chemotherapy.' },
+      { name: 'Targeted Drug Therapy', desc: 'Focuses on specific genetic mutations (like EGFR or ALK) commonly present in non-small cell lung cancer (NSCLC).' },
+      { name: 'Immunotherapy', desc: 'Monoclonal antibodies (checkpoint inhibitors) that help the patient’s own immune system identify and destroy lung cancer cells.' }
     ],
     integrativeSupport: [
       {
@@ -182,6 +196,13 @@ const servicesData = {
       'Sedentary lifestyle, obesity, and insulin resistance.',
       'Genetic syndromes like Lynch syndrome (HNPCC) or Familial Adenomatous Polyposis (FAP).'
     ],
+    conventionalTreatments: [
+      { name: 'Surgery', desc: 'Surgical resection (colectomy) to remove the cancerous section of the colon along with nearby lymph nodes.' },
+      { name: 'Chemotherapy', desc: 'Post-operative systemic drugs (adjuvant chemotherapy) to eradicate microscopic cancer cells and reduce recurrence risk.' },
+      { name: 'Radiation Therapy', desc: 'Often used for rectal cancers before surgery to shrink tumors, or to control symptoms in advanced colon cancer.' },
+      { name: 'Targeted Therapy', desc: 'Drugs targeting specific molecular pathways (VEGF, EGFR) to restrict blood supply to tumors or stop growth signals.' },
+      { name: 'Immunotherapy', desc: 'Indicated for advanced colorectal cancers with specific genetic features (MSI-H or dMMR).' }
+    ],
     integrativeSupport: [
       {
         title: 'Gut Health & Microbiota Support',
@@ -253,6 +274,13 @@ const servicesData = {
       'Family history of prostate, breast, or ovarian cancers.',
       'Diets rich in saturated animal fats and low in protective phytonutrients.',
       'Chronic pelvic inflammation and environmental exposures.'
+    ],
+    conventionalTreatments: [
+      { name: 'Active Surveillance', desc: 'Close monitoring with regular PSA tests and biopsies for low-risk, slow-growing prostate cancers.' },
+      { name: 'Surgery', desc: 'Radical prostatectomy to surgically remove the entire prostate gland and surrounding seminal vesicles.' },
+      { name: 'Radiation Therapy', desc: 'External beam radiation or brachytherapy (radioactive seed implants) targeting the prostate gland directly.' },
+      { name: 'Hormone Therapy (ADT)', desc: 'Androgen Deprivation Therapy to lower testosterone levels, which prostate cancer cells rely on to grow.' },
+      { name: 'Chemotherapy & Targeted Agents', desc: 'Systemic treatments reserved for advanced, metastatic, or castrate-resistant prostate cancers.' }
     ],
     integrativeSupport: [
       {
@@ -327,6 +355,13 @@ const servicesData = {
       'Heavy long-term alcohol consumption.',
       'Exposure to environmental liver toxins, industrial chemicals, or aflatoxins.'
     ],
+    conventionalTreatments: [
+      { name: 'Surgical Resection', desc: 'Partial hepatectomy to remove the tumor and a margin of healthy tissue, suitable for patients with good liver function.' },
+      { name: 'Liver Transplantation', desc: 'Replacing the diseased liver with a healthy donor liver, which addresses both the tumor and underlying cirrhosis.' },
+      { name: 'Localized Ablation & Embolization', desc: 'Using heat (RFA), cold (cryo), or blocking blood supply (TACE/TAE) to destroy cancer cells locally.' },
+      { name: 'Targeted Drug Therapy', desc: 'Systemic tyrosine kinase inhibitors (e.g., Sorafenib) designed to block tumor blood vessel growth and cell division signals.' },
+      { name: 'Immunotherapy', desc: 'Combining immune checkpoint inhibitors to assist T-cells in recognizing and attacking primary liver cancer cells.' }
+    ],
     integrativeSupport: [
       {
         title: 'Hepatoprotective Support',
@@ -399,6 +434,13 @@ const servicesData = {
       'Pre-existing immune system disorders or history of certain viral infections (e.g. EBV).',
       'Advancing age, although certain leukemias and lymphomas commonly affect children.',
       'Family history or underlying genetic conditions like Down syndrome.'
+    ],
+    conventionalTreatments: [
+      { name: 'Chemotherapy', desc: 'The primary treatment using potent drugs to kill leukemia, lymphoma, or myeloma cells in the blood and bone marrow.' },
+      { name: 'Radiation Therapy', desc: 'Targeted radiation to reduce pain in bone lesions or shrink swollen lymph nodes and spleen tissues.' },
+      { name: 'Stem Cell / Bone Marrow Transplant', desc: 'Infusing healthy stem cells to restore bone marrow function after intensive high-dose chemotherapy.' },
+      { name: 'Targeted Therapy', desc: 'Drugs designed to attack specific abnormalities within leukemia or lymphoma cells (e.g., tyrosine kinase inhibitors).' },
+      { name: 'Immunotherapy & CAR-T Cell Therapy', desc: 'Engineering patient T-cells or using monoclonal antibodies to target specific proteins on blood cancer cells.' }
     ],
     integrativeSupport: [
       {
@@ -656,6 +698,57 @@ export default function ServiceDetail() {
 
           </div>
         </div>
+
+        {/* Conventional Treatments */}
+        {service.conventionalTreatments && (
+          <motion.section 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            style={{ marginBottom: '60px' }}
+          >
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <span className="section-badge" style={{ background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}>
+                <FaRegHospital /> Standard Medical Care
+              </span>
+              <h2 className="section-title" style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}>
+                Conventional <span>Treatments</span>
+              </h2>
+              <p className="section-subtitle" style={{ margin: '0 auto', color: 'var(--gray-3)' }}>
+                Standard oncology treatments commonly used for primary tumor control and systemic cancer elimination.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '24px' }}>
+              {service.conventionalTreatments.map((item, i) => (
+                <motion.div
+                  key={i}
+                  whileHover={{ y: -6, boxShadow: 'var(--shadow-lg)' }}
+                  style={{
+                    background: 'white',
+                    borderRadius: '20px',
+                    padding: '28px',
+                    border: '1px solid var(--gray-2)',
+                    boxShadow: 'var(--shadow-sm)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', fontSize: '16px' }}>
+                      <FaRegHospital />
+                    </div>
+                    <h4 style={{ color: 'var(--dark-2)', fontWeight: 700, fontSize: '1.05rem', margin: 0 }}>{item.name}</h4>
+                  </div>
+                  <p style={{ color: 'var(--gray-3)', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
         {/* Our Integrative Nutritional Support */}
         <motion.section 

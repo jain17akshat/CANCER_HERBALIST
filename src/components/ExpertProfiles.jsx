@@ -1,41 +1,37 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaUserMd, FaGraduationCap, FaBriefcase, FaRegEnvelope } from 'react-icons/fa';
-const experts = [
+import { FaUserMd, FaGraduationCap, FaBriefcase } from 'react-icons/fa';
+import { useContent } from '../context/ContentContext';
+
+const staticExperts = [
   {
-    name: 'Dr. Evelyn Carter',
-    role: 'MD, PhD - Integrative Oncologist',
+    id: 1,
+    name: 'Prof. Ramesh Babu',
+    role: 'Pharmacologist — M.Pharm, PhD',
     experience: '22 Years Experience',
-    specialty: 'Clinical Oncology & Herbal Medicine Integration',
-    bio: 'Dr. Carter is a certified oncologist with over two decades of experience bridging mainstream cancer treatments with natural herbal support protocols.',
-    edu: 'Harvard Medical School (MD), Stanford (PhD in Herbology)',
-    image: 'https://drive.google.com/uc?export=view&id=1HAnp9RhEH6-IZXF7wM3UPqZTlvJ6GZcL',
+    specialty: 'Integrative Pharmacology & Herbal Oncology',
+    bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD in Pharmaceutical Sciences, demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.',
+    image: '/images/doctor1.png',
   },
   {
-    name: 'Dr. Marcus Vance',
-    role: 'ND - Naturopathic Physician',
-    specialty: 'Cancer Nutrition & Immunotherapy Botanicals',
-    bio: 'Dr. Vance specializes in developing metabolic diets and botanical support formulations that optimize patient cellular defense during treatment.',
-    edu: 'Bastyr University (ND - Doctor of Naturopathic Medicine)',
-    image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=400&h=500',
-  },
-  {
-    name: 'Prof. Aisha Rahman',
-    role: 'PhD - Botanical Pharmacology Scientist',
-    experience: '25 Years Experience',
-    specialty: 'Phytochemical Screening & Cancer Cell Research',
-    bio: 'Professor Rahman leads our research team, analyzing bioactive compounds in rare plants to validate their efficacy against abnormal cell lines.',
-    edu: 'Oxford University (PhD in Pharmacy & Organic Chemistry)',
-    image: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&q=80&w=400&h=500',
+    id: 2,
+    name: 'Nutraceutical Team',
+    role: 'Multidisciplinary Research & Care Team',
+    specialty: 'Clinical Nutrition, Herbal Research & Patient Support',
+    bio: "Comprised of dedicated professionals from diverse medical, research, and healthcare backgrounds, our team works collaboratively to deliver comprehensive care and personalized support to every patient. By combining clinical expertise, evidence-based practices, and a patient-centered approach, we strive to address each individual's unique needs throughout their treatment journey.",
+    image: '/images/doctor33.png',
   },
 ];
 
 export default function ExpertProfiles() {
+  const { content } = useContent();
+  const doctorsList = content?.doctorsList || staticExperts;
+
   return (
     <section
       id="experts"
       className="section-padding"
-      style={{ background: 'var(--gray-1)' }}
+      style={{ background: 'var(--white)' }}
     >
       <div className="container">
         <div data-aos="fade-up" style={{ textAlign: 'center', marginBottom: '56px' }}>
@@ -43,7 +39,7 @@ export default function ExpertProfiles() {
             <FaUserMd /> Clinical & Research Team
           </span>
           <h2 className="section-title">
-            Our Certified <span>Experts</span>
+            Meet Our <span>Specialists</span>
           </h2>
           <p className="section-subtitle" style={{ margin: '0 auto' }}>
             Meet our multidisciplinary team of medical doctors, naturopaths, and botanical researchers dedicated to your recovery.
@@ -53,13 +49,15 @@ export default function ExpertProfiles() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))',
             gap: '30px',
+            maxWidth: '1000px',
+            margin: '0 auto',
           }}
         >
-          {experts.map((expert, i) => (
+          {doctorsList.map((expert, i) => (
             <motion.div
-              key={expert.name}
+              key={expert.id || expert.name}
               data-aos="fade-up"
               data-aos-delay={i * 150}
               whileHover={{ y: -8 }}
@@ -70,11 +68,11 @@ export default function ExpertProfiles() {
                 boxShadow: 'var(--shadow-md)',
                 display: 'flex',
                 flexDirection: 'column',
-                border: '1px solid rgba(0,0,0,0.05)',
+                border: '1px solid rgba(56, 190, 213, 0.15)',
               }}
             >
               {/* Image Frame */}
-              <div style={{ height: '320px', overflow: 'hidden', position: 'relative' }}>
+              <div style={{ height: '340px', overflow: 'hidden', position: 'relative', background: '#f8fafc' }}>
                 <img
                   src={expert.image}
                   alt={expert.name}
@@ -84,7 +82,7 @@ export default function ExpertProfiles() {
                     objectFit: 'cover',
                     transition: 'transform 0.5s ease',
                   }}
-                  onMouseEnter={(e) => (e.target.style.transform = 'scale(1.08)')}
+                  onMouseEnter={(e) => (e.target.style.transform = 'scale(1.05)')}
                   onMouseLeave={(e) => (e.target.style.transform = 'scale(1.0)')}
                 />
               </div>
@@ -97,13 +95,14 @@ export default function ExpertProfiles() {
                     fontWeight: '700',
                     color: 'var(--dark-2)',
                     marginBottom: '4px',
+                    fontFamily: 'Playfair Display, serif',
                   }}
                 >
                   {expert.name}
                 </h3>
                 <div
                   style={{
-                    color: 'var(--primary-dark)',
+                    color: '#2ca8be',
                     fontSize: '14px',
                     fontWeight: '600',
                     marginBottom: '16px',
@@ -114,9 +113,9 @@ export default function ExpertProfiles() {
 
                 <p
                   style={{
-                    fontSize: '13.5px',
+                    fontSize: '14px',
                     color: 'var(--gray-3)',
-                    lineHeight: '1.6',
+                    lineHeight: '1.75',
                     marginBottom: '20px',
                   }}
                 >
@@ -134,28 +133,30 @@ export default function ExpertProfiles() {
                     gap: '10px',
                   }}
                 >
+                  {expert.experience && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '13px',
+                        color: 'var(--dark-3)',
+                      }}
+                    >
+                      <FaGraduationCap style={{ color: '#38bed5', fontSize: '15px', flexShrink: 0 }} />
+                      <span style={{ fontWeight: '500' }}>{expert.experience}</span>
+                    </div>
+                  )}
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      fontSize: '12px',
+                      fontSize: '13px',
                       color: 'var(--dark-3)',
                     }}
                   >
-                    <FaGraduationCap style={{ color: 'var(--primary)', fontSize: '15px', flexShrink: 0 }} />
-                    <span style={{ fontWeight: '500' }}>{expert.edu}</span>
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      fontSize: '12px',
-                      color: 'var(--dark-3)',
-                    }}
-                  >
-                    <FaBriefcase style={{ color: 'var(--secondary)', fontSize: '14px', flexShrink: 0 }} />
+                    <FaBriefcase style={{ color: '#1a6e52', fontSize: '14px', flexShrink: 0 }} />
                     <span style={{ fontWeight: '500' }}>{expert.specialty}</span>
                   </div>
                 </div>
