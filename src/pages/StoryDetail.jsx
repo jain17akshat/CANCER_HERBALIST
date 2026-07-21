@@ -11,7 +11,7 @@ const storyData = {
     condition: 'Hodgkin Lymphoma',
     status: 'Age 33 | Chemo No Response | NT & HCT Integration',
     videoUrl: 'https://www.youtube.com/embed/i5VuQjcV30w',
-    thumbnail: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=1600&h=900',
+    thumbnail: 'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&q=80&w=1600&h=900',
     readTime: '10 min read',
     date: 'January 15, 2026',
     content: [
@@ -50,7 +50,7 @@ const storyData = {
     condition: 'Blood Cancer (MDS)',
     status: 'Transfusion-Free & Active',
     videoUrl: 'https://www.youtube.com/embed/t6YiUIBDANk',
-    thumbnail: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=1600&h=900',
+    thumbnail: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&q=80&w=1600&h=900',
     readTime: '9 min read',
     date: 'March 5, 2026',
     content: [
@@ -89,7 +89,7 @@ const storyData = {
     condition: 'Lung Cancer (Stage 4)',
     status: 'Complete PET Scan Remission',
     videoUrl: 'https://www.youtube.com/embed/3awpZRSwE1A',
-    thumbnail: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&q=80&w=1600&h=900',
+    thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=1600&h=900',
     readTime: '11 min read',
     date: 'April 18, 2026',
     content: [

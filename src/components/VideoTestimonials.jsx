@@ -9,7 +9,7 @@ const videos = [
     condition: 'Hodgkin Lymphoma',
     status: 'Age 33 | Chemo No Response | NT & HCT Integration',
     title: 'When conventional chemotherapy failed, integrating HCT & Nutritional Therapy stabilized my condition.',
-    thumbnail: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600&h=400',
+    thumbnail: 'https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&q=80&w=600&h=400',
     videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Placeholder video URL
     summary: `Introduction to HCT Integration:
 - Diagnosed with Hodgkin Lymphoma at age 33.
@@ -27,7 +27,7 @@ Outcome & Progress:
     condition: 'Blood Cancer (MDS)',
     status: 'Transfusion-Free & Active',
     title: 'Customized Herbal Nutraceuticals eliminated the need for biweekly blood transfusions.',
-    thumbnail: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=600&h=400',
+    thumbnail: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&q=80&w=600&h=400',
     videoUrl: 'https://www.youtube.com/embed/t6YiUIBDANk',
     summary: `Patient Profile & Medical History:
 - Female patient, aged 78, diagnosed with Blood Cancer (Myelodysplastic Syndrome - MDS).
@@ -48,7 +48,7 @@ Clinical Outcomes:
     condition: 'Lung Cancer (Stage 4)',
     status: 'Complete PET Scan Remission',
     title: 'PET scan failed to detect cancer in the whole body after Nutrition Therapy intervention.',
-    thumbnail: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&q=80&w=600&h=400',
+    thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=600&h=400',
     videoUrl: 'https://www.youtube.com/embed/3awpZRSwE1A',
     summary: `Patient Profile & Medical History:
 - Diagnosed with Stage IV (Stage 4) Lung Cancer in January 2018.
