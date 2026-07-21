@@ -49,6 +49,31 @@ const faqs = [
     a: 'In most cases formulations would be readily available for patients. In few cases special formulations would have to be prepared which would require a day or two. Prior information would reduce the delay.',
     keywords: ['procure', 'time to get', 'delivery', 'ready', 'available', 'preparation time', 'how soon'],
   },
+  {
+    q: 'Is everyone eligible for Herbal Chemotherapy?',
+    a: 'Yes, everyone is eligible for Herbal Chemotherapy. Since it utilizes safe, non-toxic, and premium standardized botanical extracts tailored to each patient’s specific pathology and organ filtration capacity, it is suitable for individuals of all ages and health conditions.',
+    keywords: ['eligible', 'eligibility', 'everyone eligible', 'who is eligible'],
+  },
+  {
+    q: 'Is there a recovery time required for Herbal Chemotherapy?',
+    a: 'No recovery time is required as there are no serious side effects from Herbal Chemotherapy. Unlike conventional cytotoxic chemotherapy, HCT is gentle on the body and does not cause systemic toxicity, hair loss, or organ strain, allowing patients to maintain their daily routine.',
+    keywords: ['recovery', 'recovery time', 'side effects', 'serious side effects'],
+  },
+  {
+    q: 'Is preparation required before starting Herbal Chemotherapy?',
+    a: 'No preparation is required. You can start Herbal Chemotherapy at the earliest. Our medical and pharmacological team only requires a review of your recent blood panels, diagnostic scans, and current conventional medication list to screen for drug-herb interactions and personalize your formula.',
+    keywords: ['preparation', 'prepare', 'what preparation', 'start chemotherapy'],
+  },
+  {
+    q: 'Are all types of cancers eligible for Herbal Chemotherapy?',
+    a: 'Yes, all types of cancers are eligible for Herbal Chemotherapy. Our protocols are customized to address various malignancies, including breast, lung, colon, prostate, liver, blood, and rare or advanced stage cancers, supporting the body’s healing response.',
+    keywords: ['all cancers', 'all type', 'every cancer', 'types of cancer'],
+  },
+  {
+    q: 'What are the key differences between HCT and conventional therapies?',
+    a: 'There is an ocean of differences. Few key comparisons:\na. HCT works on non-dividing cancer cells.\nb. HCT works on metastasized cancer cells too.\nc. HCT works on CCC (Circulating Cancer Cells) too.\nd. HCT works on CSC (Cancer Stem Cells) too.\nFor complete differences, please visit the last page of our English yellow brochure.',
+    keywords: ['ocean', 'differences', 'comparison', 'non-dividing', 'metastasised', 'ccc', 'csc', 'brochure'],
+  },
 ];
 
 export default function Chatbot() {

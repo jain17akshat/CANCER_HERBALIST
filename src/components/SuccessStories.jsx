@@ -6,18 +6,18 @@ import Reviews from './Reviews';
 const caseStudies = [
   {
     id: 'breast',
-    tabTitle: 'Breast Cancer Support',
-    patientName: 'Friend of Nayana Gowda',
-    ageGender: 'Female',
-    diagnosis: 'Breast Cancer (Post-Chemo Integration)',
-    duration: '12 Months Support',
+    tabTitle: 'Hodgkin Lymphoma',
+    patientName: 'Mr. Sharath',
+    ageGender: '33 Years, Male',
+    diagnosis: 'Hodgkin Lymphoma (Chemo No Response)',
+    duration: '18 Months Support',
     biomarkers: [
-      { metric: 'Treatment Side Effects', pre: 'Severe Chemo Distress', post: 'Relieved / Minimal' },
-      { metric: 'Quality-of-Life Score', pre: 'Poor', post: 'Normalized / Stable' },
-      { metric: 'Treatment Compatibility', pre: 'High Toxicity Risk', post: 'Compatible & Economical' }
+      { metric: 'Chemotherapy Response', pre: 'No Response / Progression', post: 'Stable / Inactive' },
+      { metric: 'Nutritional Therapy (NT)', pre: 'Not Initiated', post: 'Integrated with HCT' },
+      { metric: 'Quality-of-Life Score', pre: 'Poor / Severe Organ Strain', post: 'Optimized / Restored' }
     ],
-    protocol: 'Non-hormonal immune-modulating phytotherapy, vital organ protection extracts, customized dietary guidelines.',
-    clinicalSummary: 'The patient integrated personalized herbal support to mitigate chemotherapy toxicity. The protocol was highly compatible, economical, and helped her achieve complete stability and relief without adverse side effects.',
+    protocol: 'Standardized phytotherapy targeting non-dividing and circulating cells, integrated with Nutritional Therapy (NT) alongside salvage chemotherapy.',
+    clinicalSummary: 'Diagnosed at age 33 with Hodgkin Lymphoma. Conventional chemotherapy yielded no response. Upon initiating customized Herbal Chemotherapy (HCT) combined with intensive Nutritional Therapy (NT) alongside conventional care, the patient experienced minimized toxic effects, stabilized cellular markers, and restored physical strength.',
   },
   {
     id: 'adrenal',
@@ -163,8 +163,8 @@ export default function SuccessStories() {
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--gray-2)', textAlign: 'left' }}>
                           <th style={{ padding: '8px 0', color: 'var(--gray-3)', whiteSpace: 'nowrap' }}>Biomarker / Metric</th>
-                          <th style={{ padding: '8px 0', color: 'var(--red)', whiteSpace: 'nowrap' }}>Pre-Herbal</th>
-                          <th style={{ padding: '8px 0', color: 'var(--primary)', whiteSpace: 'nowrap' }}>Post-Treatment</th>
+                          <th style={{ padding: '8px 0', color: 'var(--red)', whiteSpace: 'nowrap' }}>Pre HCT</th>
+                          <th style={{ padding: '8px 0', color: 'var(--primary)', whiteSpace: 'nowrap' }}>Post HCT</th>
                         </tr>
                       </thead>
                       <tbody>

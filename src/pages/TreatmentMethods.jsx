@@ -1,17 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaLeaf, FaFlask, FaUserMd, FaHeart, FaShieldAlt, FaSeedling,
   FaCalendarAlt, FaFileMedical, FaFileSignature, FaCapsules, FaUserShield,
-  FaCheckCircle, FaArrowRight
+  FaCheckCircle, FaArrowRight, FaChevronDown
 } from 'react-icons/fa';
 import { useContent } from '../context/ContentContext';
 
 const ACCENT = '#38bed5';
 
+const hctFaqs = [
+  {
+    q: 'Is everyone eligible for Herbal Chemotherapy?',
+    a: 'Yes, everyone is eligible for Herbal Chemotherapy. Since it utilizes safe, non-toxic, and premium standardized botanical extracts tailored to each patient’s specific pathology and organ filtration capacity, it is suitable for individuals of all ages and health conditions.'
+  },
+  {
+    q: 'Is there a recovery time required for Herbal Chemotherapy?',
+    a: 'No recovery time is required as there are no serious side effects from Herbal Chemotherapy. Unlike conventional cytotoxic chemotherapy, HCT is gentle on the body and does not cause systemic toxicity, hair loss, or organ strain, allowing patients to maintain their daily routine.'
+  },
+  {
+    q: 'Is preparation required before starting Herbal Chemotherapy?',
+    a: 'No preparation is required. You can start Herbal Chemotherapy at the earliest. Our medical and pharmacological team only requires a review of your recent blood panels, diagnostic scans, and current conventional medication list to screen for drug-herb interactions and personalize your formula.'
+  },
+  {
+    q: 'Are all types of cancers eligible for Herbal Chemotherapy?',
+    a: 'Yes, all types of cancers are eligible for Herbal Chemotherapy. Our protocols are customized to address various malignancies, including breast, lung, colon, prostate, liver, blood, and rare or advanced stage cancers, supporting the body’s healing response.'
+  },
+  {
+    q: 'What are the key differences between HCT and conventional therapies (Ocean of differences)?',
+    a: 'There is an ocean of differences. Few key comparisons:\na. HCT works on non-dividing cancer cells.\nb. HCT works on metastasized cancer cells too.\nc. HCT works on CCC (Circulating Cancer Cells) too.\nd. HCT works on CSC (Cancer Stem Cells) too.\nFor complete differences, please visit the last page of our English yellow brochure.'
+  }
+];
+
 export default function TreatmentMethods() {
   const { content } = useContent();
+  const [openFaq, setOpenFaq] = useState(null);
 
   // Load sections from context or default
   const treatmentMethodsHero = content?.treatmentMethodsHero || {};
@@ -134,6 +158,88 @@ export default function TreatmentMethods() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* FAQs Section */}
+        <section style={{ marginBottom: '70px', marginTop: '30px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 style={{ color: '#0f172a', fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontFamily: 'Playfair Display, serif', marginBottom: '12px', fontWeight: 800 }}>
+              Frequently Asked <span style={{ color: ACCENT }}>Questions</span>
+            </h2>
+            <p style={{ color: '#64748b', maxWidth: '640px', margin: '0 auto', lineHeight: '1.8', fontSize: '0.98rem' }}>
+              Common questions about eligibility, recovery, and the unique mechanisms of Herbal Chemotherapy (HCT).
+            </p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '800px', margin: '0 auto' }}>
+            {hctFaqs.map((faq, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    background: '#fff',
+                    borderRadius: '16px',
+                    border: isOpen ? `1.5px solid ${ACCENT}` : '1.5px solid #e2e8f0',
+                    overflow: 'hidden',
+                    boxShadow: isOpen ? `0 8px 24px ${ACCENT}15` : 'none',
+                    transition: 'all 0.25s ease'
+                  }}
+                >
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : i)}
+                    style={{
+                      width: '100%',
+                      background: isOpen ? `${ACCENT}08` : 'transparent',
+                      border: 'none',
+                      padding: '20px 24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '16px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      outline: 'none'
+                    }}
+                  >
+                    <span style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', fontFamily: 'Poppins, sans-serif' }}>
+                      {faq.q}
+                    </span>
+                    <FaChevronDown
+                      style={{
+                        color: isOpen ? ACCENT : '#94a3b8',
+                        transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.25s ease',
+                        flexShrink: 0
+                      }}
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                      >
+                        <div
+                          style={{
+                            padding: '20px 24px',
+                            borderTop: '1px solid #e2e8f0',
+                            color: '#475569',
+                            fontSize: '0.95rem',
+                            lineHeight: '1.75',
+                            whiteSpace: 'pre-line'
+                          }}
+                        >
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
         </section>
 

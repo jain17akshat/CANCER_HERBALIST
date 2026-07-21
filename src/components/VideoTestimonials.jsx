@@ -5,32 +5,63 @@ import { FaPlay, FaTimes, FaVideo, FaCheckCircle, FaStar } from 'react-icons/fa'
 const videos = [
   {
     id: 1,
-    name: 'Sarah Jenkins',
-    condition: 'Breast Cancer (Stage 3)',
-    status: '5 Years Cancer-Free',
-    title: 'Dr. Carter\'s support plan helped restore my cellular vitality.',
-    thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600&h=400',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',  
+    name: 'Mr. Sharath',
+    condition: 'Hodgkin Lymphoma',
+    status: 'Age 33 | Chemo No Response | NT & HCT Integration',
+    title: 'When conventional chemotherapy failed, integrating HCT & Nutritional Therapy stabilized my condition.',
+    thumbnail: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600&h=400',
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Placeholder video URL
+    summary: `Introduction to HCT Integration:
+- Diagnosed with Hodgkin Lymphoma at age 33.
+- Experienced no response and disease progression with conventional chemotherapy.
+- Initiated intensive Nutritional Therapy (NT) integrated with customized Herbal Chemotherapy (HCT) alongside clinical care.
+
+Outcome & Progress:
+- HCT targeted non-dividing, circulating, and metastasized cells to check progression.
+- Mitigated chemotherapy toxicity, minimized organ strain, and successfully stabilized cell markers.
+- Significantly restored physical strength, muscle mass, and baseline immunological markers.`
   },
   {
     id: 2,
-    name: 'Robert Chen',
-    condition: 'Lung Cancer (Stage 2)',
-    status: '3 Years Stable & Healthy',
-    title: 'The pulmonary herbal blends significantly helped ease my breathing.',
-    thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600&h=400',
+    name: '78-Year-Old Patient',
+    condition: 'Blood Cancer (MDS)',
+    status: 'Transfusion-Free & Active',
+    title: 'Customized Herbal Nutraceuticals eliminated the need for biweekly blood transfusions.',
+    thumbnail: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=600&h=400',
+    videoUrl: 'https://www.youtube.com/embed/t6YiUIBDANk',
+    summary: `Patient Profile & Medical History:
+- Female patient, aged 78, diagnosed with Blood Cancer (Myelodysplastic Syndrome - MDS).
+- Underwent conventional chemotherapy, which was discontinued due to severe, intolerant side effects.
 
+Intervention:
+- Initiated a personalized Herbal Nutraceutical Care Plan from Cancer Herbalist, Bangalore.
 
-    videoUrl: '',
+Clinical Outcomes:
+- Responded immediately within weeks of starting the care plan.
+- Eliminated the need for biweekly blood transfusions entirely.
+- Restored mobility, allowing her to stand and work independently.
+- Drastic reduction in chronic pains, significant improvements in aura, and a greatly enhanced quality of life.`
   },
   {
     id: 3,
-    name: 'Helena Silva',
-    condition: 'Colon Cancer (Stage 4)',
-    status: 'In Full Remission',
-    title: 'Restoring my gut flora naturally changed my whole prognosis.',
-    thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600&h=400',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    name: 'Stage IV Lung Cancer Patient',
+    condition: 'Lung Cancer (Stage 4)',
+    status: 'Complete PET Scan Remission',
+    title: 'PET scan failed to detect cancer in the whole body after Nutrition Therapy intervention.',
+    thumbnail: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&q=80&w=600&h=400',
+    videoUrl: 'https://www.youtube.com/embed/3awpZRSwE1A',
+    summary: `Patient Profile & Medical History:
+- Diagnosed with Stage IV (Stage 4) Lung Cancer in January 2018.
+- The malignancy had metastasized and spread all over the body.
+- Conventional treatments and standard therapies were failing to show positive clinical responses.
+
+Intervention:
+- Initiated a clinical Nutrition Therapy (NT) program with personalized herbal support from Cancer Herbalist, Bangalore.
+
+Clinical Outcomes:
+- By July 2018, follow-up diagnostics showed a complete turnaround.
+- The post-treatment PET scan failed to detect any cancer in the entire body, demonstrating full metabolic remission.
+- Patient restored full physical health and achieved long-term healthy, active living.`
   },
 ];
 
@@ -259,13 +290,26 @@ export default function VideoTestimonials() {
               </div>
 
               {/* Video Summary */}
-              <div style={{ padding: '24px' }}>
-                <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '6px' }}>
+              <div style={{ padding: '24px', color: 'white' }}>
+                <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '6px', color: 'white', fontFamily: 'Playfair Display, serif' }}>
                   {activeVideo.name} — {activeVideo.condition}
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--primary)' }}>
+                <div style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: '600', marginBottom: '16px' }}>
                   {activeVideo.status}
                 </div>
+                {activeVideo.summary && (
+                  <div style={{ 
+                    marginTop: '16px', 
+                    paddingTop: '16px', 
+                    borderTop: '1px solid rgba(255,255,255,0.1)', 
+                    fontSize: '13.5px', 
+                    lineHeight: '1.7', 
+                    color: 'rgba(255,255,255,0.85)',
+                    whiteSpace: 'pre-line' 
+                  }}>
+                    {activeVideo.summary}
+                  </div>
+                )}
               </div>
             </motion.div>
           </motion.div>

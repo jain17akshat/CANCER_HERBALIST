@@ -7,123 +7,115 @@ const ACCENT = '#38bed5';
 
 const storyData = {
   1: {
-    name: 'Sarah Jenkins',
-    condition: 'Breast Cancer (Stage 3)',
-    status: '5 Years Cancer-Free',
+    name: 'Mr. Sharath',
+    condition: 'Hodgkin Lymphoma',
+    status: 'Age 33 | Chemo No Response | NT & HCT Integration',
     videoUrl: 'https://www.youtube.com/embed/i5VuQjcV30w',
-    thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=1600&h=900',
+    thumbnail: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=1600&h=900',
     readTime: '10 min read',
     date: 'January 15, 2026',
     content: [
       {
-        heading: 'The Beginning of the Journey',
-        body: `Sarah Jenkins was diagnosed with Stage 3 Breast Cancer (Infiltrating Ductal Carcinoma, HER2 Positive) in early 2020 at the age of 42. The diagnosis came as a shock—she had no family history of cancer and maintained a healthy, active lifestyle. Initial imaging revealed a 4.2 cm tumor with involvement of three auxiliary lymph nodes.`
+        heading: 'The Diagnosis & Challenge',
+        body: `Mr. Sharath was diagnosed with Hodgkin Lymphoma at the young age of 33. The diagnosis came as a profound shock, immediately introducing him to the aggressive world of clinical oncology. His medical team initiated standard first-line chemotherapy cycles, hoping for a swift and decisive response to target the lymphatic malignancy.`
       },
       {
-        heading: 'The Conventional Treatment Path',
-        body: `Sarah's oncology team recommended an aggressive treatment protocol: six cycles of targeted chemotherapy (Taxotere, Carboplatin, and Herceptin), followed by bilateral mastectomy, and then radiation therapy. While the treatment was medically necessary, Sarah experienced severe side effects including extreme fatigue, nausea, neuropathy in her hands and feet, and significant weight loss. Her quality-of-life score dropped to 35 out of 100 during the peak of chemotherapy.`
+        heading: 'Chemotherapy with No Response',
+        body: `Unfortunately, after multiple exhausting rounds of conventional chemotherapy, follow-up imaging and clinical evaluations showed no response. The disease continued to progress, causing immense physical distress, severe weight loss, and critical organ strain. The conventional route alone was proving ineffective, leaving the family searching for alternative and complementary support mechanisms.`
       },
       {
-        heading: 'Discovering Integrative Support',
-        body: `During her third chemotherapy cycle, Sarah began exploring complementary approaches to support her body through treatment. After extensive research and consultations, she was introduced to a structured herbal support program designed to work alongside her conventional treatment—not replace it. Her oncology team was consulted and agreed to monitor her progress with the integrative additions.`
+        heading: 'Integrating Herbal Chemotherapy (HCT)',
+        body: `Seeking to enhance his therapeutic options, Mr. Sharath decided to integrate a customized Herbal Chemotherapy (HCT) protocol alongside his standard salvage care. The medical and pharmacological teams worked together to formulate a strategy targeting non-dividing cancer cells and circulating tumor cells while protecting his vital organs from chemotherapy-induced toxicity.`
       },
       {
-        heading: 'The Herbal Support Protocol',
-        body: `Sarah's personalized herbal protocol included cellular vitality tinctures made from concentrated turmeric (curcumin), ashwagandha, and medicinal mushroom extracts (reishi, turkey tail). She also followed active green botanical infusions with matcha, moringa, and tulasi (holy basil). A custom low-inflammatory dietary plan was developed, emphasizing omega-3-rich foods, cruciferous vegetables, berries, and fermented foods while eliminating processed sugars and refined carbohydrates.`
+        heading: 'The Role of Nutritional Therapy (NT)',
+        body: `A cornerstone of his recovery was the simultaneous initiation of intensive Nutritional Therapy (NT). Under strict dietary guidelines, Mr. Sharath focused on high-density botanical nutrition to optimize his metabolic health, strengthen his immune system, and repair the gut mucosal barrier, laying a strong foundation for his recovery.`
       },
       {
-        heading: 'Measurable Improvements',
-        body: `Within the first three months of integrating the herbal support protocol, Sarah reported notable improvements. Her immune cell count (Natural Killer cells) improved from a deficient 180 to an optimized 420. Her inflammatory markers (hs-CRP) dropped from 8.4 mg/L to 1.2 mg/L. Most importantly to Sarah, her quality-of-life score improved from 35/100 to 88/100. She regained her appetite, her energy stabilized, and the neuropathy symptoms reduced significantly.`
+        heading: 'A Turnaround in Biomarkers',
+        body: `Within months of starting the HCT and NT protocols, the results were visible in his laboratory reports. His tumor markers stabilized, and his immune system began showing active signs of recovery. Cellular markers that had been persistently abnormal started trending toward healthy ranges, demonstrating that HCT and conventional care could work synergistically.`
       },
       {
-        heading: 'Surgery and Recovery',
-        body: `Sarah's post-chemotherapy imaging showed a remarkable response—the primary tumor had shrunk by over 70%. She proceeded with surgery, and pathology confirmed near-complete pathological response. Her surgical recovery was described by her medical team as "exceptionally smooth," with no wound complications and rapid healing. She attributes part of this to the anti-inflammatory and immune-supporting properties of her herbal protocol.`
+        heading: 'Restoring Vitality and Strength',
+        body: `In addition to clinical improvements, Mr. Sharath experienced a dramatic return of physical strength. He successfully countered the debilitating muscle wasting and fatigue associated with advanced treatment, gaining back healthy body weight and restoring his overall quality-of-life score from a critical low to a highly functional level.`
       },
       {
-        heading: 'Life Five Years Later',
-        body: `Today, five years after her initial diagnosis, Sarah remains cancer-free. She continues a maintenance herbal protocol and follows the nutritional guidelines that became a permanent part of her lifestyle. She exercises regularly, mentors newly diagnosed breast cancer patients, and advocates for integrative approaches that complement conventional oncology care. Her story is a testament to resilience, informed decision-making, and the power of comprehensive, multi-modal cancer support.`
-      },
-      {
-        heading: 'Key Takeaways',
-        body: `Sarah's journey highlights several important lessons: early detection and prompt treatment are crucial; integrative herbal support can complement conventional therapy when properly supervised; nutritional optimization plays a vital role in treatment tolerance and recovery; quality of life matters as much as clinical outcomes; and every patient's journey is unique—what works for one person may differ for another. Always consult with your oncology team before adding any supplements or herbal protocols to your treatment plan.`
+        heading: 'Key Takeaways & Looking Forward',
+        body: `Mr. Sharath's case is a powerful testament to the value of integrative oncology. Even in scenarios where standard chemotherapy initially fails to produce a response, combining it with targeted phytotherapy (HCT) and clinical nutritional therapy (NT) can support the body, manage toxicity, and help patients achieve clinical stability and renewed vitality.`
       }
     ]
   },
   2: {
-    name: 'Robert Chen',
-    condition: 'Lung Cancer (Stage 2)',
-    status: '3 Years Stable & Healthy',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=1600&h=900',
+    name: '78-Year-Old Patient',
+    condition: 'Blood Cancer (MDS)',
+    status: 'Transfusion-Free & Active',
+    videoUrl: 'https://www.youtube.com/embed/t6YiUIBDANk',
+    thumbnail: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=1600&h=900',
     readTime: '9 min read',
     date: 'March 5, 2026',
     content: [
       {
-        heading: 'An Unexpected Diagnosis',
-        body: `Robert Chen, a 56-year-old retired engineer, never smoked a day in his life. So when a persistent cough led to a CT scan revealing a 3.1 cm mass in his right upper lobe, both he and his family were stunned. A biopsy confirmed Stage 2 non-small cell lung cancer (adenocarcinoma). The diagnosis came during a routine check-up—Robert had no pain, no weight loss, and no shortness of breath at the time.`
+        heading: 'The Diagnosis: MDS & Age Challenges',
+        body: `A female patient aged 78 was diagnosed with Myelodysplastic Syndrome (MDS), a form of blood cancer that prevents the bone marrow from producing enough healthy blood cells. At her advanced age, the diagnosis presented severe challenges. She suffered from extreme fatigue, severe anemia, and chronic pain, requiring biweekly blood transfusions to maintain minimal viability.`
       },
       {
-        heading: 'Navigating Treatment Options',
-        body: `Robert's thoracic oncologist recommended a lobectomy (surgical removal of the affected lobe) followed by four cycles of adjuvant chemotherapy to reduce the risk of recurrence. Robert researched extensively and sought second opinions. He was particularly concerned about maintaining his lung capacity and overall quality of life after surgery, given his active lifestyle that included hiking and swimming.`
+        heading: 'Chemotherapy with Severe Side Effects',
+        body: `Her medical team initiated conventional chemotherapy in an effort to control the disease progression. However, the aggressive treatment was too taxing on her elderly body. She developed severe side effects, including critical organ strain, extreme physical weakness, and debilitating nausea, making it impossible to continue the conventional protocol safely.`
       },
       {
-        heading: 'Integrating Pulmonary Herbal Support',
-        body: `After his surgery was successfully completed, Robert began working with an integrative medicine team alongside his oncologist. His personalized pulmonary herbal protocol included mullein leaf and elecampane root preparations traditionally used to support respiratory function, adaptogenic herbs including rhodiola and astragalus for immune recovery, and medicinal mushroom blends (cordyceps, chaga) known for their lung-supporting properties. A structured breathing exercise program was also integrated into his recovery.`
+        heading: 'Approaching Cancer Herbalist',
+        body: `Faced with discontinued conventional options, the patient's family approached the Cancer Herbalist clinic in Bangalore. Our team evaluated her specific hematological panel and organ capacity to draft a customized, non-toxic Herbal Nutraceutical Care Plan designed to stimulate natural blood synthesis and provide cellular protection.`
       },
       {
-        heading: 'Recovery and Progress',
-        body: `Robert's post-surgical recovery exceeded expectations. His pulmonary function tests showed faster-than-anticipated improvement—he regained 85% of his pre-surgery lung capacity within four months. His chemotherapy tolerance was notably good, with his oncologist commenting on the stability of his blood counts throughout treatment. Robert maintained his weight, continued gentle exercise, and reported manageable fatigue levels compared to typical expectations.`
+        heading: 'Immediate Recovery and Clinical Turnaround',
+        body: `The response to the herbal nutraceutical care plan was immediate. Within just a few weeks of starting the protocol, the patient's blood counts stabilized. The most dramatic clinical milestone was that her biweekly blood transfusion requirement was completely eliminated, showing that her bone marrow was beginning to function adequately again.`
       },
       {
-        heading: 'Three Years of Stability',
-        body: `Now three years post-diagnosis, Robert's follow-up scans remain clear. His pulmonary function has stabilized at 90% of pre-surgery capacity, and he has returned to hiking—recently completing a 15-mile trail in the Pacific Northwest. He continues a maintenance herbal protocol and credits the combination of excellent surgical care, chemotherapy, and integrative support for his positive outcome. He remains under regular oncological surveillance with CT scans every six months.`
+        heading: 'Restoring Independence and Mobility',
+        body: `In addition to the stable hematological reports, the patient experienced a complete recovery of physical mobility. She was able to stand on her own legs, walk without support, and begin working on her daily activities independently. Her family observed a dramatic transformation in her physical stamina and energy levels.`
       },
       {
-        heading: 'Robert\'s Advice to Others',
-        body: `Robert emphasizes three lessons from his experience: never ignore persistent symptoms even if you don't fit the "typical" risk profile; seek multiple opinions and explore all available support options; and stay active throughout treatment as much as your body allows. He also stresses the importance of transparency with your medical team about any supplements or herbal protocols you incorporate. "Communication between all your care providers is essential," he says.`
+        heading: 'Significant Improvement in Pain & Quality of Life',
+        body: `Her overall physical aura improved significantly, and her chronic pain levels dropped drastically. She regained a healthy appetite and stable sleep patterns. The clinical improvement in her quality of life was profound, providing immense relief and comfort to both the patient and her dedicated caregivers.`
+      },
+      {
+        heading: 'Key Takeaways & Natural Healing',
+        body: `This remarkable case highlights the efficacy of targeted, premium herbal nutraceuticals in elderly care. When aggressive conventional therapies cannot be tolerated, complementary botanical protocols offer a gentle, highly effective alternative to support hematological function, eliminate transfusion dependencies, and restore a happy, independent life. All these benefits can be seen only if the burden of cancer has been reduced to that extent.`
       }
     ]
   },
   3: {
-    name: 'Helena Silva',
-    condition: 'Colon Cancer (Stage 4)',
-    status: 'In Full Remission',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=1600&h=900',
+    name: 'Stage IV Lung Cancer Patient',
+    condition: 'Lung Cancer (Stage 4)',
+    status: 'Complete PET Scan Remission',
+    videoUrl: 'https://www.youtube.com/embed/3awpZRSwE1A',
+    thumbnail: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&q=80&w=1600&h=900',
     readTime: '11 min read',
     date: 'April 18, 2026',
     content: [
       {
-        heading: 'A Devastating Diagnosis',
-        body: `Helena Silva, a 58-year-old mother of three, was diagnosed with Stage 4 colon cancer (adenocarcinoma with secondary hepatic lesions) after months of unexplained digestive issues and fatigue. By the time she sought medical attention, the cancer had spread to her liver with two detectable metastatic lesions. Her initial prognosis was guarded, and her family was told to prepare for a challenging journey ahead.`
+        heading: 'The Metastatic Challenge',
+        body: `In January 2018, a patient received a devastating diagnosis: Stage IV (Stage 4) Lung Cancer. Clinical imaging and PET scans revealed that the cancer was highly aggressive and had metastasized, spreading all over the body. The patient faced a challenging outlook as first-line oncology options and multiple therapies were failing to work in their favor.`
       },
       {
-        heading: 'Aggressive Conventional Treatment',
-        body: `Helena's treatment plan was extensive: FOLFOX chemotherapy (a combination of folinic acid, fluorouracil, and oxaliplatin) for the primary tumor, followed by targeted therapy with bevacizumab for the liver metastases, and eventual surgical evaluation. The treatment was grueling—Helena experienced severe nausea, dramatic weight loss (12 kg in three months), elevated liver enzymes, and profound fatigue that left her unable to perform daily activities.`
+        heading: 'Seeking Nutritional Integration',
+        body: `Confronted with progressive disease and declining vitality, the patient's family reached out to the Cancer Herbalist clinic in Bangalore to explore integrative options. The clinical focus turned to rebuilding cellular strength, correcting immunodeficiencies, and introducing targeted nutritional therapies to work alongside baseline medical care.`
       },
       {
-        heading: 'The Turning Point',
-        body: `During her fourth chemotherapy cycle, Helena's CEA tumor marker was at 45.0 ng/mL and her liver enzyme (ALT) had risen to 110 U/L. Her medical team was considering adjusting her treatment protocol. It was at this point that Helena's daughter researched complementary support options and connected with an integrative medicine team specializing in gut health and hepatoprotective botanical support.`
+        heading: 'The Nutrition Therapy Protocol',
+        body: `The clinical team initiated an intensive Nutrition Therapy (NT) intervention. This highly customized care plan combined dense phytotherapy extracts with specialized antioxidant formulations and cell-protective herbs to target systemic inflammation and support normal respiratory cell functions.`
       },
       {
-        heading: 'Gut Restoration and Liver Support Protocol',
-        body: `Helena's integrative protocol was designed specifically to support her body during aggressive treatment. It included hepatoprotective botanical extracts (milk thistle standardized to 80% silymarin, schisandra berry, and dandelion root) for liver support, gut mucosa barrier-repair powders containing L-glutamine, slippery elm, and marshmallow root, organic cellular detox syrups with chlorella and spirulina, and a carefully structured anti-inflammatory diet rich in easily digestible proteins, bone broth, and probiotic-rich fermented foods.`
+        heading: 'The July 2018 Turning Point',
+        body: `The response to the clinical Nutrition Therapy intervention exceeded all expectations. In July 2018, just six months after starting the intensive integrative care plan, the patient underwent a follow-up whole-body PET scan. To the amazement of the medical staff, the scan failed to detect any active cancer in the entire body.`
       },
       {
-        heading: 'Remarkable Clinical Improvements',
-        body: `Over the following 18 months, Helena's clinical progress astonished her medical team. Her CEA tumor marker dropped from 45.0 ng/mL to 1.8 ng/mL—well within normal range. Her liver enzyme (ALT) normalized from 110 U/L to 32 U/L. She regained 8 kg of the weight she had lost. Follow-up CT scans demonstrated a significant reduction in the secondary liver lesions, and her oncologist described her response as "exceptional." She was eventually able to undergo successful surgical resection of the remaining liver lesion.`
+        heading: 'Achieving Complete Remission',
+        body: `The complete metabolic remission marked a grand success. Reversing systemic Stage IV metastasis demonstrated the power of restoring the body's natural defense mechanisms through precise nutrition and herbal medicine. The patient was declared cancer-free and successfully transitioned to a long-term preventative care program.`
       },
       {
-        heading: 'Full Remission',
-        body: `After completing her full treatment course—chemotherapy, targeted therapy, surgery, and continuous integrative support—Helena's latest comprehensive scan showed no evidence of disease. She has been in full remission for over a year. Her gastroenterologist notes that her gut health markers are now within optimal ranges, and she reports energy levels and quality of life that she hasn't experienced in years.`
-      },
-      {
-        heading: 'Helena\'s Message of Hope',
-        body: `Helena's story is one of determination and comprehensive care. She is quick to credit her conventional medical team for the aggressive treatment that targeted her cancer, while also acknowledging the role that integrative support played in helping her body tolerate treatment and recover. "I believe in using every tool available," she says. "My doctors saved my life, and the herbal support helped me maintain the strength to get through it." She now volunteers at a local cancer support group, sharing her experience and encouraging others to explore all available support options in consultation with their medical teams.`
-      },
-      {
-        heading: 'Important Medical Note',
-        body: `Helena's case involved Stage 4 cancer with liver metastases—an extremely serious diagnosis. Her positive outcome resulted from a combination of aggressive conventional treatment, surgical intervention, and complementary integrative support. Every patient's cancer is different, and outcomes vary significantly. Herbal support protocols should never replace conventional cancer treatment but may serve as a complementary approach when supervised by qualified healthcare professionals. Always discuss any supplements with your oncology team.`
+        heading: 'Key Takeaways & Strong Will',
+        body: `This grand success story highlights the potential of combining strong patient resolve with targeted nature-based therapies. Cancer Herbalist Bangalore remains dedicated to helping patients fight cancer at any stage, age, or condition. If you create a strong will to fight, nature and science can provide the path to healing.`
       }
     ]
   }

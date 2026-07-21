@@ -30,30 +30,63 @@ function getEmbedUrl(url) {
 const videos = [
   {
     id: 1,
-    name: 'Sarah Jenkins',
-    condition: 'Breast Cancer (Stage 3)',
-    status: '5 Years Cancer-Free',
-    title: 'Dr. Carter\'s support plan helped restore my cellular vitality.',
-    thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600&h=400',
+    name: 'Mr. Sharath',
+    condition: 'Hodgkin Lymphoma',
+    status: 'Age 33 | Chemo No Response | NT & HCT Integration',
+    title: 'When conventional chemotherapy failed, integrating HCT & Nutritional Therapy stabilized my condition.',
+    thumbnail: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600&h=400',
     videoUrl: 'https://www.youtube.com/watch?v=i5VuQjcV30w',
+    summary: `Introduction to HCT Integration:
+- Diagnosed with Hodgkin Lymphoma at age 33.
+- Experienced no response and disease progression with conventional chemotherapy.
+- Initiated intensive Nutritional Therapy (NT) integrated with customized Herbal Chemotherapy (HCT) alongside clinical care.
+
+Outcome & Progress:
+- HCT targeted non-dividing, circulating, and metastasized cells to check progression.
+- Mitigated chemotherapy toxicity, minimized organ strain, and successfully stabilized cell markers.
+- Significantly restored physical strength, muscle mass, and baseline immunological markers.`
   },
   {
     id: 2,
-    name: 'Robert Chen',
-    condition: 'Lung Cancer (Stage 2)',
-    status: '3 Years Stable & Healthy',
-    title: 'The pulmonary herbal blends significantly helped ease my breathing.',
-    thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600&h=400',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    name: '78-Year-Old Patient',
+    condition: 'Blood Cancer (MDS)',
+    status: 'Transfusion-Free & Active',
+    title: 'Customized Herbal Nutraceuticals eliminated the need for biweekly blood transfusions.',
+    thumbnail: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=600&h=400',
+    videoUrl: 'https://www.youtube.com/watch?v=t6YiUIBDANk',
+    summary: `Patient Profile & Medical History:
+- Female patient, aged 78, diagnosed with Blood Cancer (Myelodysplastic Syndrome - MDS).
+- Underwent conventional chemotherapy, which was discontinued due to severe, intolerant side effects.
+
+Intervention:
+- Initiated a personalized Herbal Nutraceutical Care Plan from Cancer Herbalist, Bangalore.
+
+Clinical Outcomes:
+- Responded immediately within weeks of starting the care plan.
+- Eliminated the need for biweekly blood transfusions entirely.
+- Restored mobility, allowing her to stand and work independently.
+- Drastic reduction in chronic pains, significant improvements in aura, and a greatly enhanced quality of life.`
   },
   {
     id: 3,
-    name: 'Helena Silva',
-    condition: 'Colon Cancer (Stage 4)',
-    status: 'In Full Remission',
-    title: 'Restoring my gut flora naturally changed my whole prognosis.',
-    thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600&h=400',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    name: 'Stage IV Lung Cancer Patient',
+    condition: 'Lung Cancer (Stage 4)',
+    status: 'Complete PET Scan Remission',
+    title: 'PET scan failed to detect cancer in the whole body after Nutrition Therapy intervention.',
+    thumbnail: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&q=80&w=600&h=400',
+    videoUrl: 'https://www.youtube.com/watch?v=3awpZRSwE1A',
+    summary: `Patient Profile & Medical History:
+- Diagnosed with Stage IV (Stage 4) Lung Cancer in January 2018.
+- The malignancy had metastasized and spread all over the body.
+- Conventional treatments and standard therapies were failing to show positive clinical responses.
+
+Intervention:
+- Initiated a clinical Nutrition Therapy (NT) program with personalized herbal support from Cancer Herbalist, Bangalore.
+
+Clinical Outcomes:
+- By July 2018, follow-up diagnostics showed a complete turnaround.
+- The post-treatment PET scan failed to detect any cancer in the entire body, demonstrating full metabolic remission.
+- Patient restored full physical health and achieved long-term healthy, active living.`
   },
 ];
 
@@ -69,18 +102,18 @@ After taking the herbal kit, my uncle felt better for several months. Sadly, he 
 const caseStudies = [
   {
     id: 'breast',
-    tabTitle: 'Breast Cancer Support',
-    patientName: 'Friend of Nayana Gowda',
-    ageGender: 'Female',
-    diagnosis: 'Breast Cancer (Post-Chemo Integration)',
-    duration: '12 Months Support',
+    tabTitle: 'Hodgkin Lymphoma',
+    patientName: 'Mr. Sharath',
+    ageGender: '33 Years, Male',
+    diagnosis: 'Hodgkin Lymphoma (Chemo No Response)',
+    duration: '18 Months Support',
     biomarkers: [
-      { metric: 'Treatment Side Effects', pre: 'Severe Chemo Distress', post: 'Relieved / Minimal' },
-      { metric: 'Quality-of-Life Score', pre: 'Poor', post: 'Normalized / Stable' },
-      { metric: 'Treatment Compatibility', pre: 'High Toxicity Risk', post: 'Compatible & Economical' }
+      { metric: 'Chemotherapy Response', pre: 'No Response / Progression', post: 'Stable / Inactive' },
+      { metric: 'Nutritional Therapy (NT)', pre: 'Not Initiated', post: 'Integrated with HCT' },
+      { metric: 'Quality-of-Life Score', pre: 'Poor / Severe Organ Strain', post: 'Optimized / Restored' }
     ],
-    protocol: 'Non-hormonal immune-modulating phytotherapy, vital organ protection extracts, customized dietary guidelines.',
-    clinicalSummary: 'The patient integrated personalized herbal support to mitigate chemotherapy toxicity. The protocol was highly compatible, economical, and helped her achieve complete stability and relief without adverse side effects.',
+    protocol: 'Standardized phytotherapy targeting non-dividing and circulating cells, integrated with Nutritional Therapy (NT) alongside salvage chemotherapy.',
+    clinicalSummary: 'Diagnosed at age 33 with Hodgkin Lymphoma. Conventional chemotherapy yielded no response. Upon initiating customized Herbal Chemotherapy (HCT) combined with intensive Nutritional Therapy (NT) alongside conventional care, the patient experienced minimized toxic effects, stabilized cellular markers, and restored physical strength.',
   },
   {
     id: 'adrenal',
@@ -232,9 +265,22 @@ export default function Testimonials() {
                 <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
                   <iframe src={getEmbedUrl(activeVideo.videoUrl)} title={activeVideo.name} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }} />
                 </div>
-                <div style={{ padding: '24px' }}>
-                  <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '6px' }}>{activeVideo.name} — {activeVideo.condition}</div>
-                  <div style={{ fontSize: '14px', color: 'var(--primary)' }}>{activeVideo.status}</div>
+                <div style={{ padding: '24px', color: 'white' }}>
+                  <div style={{ fontSize: '20px', fontWeight: '700', marginBottom: '6px', color: 'white', fontFamily: 'Playfair Display, serif' }}>{activeVideo.name} — {activeVideo.condition}</div>
+                  <div style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: '600', marginBottom: '16px' }}>{activeVideo.status}</div>
+                  {activeVideo.summary && (
+                    <div style={{ 
+                      marginTop: '16px', 
+                      paddingTop: '16px', 
+                      borderTop: '1px solid rgba(255,255,255,0.1)', 
+                      fontSize: '13.5px', 
+                      lineHeight: '1.7', 
+                      color: 'rgba(255,255,255,0.85)',
+                      whiteSpace: 'pre-line' 
+                    }}>
+                      {activeVideo.summary}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -578,8 +624,8 @@ export default function Testimonials() {
                         <thead>
                           <tr style={{ borderBottom: '1px solid var(--gray-2)', textAlign: 'left' }}>
                             <th style={{ padding: '8px 0', color: 'var(--gray-3)', whiteSpace: 'nowrap' }}>Biomarker / Metric</th>
-                            <th style={{ padding: '8px 0', color: '#EF4444', whiteSpace: 'nowrap' }}>Pre-Herbal</th>
-                            <th style={{ padding: '8px 0', color: 'var(--primary-dark)', whiteSpace: 'nowrap' }}>Post-Treatment</th>
+                            <th style={{ padding: '8px 0', color: '#EF4444', whiteSpace: 'nowrap' }}>Pre HCT</th>
+                            <th style={{ padding: '8px 0', color: 'var(--primary-dark)', whiteSpace: 'nowrap' }}>Post HCT</th>
                           </tr>
                         </thead>
                         <tbody>
