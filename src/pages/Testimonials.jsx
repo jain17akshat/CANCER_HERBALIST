@@ -171,6 +171,26 @@ export default function Testimonials() {
 
   return (
     <>
+      {/* Website Impact Statistics Banner */}
+      <section style={{ background: 'linear-gradient(135deg, #0a1628 0%, #1a6e52 50%, #0e6655 100%)', padding: '130px 20px 60px', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '400px', height: '400px', borderRadius: '50%', background: ACCENT, opacity: 0.15, filter: 'blur(90px)' }} />
+
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <span style={{ background: `${ACCENT}22`, border: `1px solid ${ACCENT}55`, color: ACCENT, padding: '8px 24px', borderRadius: '50px', fontSize: '13px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', display: 'inline-block', marginBottom: '18px' }}>
+            🌟 Real Results & Clinical Milestones
+          </span>
+          <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2.2rem, 5vw, 3.8rem)', fontWeight: 800, marginBottom: '20px' }}>
+            Patient Stories & <span style={{ color: ACCENT }}>Impact Metrics</span>
+          </h1>
+          <p style={{ fontSize: 'clamp(1rem, 2vw, 1.15rem)', color: 'rgba(255,255,255,0.85)', maxWidth: '720px', margin: '0 auto 48px', lineHeight: '1.8' }}>
+            Discover verified healing journeys and real clinical outcomes achieved through Herbal Chemotherapy (HCT) and Integrative Clinical Support.
+          </p>
+
+          {/* Hero description ends here */}
+        </div>
+      </section>
+
+
       {/* Video Testimonials Section */}
       <section className="section-padding" style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', width: '600px', height: '600px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 60%)', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }} />

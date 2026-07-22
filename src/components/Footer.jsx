@@ -16,15 +16,14 @@ import { useContent } from '../context/ContentContext';
 const quickLinks = [
   { label: 'Home',              to: '/' },
   { label: 'About Us',          to: '/about' },
-  { label: 'Care Programs',     to: '/care-programs' },
+  { label: 'Cancer Overview',   to: '/cancer-overview' },
   { label: 'Integrative Therapies', to: '/integrative-therapies' },
   { label: 'Personalized Plans', to: '/personalized-treatment-plans' },
-  { label: 'Patient Resources', to: '/patient-resources' },
-  { label: 'Our Team',          to: '/doctors' },
-  { label: 'Testimonials',      to: '/testimonials' },
-  { label: 'Blog & Articles',   to: '/blog' },
+  { label: 'Products Hub',      to: '/products' },
+  { label: 'Patient Onboarding', to: '/patient-onboarding' },
+  { label: 'Education Resources', to: '/education-resources' },
+  { label: 'Success Stories',   to: '/testimonials' },
   { label: 'Contact Us',        to: '/contact' },
-  { label: 'Support Centre',    to: '/support' },
 ];
 
 const socials = [
@@ -369,8 +368,9 @@ export default function Footer() {
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
             {[
               { label: 'Privacy Policy',   to: '/privacy-policy' },
-              { label: 'Terms of Service', to: '/terms-of-service' },
-              { label: 'Refund Policy',    to: '/refund-policy' },
+              { label: 'Terms & Conditions', to: '/terms-of-service' },
+              { label: 'Medical Disclaimer', to: '/medical-disclaimer' },
+              { label: 'Data Retention & Deletion Policy', to: '/data-deletion-policy' },
             ].map((item) => (
               <Link
                 key={item.label}

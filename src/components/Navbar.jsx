@@ -1,179 +1,189 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaPhone, FaChevronDown, FaLeaf, FaHeart, FaShoppingBag } from 'react-icons/fa';
+import { FaBars, FaTimes, FaPhone, FaChevronDown, FaEnvelope } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useContent } from '../context/ContentContext';
 
-const ACCENT = '#38bed5';
 const PRIMARY = '#1a6e52';
+const ACCENT  = '#38bed5';
+const DARK    = '#0f172a';
 
+/* ─── Navigation Structure ─────────────────────────────────────── */
 const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Care Programs', href: '/care-programs' },
-  { label: 'Integrative Therapies', href: '/integrative-therapies' },
-  { label: 'Personalized Care', href: '/personalized-treatment-plans' },
-  { label: 'Our Team', href: '/doctors' },
-  { label: 'Stories', href: '/testimonials' },
+  { label: 'Home',              href: '/' },
+  { label: 'About',             href: '/about' },
+  { label: 'Cancer Overview',   href: '/cancer-overview' },
   {
-    label: 'Resources',
-    href: '#',
+    label: 'Treatments',
+    href: '/integrative-therapies',
     children: [
-      { label: '📝 Blog', href: '/blog' },
-      { label: '🧬 Patient Education', href: '/patient-education' },
-      { label: '📁 Patient Resources', href: '/patient-resources' },
-      { label: '🛒 Herbal Store', href: '/store' },
-      { label: '📦 Track Order', href: '/track-order' },
-      { label: '📋 My Orders', href: '/my-orders' },
-      { label: '💬 FAQs & Help', href: '/faqs' },
+      { label: 'Integrative Therapies',    href: '/integrative-therapies',        desc: 'Gene-targeted & holistic care' },
+      { label: 'Personalized Care',        href: '/personalized-treatment-plans', desc: 'Plans tailored just for you' },
     ],
   },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Stories',           href: '/testimonials' },
+  {
+    label: 'Products',
+    href: '/products',
+    children: [
+      { label: 'Products Hub',  href: '/products',      desc: 'Explore all herbal products' },
+      { label: 'Herbal Store',  href: '/store',         desc: 'Shop natural remedies' },
+      { label: 'Track Order',   href: '/track-order',   desc: 'Check your order status' },
+      { label: 'My Orders',     href: '/my-orders',     desc: 'View order history' },
+    ],
+  },
+  {
+    label: 'Education',
+    href: '/education-resources',
+    children: [
+      { label: 'All Resources',       href: '/education-resources',                                  desc: 'Full library' },
+      { label: 'Cancer Awareness',    href: '/education-resources?category=cancer-awareness',        desc: 'Know the facts' },
+      { label: 'Cancer Prevention',   href: '/education-resources?category=cancer-prevention',       desc: 'Reduce your risk' },
+      { label: 'Nutrition Guide',     href: '/education-resources?category=nutrition-guide',         desc: 'Eat to heal' },
+      { label: 'Herbal Medicine',     href: '/education-resources?category=herbal-medicine',         desc: 'Nature\'s pharmacy' },
+      { label: 'Mental Wellness',     href: '/education-resources?category=mental-wellness',         desc: 'Mind-body balance' },
+      { label: 'Exercise & Recovery', href: '/education-resources?category=exercise-recovery',       desc: 'Move to recover' },
+      { label: 'Research Updates',    href: '/education-resources?category=research-updates',        desc: 'Latest science' },
+      { label: 'Healthy Recipes',     href: '/education-resources?category=healthy-recipes',         desc: 'Nourishing meals' },
+    ],
+  },
+  { label: 'Patient Onboarding', href: '/patient-onboarding' },
+  { label: 'Contact',            href: '/contact' },
 ];
 
+/* ─── Component ─────────────────────────────────────────────────── */
 export default function Navbar() {
   const { content } = useContent();
   const contactInfo = content?.contact || {
     phone: '+91 88845 88835',
     email: 'cancerherbalist@gmail.com',
-    whatsapp: '918884588835',
-    timings: 'Mon–Sat, 9 AM–6 PM',
-    address: 'Bangalore, India'
   };
 
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null); // desktop
-  const [mobileOpenDropdown, setMobileOpenDropdown] = useState(null); // mobile
+  const [scrolled,            setScrolled]            = useState(false);
+  const [menuOpen,            setMenuOpen]            = useState(false);
+  const [openDropdown,        setOpenDropdown]        = useState(null);
+  const [mobileOpenDropdown,  setMobileOpenDropdown]  = useState(null);
+  const [isAdmin,             setIsAdmin]             = useState(false);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const dropdownRef = useRef(null);
-  const { cartCount, setIsCartOpen } = useCart();
-
-  // We'd use useWishlist here, but to avoid an error if context isn't available everywhere we can just show the icon.
-  // We will import it at the top.
+  const navigate      = useNavigate();
+  const location      = useLocation();
+  const dropdownRef   = useRef(null);
 
   const isActive = (href) => {
     if (href === '#') return false;
     if (href === '/') return location.pathname === '/';
-    return location.pathname.startsWith(href);
+    return location.pathname.startsWith(href.split('?')[0]);
   };
 
-  const isGroupActive = (link) => {
-    if (!link.children) return isActive(link.href);
-    return link.children.some((c) => isActive(c.href));
-  };
+  const isGroupActive = (link) =>
+    link.children ? link.children.some((c) => isActive(c.href)) : isActive(link.href);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setOpenDropdown(null);
-      }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMenuOpen(false);
     setMobileOpenDropdown(null);
   }, [location.pathname]);
 
-  const [isAdmin, setIsAdmin] = useState(false);
-
   useEffect(() => {
     setIsAdmin(localStorage.getItem('ch_admin_authed') === 'true');
   }, [location.pathname]);
 
-  const visibleLinks = isAdmin
-    ? [...navLinks, { label: 'Admin 🛡️', href: '/admin' }]
-    : navLinks;
-
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const visibleLinks = isAdmin
+    ? [...navLinks, { label: 'Admin', href: '/admin' }]
+    : navLinks;
+
+  /* ─── Mega-menu column count ─── */
+  const megaCols = (count) => (count > 5 ? 3 : count > 3 ? 2 : 1);
 
   return (
     <>
-      {/* ─── NAVBAR ─────────────────────────────────────────────────── */}
+      {/* ══════════ TOP BAR ══════════ */}
+      <div className="ch-topbar">
+        <div className="ch-topbar-inner">
+          <div className="ch-topbar-contact">
+            <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`} className="ch-topbar-link">
+              <FaPhone />
+              <span>{contactInfo.phone}</span>
+            </a>
+            <span className="ch-topbar-divider" />
+            <a href={`mailto:${contactInfo.email}`} className="ch-topbar-link">
+              <FaEnvelope />
+              <span>{contactInfo.email}</span>
+            </a>
+          </div>
+          <div className="ch-topbar-right">
+            <span className="ch-topbar-tag">🕒 Mon–Sat, 9 AM – 6 PM</span>
+            <span className="ch-topbar-tag">📍 Bangalore, India</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ══════════ MAIN NAV ══════════ */}
       <motion.nav
-        initial={{ y: -80, opacity: 0 }}
+        initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          background: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.85)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: scrolled ? `1px solid ${ACCENT}33` : '1px solid transparent',
-          boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.08)' : 'none',
-          transition: 'all 0.35s ease',
-        }}
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+        className={`ch-navbar${scrolled ? ' ch-scrolled' : ''}`}
       >
-        <div
-          style={{
-            maxWidth: '1280px',
-            margin: '0 auto',
-            padding: '0 24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            height: '70px',
-          }}
-        >
-          {/* ── Logo ── */}
+        <div className="ch-nav-inner">
+
+          {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.03 }}
             onClick={() => navigate('/')}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}
+            className="ch-logo"
           >
-            <img
-              src="/logo2.png"
-              alt="Cancer Herbalist"
-              style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
-            />
+            <img src="/logo2.png" alt="Cancer Herbalist" />
           </motion.div>
 
-          {/* ── Desktop Nav ── */}
+          {/* Desktop links */}
           <nav className="ch-desktop-nav" ref={dropdownRef}>
             {visibleLinks.map((link) => (
-              <div key={link.label} className="ch-nav-item">
+              <div
+                key={link.label}
+                className="ch-nav-item"
+                onMouseEnter={() => link.children && setOpenDropdown(link.label)}
+                onMouseLeave={() => link.children && setOpenDropdown(null)}
+              >
                 {link.children ? (
                   <>
                     <button
                       className={`ch-nav-btn${isGroupActive(link) ? ' ch-active' : ''}`}
-                      onClick={() =>
-                        setOpenDropdown(openDropdown === link.label ? null : link.label)
-                      }
+                      onClick={() => navigate(link.href)}
                     >
                       {link.label}
                       <FaChevronDown
                         className="ch-chevron"
-                        style={{
-                          transform: openDropdown === link.label ? 'rotate(180deg)' : 'rotate(0deg)',
-                        }}
+                        style={{ transform: openDropdown === link.label ? 'rotate(180deg)' : 'rotate(0)' }}
                       />
                     </button>
 
                     <AnimatePresence>
                       {openDropdown === link.label && (
                         <motion.div
-                          initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                          transition={{ duration: 0.18 }}
+                          initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                          animate={{ opacity: 1, y: 0,  scale: 1    }}
+                          exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                          transition={{ duration: 0.16 }}
                           className="ch-dropdown"
+                          style={{
+                            gridTemplateColumns: `repeat(${megaCols(link.children.length)}, 1fr)`,
+                          }}
                         >
                           {link.children.map((sub) => (
                             <Link
@@ -182,7 +192,8 @@ export default function Navbar() {
                               className={`ch-dropdown-item${isActive(sub.href) ? ' ch-active' : ''}`}
                               onClick={() => setOpenDropdown(null)}
                             >
-                              {sub.label}
+                              <span className="ch-drop-label">{sub.label}</span>
+                              {sub.desc && <span className="ch-drop-desc">{sub.desc}</span>}
                             </Link>
                           ))}
                         </motion.div>
@@ -201,8 +212,8 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* ── Right side ── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+          {/* CTA + hamburger */}
+          <div className="ch-nav-actions">
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
@@ -211,50 +222,42 @@ export default function Navbar() {
             >
               Book Consultation
             </motion.button>
-
-            {/* Hamburger */}
             <button
               className="ch-hamburger"
-              onClick={() => {
-                setMenuOpen((p) => !p);
-                setOpenDropdown(null);
-              }}
+              onClick={() => { setMenuOpen((p) => !p); setOpenDropdown(null); }}
               aria-label="Toggle menu"
             >
               {menuOpen ? <FaTimes /> : <FaBars />}
             </button>
           </div>
+
         </div>
       </motion.nav>
 
-      {/* ─── MOBILE MENU ─────────────────────────────────────────────── */}
+      {/* ══════════ MOBILE MENU ══════════ */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
+            transition={{ duration: 0.28, ease: 'easeInOut' }}
             className="ch-mobile-menu"
           >
-            <div style={{ padding: '12px 20px 20px' }}>
+            <div className="ch-mobile-inner">
               {visibleLinks.map((link, i) => (
                 <motion.div
                   key={link.label}
-                  initial={{ opacity: 0, x: -16 }}
+                  initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04 }}
+                  transition={{ delay: i * 0.035 }}
                 >
                   {link.children ? (
                     <div>
-                      {/* Accordion trigger */}
                       <button
-                        className={`ch-mobile-link ch-mobile-accordion${isGroupActive(link) ? ' ch-active' : ''}`}
+                        className={`ch-mob-row ch-mob-accordion${isGroupActive(link) ? ' ch-active' : ''}`}
                         onClick={() =>
-                          setMobileOpenDropdown(
-                            mobileOpenDropdown === link.label ? null : link.label
-                          )
+                          setMobileOpenDropdown(mobileOpenDropdown === link.label ? null : link.label)
                         }
                       >
                         <span>{link.label}</span>
@@ -262,35 +265,28 @@ export default function Navbar() {
                           style={{
                             fontSize: '11px',
                             transition: 'transform 0.25s',
-                            transform:
-                              mobileOpenDropdown === link.label
-                                ? 'rotate(180deg)'
-                                : 'rotate(0deg)',
+                            transform: mobileOpenDropdown === link.label ? 'rotate(180deg)' : 'rotate(0)',
                           }}
                         />
                       </button>
-
-                      {/* Sub-items */}
                       <AnimatePresence>
                         {mobileOpenDropdown === link.label && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.22 }}
-                            style={{ overflow: 'hidden', paddingLeft: '12px' }}
+                            transition={{ duration: 0.2 }}
+                            style={{ overflow: 'hidden' }}
                           >
                             {link.children.map((sub) => (
                               <Link
                                 key={sub.label}
                                 to={sub.href}
-                                className={`ch-mobile-sub${isActive(sub.href) ? ' ch-active' : ''}`}
-                                onClick={() => {
-                                  setMenuOpen(false);
-                                  setMobileOpenDropdown(null);
-                                }}
+                                className={`ch-mob-sub${isActive(sub.href) ? ' ch-active' : ''}`}
+                                onClick={() => { setMenuOpen(false); setMobileOpenDropdown(null); }}
                               >
-                                {sub.label}
+                                <span className="ch-mob-sub-label">{sub.label}</span>
+                                {sub.desc && <span className="ch-mob-sub-desc">{sub.desc}</span>}
                               </Link>
                             ))}
                           </motion.div>
@@ -300,7 +296,7 @@ export default function Navbar() {
                   ) : (
                     <Link
                       to={link.href}
-                      className={`ch-mobile-link${isActive(link.href) ? ' ch-active' : ''}`}
+                      className={`ch-mob-row${isActive(link.href) ? ' ch-active' : ''}`}
                       onClick={() => setMenuOpen(false)}
                     >
                       {link.label}
@@ -309,72 +305,128 @@ export default function Navbar() {
                 </motion.div>
               ))}
 
-
-
-              <motion.a
-                href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: PRIMARY,
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  marginTop: '10px',
-                  padding: '10px 14px',
-                }}
-              >
-                <FaPhone style={{ fontSize: '12px' }} />
-                {contactInfo.phone}
-              </motion.a>
-
-              <button
-                onClick={() => {
-                  navigate('/contact');
-                  setMenuOpen(false);
-                }}
-                style={{
-                  width: '100%',
-                  marginTop: '12px',
-                  padding: '14px',
-                  background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontWeight: 700,
-                  fontSize: '15px',
-                  cursor: 'pointer',
-                  letterSpacing: '0.3px',
-                }}
-              >
-                Book Free Consultation
-              </button>
+              <div className="ch-mob-footer">
+                <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`} className="ch-mob-phone">
+                  <FaPhone style={{ fontSize: '12px' }} />
+                  {contactInfo.phone}
+                </a>
+                <button
+                  onClick={() => { navigate('/contact'); setMenuOpen(false); }}
+                  className="ch-mob-cta"
+                >
+                  Book Free Consultation
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ─── STYLES ─────────────────────────────────────────────────── */}
+      {/* ══════════ STYLES ══════════ */}
       <style>{`
-        /* ── Desktop nav ── */
+        /* ── Topbar ── */
+        .ch-topbar {
+          background: ${DARK};
+          color: rgba(255,255,255,0.75);
+          font-size: 12.5px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          position: relative;
+          z-index: 1001;
+        }
+        .ch-topbar-inner {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 0 28px;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .ch-topbar-contact { display: flex; align-items: center; gap: 16px; }
+        .ch-topbar-link {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: rgba(255,255,255,0.72);
+          text-decoration: none;
+          font-size: 12.5px;
+          transition: color 0.2s;
+          white-space: nowrap;
+        }
+        .ch-topbar-link:hover { color: ${ACCENT}; }
+        .ch-topbar-divider {
+          width: 1px;
+          height: 14px;
+          background: rgba(255,255,255,0.2);
+          flex-shrink: 0;
+        }
+        .ch-topbar-right { display: flex; align-items: center; gap: 16px; }
+        .ch-topbar-tag { white-space: nowrap; font-size: 12px; color: rgba(255,255,255,0.55); }
+
+        /* ── Main Navbar ── */
+        .ch-navbar {
+          position: sticky;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          background: rgba(255,255,255,0.96);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          border-bottom: 1px solid rgba(0,0,0,0.07);
+          transition: box-shadow 0.3s ease, background 0.3s ease;
+        }
+        .ch-navbar.ch-scrolled {
+          background: rgba(255,255,255,0.99);
+          box-shadow: 0 2px 24px rgba(0,0,0,0.09);
+        }
+        .ch-nav-inner {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 0 28px;
+          height: 68px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+        }
+
+        /* ── Logo ── */
+        .ch-logo {
+          cursor: pointer;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+        }
+        .ch-logo img {
+          height: 46px;
+          width: auto;
+          object-fit: contain;
+        }
+
+        /* ── Desktop nav container ── */
         .ch-desktop-nav {
           display: flex;
           align-items: center;
-          gap: 3px;
+          gap: 0px;
+          flex: 1;
+          justify-content: center;
         }
-        .ch-nav-item {
-          position: relative;
-        }
+        .ch-nav-item { position: relative; }
+
+        /* ── Links & buttons ── */
         .ch-nav-link,
         .ch-nav-btn {
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          padding: 6px 9px;
+          padding: 8px 13px;
           border-radius: 8px;
-          font-size: 13.5px;
+          font-size: 14px;
           font-weight: 500;
+          letter-spacing: -0.01em;
           text-decoration: none;
           color: #374151;
           background: transparent;
@@ -383,104 +435,127 @@ export default function Navbar() {
           transition: color 0.2s, background 0.2s;
           white-space: nowrap;
           font-family: inherit;
+          line-height: 1;
         }
         .ch-nav-link:hover,
         .ch-nav-btn:hover {
           color: ${PRIMARY};
-          background: ${ACCENT}18;
+          background: ${PRIMARY}0d;
         }
         .ch-nav-link.ch-active,
         .ch-nav-btn.ch-active {
           color: ${PRIMARY};
-          background: ${ACCENT}22;
           font-weight: 600;
+          background: ${PRIMARY}12;
         }
         .ch-chevron {
-          font-size: 10px;
+          font-size: 9px;
           transition: transform 0.25s ease;
+          opacity: 0.6;
         }
 
-        /* ── Dropdown ── */
+        /* ── Mega Dropdown ── */
         .ch-dropdown {
           position: absolute;
-          top: calc(100% + 6px);
+          top: calc(100% + 10px);
           left: 50%;
           transform: translateX(-50%);
-          background: #fff;
-          border: 1px solid ${ACCENT}44;
-          border-radius: 12px;
-          min-width: 190px;
-          box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-          padding: 6px;
-          z-index: 20;
+          background: #ffffff;
+          border: 1px solid rgba(0,0,0,0.08);
+          border-radius: 16px;
+          box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+          padding: 10px;
+          z-index: 200;
+          display: grid;
+          gap: 4px;
+          min-width: 200px;
         }
         .ch-dropdown-item {
-          display: block;
-          padding: 10px 14px;
-          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          padding: 11px 14px;
+          border-radius: 10px;
           text-decoration: none;
-          font-size: 13.5px;
-          font-weight: 500;
-          color: #374151;
-          transition: background 0.2s, color 0.2s;
+          transition: background 0.18s, transform 0.18s;
         }
         .ch-dropdown-item:hover {
-          background: ${ACCENT}18;
-          color: ${PRIMARY};
+          background: ${PRIMARY}0d;
+          transform: translateX(2px);
         }
         .ch-dropdown-item.ch-active {
-          background: ${ACCENT}22;
-          color: ${PRIMARY};
+          background: ${PRIMARY}14;
+        }
+        .ch-drop-label {
+          font-size: 13.5px;
           font-weight: 600;
+          color: ${DARK};
+          line-height: 1.2;
+        }
+        .ch-dropdown-item.ch-active .ch-drop-label { color: ${PRIMARY}; }
+        .ch-drop-desc {
+          font-size: 11.5px;
+          color: #9ca3af;
+          font-weight: 400;
+          line-height: 1;
+        }
+
+        /* ── Nav actions ── */
+        .ch-nav-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-shrink: 0;
         }
 
         /* ── CTA Button ── */
         .ch-cta-btn {
-          padding: 9px 18px;
-          background: linear-gradient(135deg, ${PRIMARY}, ${ACCENT});
+          padding: 10px 22px;
+          background: ${PRIMARY};
           color: #fff;
           border: none;
           border-radius: 50px;
           font-weight: 600;
-          font-size: 13px;
+          font-size: 13.5px;
           cursor: pointer;
-          transition: box-shadow 0.2s, transform 0.2s;
+          transition: background 0.2s, box-shadow 0.2s;
           white-space: nowrap;
           font-family: inherit;
-          box-shadow: 0 4px 14px ${ACCENT}44;
+          letter-spacing: -0.01em;
         }
         .ch-cta-btn:hover {
-          box-shadow: 0 6px 20px ${ACCENT}66;
-        }
-
-        /* ── Phone link ── */
-        .ch-phone-link {
-          white-space: nowrap;
+          background: #155c43;
+          box-shadow: 0 4px 16px ${PRIMARY}44;
         }
 
         /* ── Hamburger ── */
         .ch-hamburger {
           display: none;
           background: none;
-          border: none;
-          font-size: 20px;
+          border: 1px solid rgba(0,0,0,0.12);
+          border-radius: 8px;
+          font-size: 18px;
           cursor: pointer;
           color: #374151;
-          padding: 4px;
+          padding: 8px 10px;
+          transition: background 0.2s;
         }
+        .ch-hamburger:hover { background: rgba(0,0,0,0.05); }
 
         /* ── Mobile menu ── */
         .ch-mobile-menu {
-          position: fixed;
-          top: 70px;
+          position: sticky;
+          top: 68px;
           left: 0;
           right: 0;
           z-index: 999;
           background: #fff;
-          border-bottom: 2px solid ${ACCENT}44;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+          border-bottom: 1px solid rgba(0,0,0,0.08);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+          overflow: hidden;
         }
-        .ch-mobile-link {
+        .ch-mobile-inner { padding: 12px 20px 20px; }
+        .ch-mob-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -495,66 +570,80 @@ export default function Navbar() {
           border: none;
           cursor: pointer;
           font-family: inherit;
-          transition: background 0.2s, color 0.2s;
+          transition: background 0.18s, color 0.18s;
           margin-bottom: 2px;
         }
-        .ch-mobile-link:hover,
-        .ch-mobile-accordion:hover {
-          background: ${ACCENT}14;
-          color: ${PRIMARY};
-        }
-        .ch-mobile-link.ch-active {
-          background: ${ACCENT}20;
-          color: ${PRIMARY};
-          font-weight: 600;
-        }
-        .ch-mobile-accordion {
+        .ch-mob-row:hover,
+        .ch-mob-accordion:hover { background: ${PRIMARY}0d; color: ${PRIMARY}; }
+        .ch-mob-row.ch-active { background: ${PRIMARY}12; color: ${PRIMARY}; font-weight: 600; }
+        .ch-mob-accordion {
           display: flex;
           align-items: center;
           justify-content: space-between;
         }
-        .ch-mobile-sub {
-          display: block;
-          padding: 10px 14px;
+        .ch-mob-sub {
+          display: flex;
+          flex-direction: column;
+          gap: 1px;
+          padding: 10px 14px 10px 28px;
           border-radius: 8px;
-          font-size: 14px;
-          font-weight: 500;
-          color: #4b5563;
           text-decoration: none;
           background: transparent;
-          transition: background 0.2s, color 0.2s;
+          transition: background 0.18s, color 0.18s;
           margin-bottom: 2px;
         }
-        .ch-mobile-sub:hover {
-          background: ${ACCENT}14;
-          color: ${PRIMARY};
+        .ch-mob-sub:hover { background: ${PRIMARY}0a; }
+        .ch-mob-sub.ch-active { background: ${PRIMARY}12; }
+        .ch-mob-sub-label { font-size: 14px; font-weight: 500; color: #374151; }
+        .ch-mob-sub.ch-active .ch-mob-sub-label { color: ${PRIMARY}; font-weight: 600; }
+        .ch-mob-sub-desc { font-size: 11.5px; color: #9ca3af; }
+        .ch-mob-footer {
+          padding-top: 14px;
+          margin-top: 10px;
+          border-top: 1px solid rgba(0,0,0,0.07);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
-        .ch-mobile-sub.ch-active {
-          background: ${ACCENT}20;
+        .ch-mob-phone {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           color: ${PRIMARY};
+          text-decoration: none;
           font-weight: 600;
+          font-size: 14px;
+          padding: 10px 14px;
         }
-
-        /* ── Responsive breakpoints ── */
-        @media (max-width: 1200px) {
-          .ch-desktop-nav {
-            display: none !important;
-          }
-          .ch-phone-link {
-            display: none !important;
-          }
-          .ch-cta-btn {
-            display: none !important;
-          }
-          .ch-hamburger {
-            display: block !important;
-          }
+        .ch-mob-cta {
+          width: 100%;
+          padding: 14px;
+          background: ${PRIMARY};
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 15px;
+          cursor: pointer;
+          font-family: inherit;
+          letter-spacing: -0.01em;
+          transition: background 0.2s;
         }
+        .ch-mob-cta:hover { background: #155c43; }
 
-        @media (min-width: 1201px) {
-          .ch-mobile-menu {
-            display: none !important;
-          }
+        /* ── Responsive ── */
+        @media (max-width: 1100px) {
+          .ch-desktop-nav { display: none !important; }
+          .ch-cta-btn     { display: none !important; }
+          .ch-hamburger   { display: flex !important; align-items: center; }
+          .ch-topbar-right { display: none !important; }
+        }
+        @media (max-width: 600px) {
+          .ch-topbar { display: none !important; }
+          .ch-topbar-contact { display: none !important; }
+        }
+        @media (min-width: 1101px) {
+          .ch-mobile-menu { display: none !important; }
         }
       `}</style>
     </>
