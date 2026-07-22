@@ -24,12 +24,12 @@ export default function ProductsHub() {
       color: PRIMARY
     },
     {
-      title: 'Track Your Order',
-      desc: 'Track the real-time shipping status of your herbal prescription kits, international dispatch, and medical courier deliveries worldwide.',
+      title: 'Track Order & Refund History',
+      desc: 'Track the real-time shipping status of your orders and view your complete refund history, refund status updates, and credited amounts.',
       icon: <FaShippingFast />,
       link: '/track-order',
-      btnText: 'Track Shipment Now',
-      badge: '📦 Live Dispatch Tracking',
+      btnText: 'Track Order & Refunds',
+      badge: '📦 Order & Refund Tracking',
       color: ACCENT
     },
     {

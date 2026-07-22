@@ -27,10 +27,9 @@ const navLinks = [
     label: 'Products',
     href: '/products',
     children: [
-      { label: 'Products Hub',  href: '/products',      desc: 'Explore all herbal products' },
-      { label: 'Herbal Store',  href: '/store',         desc: 'Shop natural remedies' },
-      { label: 'Track Order',   href: '/track-order',   desc: 'Check your order status' },
-      { label: 'My Orders',     href: '/my-orders',     desc: 'View order history' },
+      { label: 'Herbal Store',         href: '/store',         desc: 'Shop natural remedies' },
+      { label: 'Track Order & Refunds', href: '/track-order',   desc: 'Track order & refund status' },
+      { label: 'My Orders',            href: '/my-orders',     desc: 'View full order history' },
     ],
   },
   {
