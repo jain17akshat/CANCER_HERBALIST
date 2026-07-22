@@ -308,6 +308,31 @@ router.post('/book-appointment', async (req, res) => {
     appointmentDay, appointmentSlot,
   } = req.body;
 
+  // ── Sync latest appointments from Sheets before checking ────
+  await syncAppointmentsFromSheets();
+
+  // ── Duplicate patient check (same phone OR email already booked) ──
+  const normalisePhone = (p) => String(p || '').replace(/\D/g, '').slice(-10);
+  const normalisedPhone = normalisePhone(phone);
+
+  const existing = appointmentStore.find(a => {
+    const samePhone = normalisedPhone && normalisePhone(a.phone) === normalisedPhone;
+    const sameEmail = email && a.email && a.email.toLowerCase() === email.toLowerCase();
+    return samePhone || sameEmail;
+  });
+
+  if (existing) {
+    return res.status(409).json({
+      success: false,
+      error: `An appointment is already registered for this contact (${existing.appointmentDay} at ${existing.appointmentSlot}). Please contact us on WhatsApp to reschedule or enquire about your existing booking.`,
+      existingAppt: {
+        appointmentDay: existing.appointmentDay,
+        appointmentSlot: existing.appointmentSlot,
+        treatment: existing.treatment,
+      },
+    });
+  }
+
   // ── Slot conflict check ──────────────────────────────────
   const conflict = appointmentStore.find(a =>
     a.appointmentDay === appointmentDay &&
@@ -319,6 +344,7 @@ router.post('/book-appointment', async (req, res) => {
       error: `The ${appointmentSlot} slot on ${appointmentDay} is already booked. Please choose a different time.`,
     });
   }
+
 
   const apptId = `APT-${Date.now()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   const bookedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });

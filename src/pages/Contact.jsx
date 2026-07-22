@@ -181,6 +181,20 @@ export default function Contact() {
 
       const data = await res.json();
 
+      if (res.status === 409) {
+        // Duplicate booking (same phone/email OR same slot)
+        setSending(false);
+        if (data.existingAppt) {
+          setError(
+            `You already have an appointment booked on ${data.existingAppt.appointmentDay} at ${data.existingAppt.appointmentSlot} for "${data.existingAppt.treatment}". ` +
+            `Only one appointment per person is allowed. Please WhatsApp us at +91 88845 88835 to reschedule.`
+          );
+        } else {
+          setError(data.error || 'This slot is already booked. Please choose a different time.');
+        }
+        return;
+      }
+
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Failed to send confirmation.');
       }

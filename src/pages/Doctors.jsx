@@ -19,7 +19,7 @@ export default function Doctors() {
       role: 'Pharmacologist — M.Pharm, PhD',
       experience: '22 Years Experience',
       specialty: 'Integrative Pharmacology & Herbal Oncology',
-      bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm) and a PhD in Pharmaceutical Sciences, demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.',
+      bio: 'Prof. Ramesh is a highly accomplished Pharmacologist with a strong academic background and extensive experience in the field of herbal medicine. He holds a Master of Pharmacy (M.Pharm), demonstrating his deep expertise in natural products and integrative oncology. With over two decades of dedicated practice, he has made significant contributions to herbal formulation and patient-centric cancer care.',
       image: '/images/doctor1.png',
     },
     {

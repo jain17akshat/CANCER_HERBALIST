@@ -457,7 +457,7 @@ export default function CancerOverview() {
             Need Personalized Guidance for Your Condition?
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '32px' }}>
-            Our multidisciplinary team of medical experts and clinical pharmacologists is ready to review your medical reports and craft a personalized phytotherapeutic protocol.
+            Our team of pharma experts, pharmacologists, and nutritionists is ready to review your health reports and suggest a personalized nutraceutical supplement protocol.
           </p>
           <Link
             to="/contact"
@@ -476,7 +476,7 @@ export default function CancerOverview() {
               transition: 'transform 0.2s ease'
             }}
           >
-            Schedule Clinical Consultation <FaArrowRight />
+            Schedule Consultation <FaArrowRight />
           </Link>
         </div>
       </section>

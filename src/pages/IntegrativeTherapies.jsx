@@ -37,10 +37,10 @@ By suppressing Nuclear Factor kappa B (NF-κB), these targeted botanicals inhibi
     title: 'Phytotherapeutic Herbal Chemotherapy (HCT)',
     short: 'Custom-compounded organic botanical extracts formulated according to individual patient pathology and tumor staging.',
     clinicalFocus: 'Direct tumor microenvironment modulation, stem-cell suppression, and systemic organ protection.',
-    mechanism: `Standardized botanical preparations incorporating Scutellaria barbata, Astragalus membranaceus, Viscum album (Mistletoe lectins), and Tinospora cordifolia are compounded based on individual blood markers and oncology history.
+    mechanism: `Standardized botanical preparations incorporating Withaferins from Ashwagandha, Ocimum sanctum standardized extract, Echinacea, EGCG from Green Tea extract, 6-Gingerol from Ginger extract, Curcumin C3 Complex, and Tinospora cordifolia are formulated based on individual health parameters and nutrition needs.
     
-These phytochemical compounds act synergistically across multiple cell checkpoints, disrupting malignant cell membrane dynamics, inducing G2/M cell cycle arrest, and down-regulating multidrug resistance (MDR-1) efflux pumps.`,
-    evidence: `Multicenter clinical observations indicate that standardized Astragalus and Mistletoe extracts significantly reduce chemotherapy-induced neutropenia, anemia, and gastrointestinal toxicity while preserving absolute neutrophil counts (ANC).`,
+These phytochemical compounds act synergistically across multiple cell checkpoints, supporting cell resilience, cellular defense, and metabolic balance.`,
+    evidence: `Scientific studies indicate that standardized Tinospora cordifolia (Giloy) and Withania somnifera (Ashwagandha) extracts significantly support immune resilience, mitigate treatment fatigue, and help preserve healthy cell reserves.`,
     formulationScience: 'Standardized hydro-ethanolic and aqueous extracts tested for heavy metal purity and pesticide residue via ICP-MS.',
     benefits: [
       'Selective cytotoxic activity against malignant cell lines',
