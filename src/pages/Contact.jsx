@@ -111,7 +111,8 @@ export default function Contact() {
     address: 'Bangalore, India'
   };
 
-  const [step, setStep] = useState(1); // 1=form, 2=slot, 3=success
+  const [step, setStep] = useState(0); // 0=consent, 1=form, 2=slot, 3=success
+  const [consentGiven, setConsentGiven] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [bookedSlots, setBookedSlots] = useState([]); // slots already taken for selected day
@@ -209,7 +210,8 @@ export default function Contact() {
   };
 
   const reset = () => {
-    setStep(1);
+    setStep(0);
+    setConsentGiven(false);
     setFormData({ name: '', phone: '', email: '', treatment: '', stage: '', message: '', selectedDay: null, selectedSlot: '' });
     setError('');
   };
@@ -261,23 +263,69 @@ export default function Contact() {
 
             {/* Step Indicator */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0', marginBottom: '32px' }}>
-              {['Your Details', 'Choose Slot', 'Confirmed'].map((label, i) => {
-                const num = i + 1;
-                const active = step === num;
-                const done = step > num;
+              {['Consent', 'Details', 'Slot', 'Done'].map((label, i) => {
+                const active = step === i;
+                const done = step > i;
                 return (
-                  <React.Fragment key={num}>
+                  <React.Fragment key={i}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                      <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: done || active ? ACCENT : '#e2e8f0', color: done || active ? '#fff' : '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', transition: 'all 0.3s' }}>
-                        {done ? '✓' : num}
+                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: done || active ? ACCENT : '#e2e8f0', color: done || active ? '#fff' : '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '13px', transition: 'all 0.3s' }}>
+                        {done ? '✓' : i + 1}
                       </div>
-                      <span style={{ fontSize: '11px', fontWeight: 600, color: active ? ACCENT : '#94a3b8', whiteSpace: 'nowrap' }}>{label}</span>
+                      <span style={{ fontSize: '10px', fontWeight: 600, color: active ? ACCENT : '#94a3b8', whiteSpace: 'nowrap' }}>{label}</span>
                     </div>
-                    {i < 2 && <div style={{ flex: 1, height: '2px', background: step > num ? ACCENT : '#e2e8f0', margin: '0 6px', marginBottom: '20px', transition: 'background 0.3s' }} />}
+                    {i < 3 && <div style={{ flex: 1, height: '2px', background: step > i ? ACCENT : '#e2e8f0', margin: '0 4px', marginBottom: '20px', transition: 'background 0.3s' }} />}
                   </React.Fragment>
                 );
               })}
             </div>
+
+            {/* ── STEP 0: Consent ── */}
+            {step === 0 && (
+              <div>
+                <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', marginBottom: '8px', fontSize: '1.4rem' }}>
+                  Read & <span style={{ color: ACCENT }}>Agree to Consent</span>
+                </h2>
+                <p style={{ color: '#64748b', fontSize: '13px', marginBottom: '20px', lineHeight: '1.6' }}>
+                  Before booking, please read and agree to our Integrative Care Consent Agreement.
+                </p>
+
+                <div style={{ maxHeight: '280px', overflowY: 'auto', border: '1.5px solid #e2e8f0', borderRadius: '14px', padding: '16px 20px', background: '#f8fafc', marginBottom: '16px', fontSize: '13px', color: '#475569', lineHeight: '1.8' }}>
+                  <p style={{ fontWeight: 700, color: '#0f172a', marginBottom: '10px' }}>Integrative Care Consent Agreement</p>
+                  <p><strong>1. Nature of Services</strong><br />Cancer Herbalist provides integrative, evidence-based herbal and nutritional support as a <em>complementary</em> approach alongside conventional oncology treatments. These services are NOT a replacement for surgery, chemotherapy, radiotherapy, or any conventional medical treatment prescribed by your oncology team.</p>
+                  <p><strong>2. No Claim of Cure</strong><br />You acknowledge that Cancer Herbalist does not claim to diagnose, cure, treat, or prevent cancer or any other disease. Treatment outcomes vary between individuals and no specific results are guaranteed.</p>
+                  <p><strong>3. Information Accuracy</strong><br />You confirm that all personal, medical, and health-related information provided is accurate and complete to the best of your knowledge.</p>
+                  <p><strong>4. Data Privacy & Storage</strong><br />Your personal and medical information is stored securely and used solely to provide personalized care recommendations. We comply with applicable Indian data protection regulations. Your data will never be sold or shared with third parties without your explicit consent.</p>
+                  <p><strong>5. Voluntary Participation</strong><br />Participation is entirely voluntary. You may withdraw at any time without penalty.</p>
+                  <p><strong>6. Communication Consent</strong><br />You consent to receive consultation confirmations, appointment reminders, and health information via email, SMS, and/or WhatsApp at the contact details you provide.</p>
+                </div>
+
+                <div style={{ background: consentGiven ? '#f0fdf4' : '#f8fafc', border: `2px solid ${consentGiven ? '#22c55e' : '#e2e8f0'}`, borderRadius: '12px', padding: '16px', marginBottom: '20px', transition: 'all 0.3s' }}>
+                  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={consentGiven}
+                      onChange={(e) => setConsentGiven(e.target.checked)}
+                      style={{ width: '18px', height: '18px', marginTop: '3px', accentColor: ACCENT, flexShrink: 0 }}
+                    />
+                    <span style={{ color: '#334155', fontSize: '13px', lineHeight: '1.7', fontWeight: 500 }}>
+                      I have read, understood, and voluntarily agree to the Integrative Care Consent Agreement. I confirm I am over 18 years of age (or acting as a guardian).
+                    </span>
+                  </label>
+                </div>
+
+                <button
+                  onClick={() => { if (consentGiven) setStep(1); }}
+                  disabled={!consentGiven}
+                  style={{ width: '100%', background: consentGiven ? ACCENT : '#e2e8f0', color: consentGiven ? '#fff' : '#94a3b8', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: consentGiven ? 'pointer' : 'not-allowed', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.3s', boxShadow: consentGiven ? '0 4px 18px rgba(56,190,213,0.3)' : 'none' }}
+                >
+                  <FaCheckCircle /> I Agree — Continue to Booking
+                </button>
+                {!consentGiven && (
+                  <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '11.5px', marginTop: '8px' }}>Please read and check the box above to continue</p>
+                )}
+              </div>
+            )}
 
             {/* ── STEP 1: Patient Details ── */}
             {step === 1 && (
@@ -443,17 +491,8 @@ export default function Contact() {
                   Book Another Appointment
                 </button>
 
-                {/* ── Sign Consent Form CTA ── */}
-                <div style={{ marginTop: '20px', background: 'linear-gradient(135deg,#f0fdf4,#eff6ff)', border: `1.5px solid ${ACCENT}33`, borderRadius: '16px', padding: '20px' }}>
-                  <p style={{ color: '#0f172a', fontWeight: 700, fontSize: '14px', marginBottom: '8px' }}>✍️ Next Step: Sign Your Consent Form</p>
-                  <p style={{ color: '#64748b', fontSize: '13px', lineHeight: '1.7', marginBottom: '14px' }}>To complete your appointment, please sign our digital consent form. It takes less than 2 minutes.</p>
-                  <Link
-                    to={`/consent?name=${encodeURIComponent(formData.name)}&email=${encodeURIComponent(formData.email)}&phone=${encodeURIComponent(formData.phone)}&treatment=${encodeURIComponent(formData.treatment)}`}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: ACCENT, color: '#fff', padding: '12px 24px', borderRadius: '10px', textDecoration: 'none', fontWeight: 700, fontSize: '13.5px' }}
-                  >
-                    🖊 Sign Consent Form
-                  </Link>
-                  <p style={{ color: '#94a3b8', fontSize: '11.5px', marginTop: '10px', margin: '10px 0 0' }}>You will receive a digitally signed copy in your email via Zoho Sign.</p>
+                <div style={{ marginTop: '20px', background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '14px', padding: '16px 20px' }}>
+                  <p style={{ color: '#166534', fontSize: '13px', margin: 0 }}>✅ Your consent was recorded at the start of this booking.</p>
                 </div>
               </div>
             )}

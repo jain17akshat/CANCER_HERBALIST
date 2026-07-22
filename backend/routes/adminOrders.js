@@ -680,8 +680,8 @@ router.post('/admin/orders/:orderId/refund/initiate', async (req, res) => {
         `Admin manually approved refund of ₹${order.orderAmount} (direct override).`);
     }
 
-    if (refund.status === 'PROCESSED' || refund.status === 'PROCESSING') {
-      return res.status(400).json({ success: false, error: `Refund is already ${refund.status}.` });
+    if (refund.status === 'PROCESSED' || refund.status === 'PROCESSING' || refund.status === 'INITIATED') {
+      return res.status(400).json({ success: false, error: `Refund is already ${refund.status}. Cannot re-initiate.` });
     }
 
     // Prevent refund amount from exceeding paid order amount
@@ -827,7 +827,7 @@ router.post('/admin/orders/:orderId/refund/sync', async (req, res) => {
     }
 
     if (refund.status === 'PROCESSED') {
-      return res.json({ success: true, message: 'Refund already processed.', refund });
+      return res.json({ success: true, message: 'Refund already processed. No email sent.', refund });
     }
 
     // Fetch refund state from Razorpay

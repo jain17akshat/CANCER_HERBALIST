@@ -112,26 +112,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ══════════ TOP BAR ══════════ */}
-      <div className="ch-topbar">
-        <div className="ch-topbar-inner">
-          <div className="ch-topbar-contact">
-            <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`} className="ch-topbar-link">
-              <FaPhone />
-              <span>{contactInfo.phone}</span>
-            </a>
-            <span className="ch-topbar-divider" />
-            <a href={`mailto:${contactInfo.email}`} className="ch-topbar-link">
-              <FaEnvelope />
-              <span>{contactInfo.email}</span>
-            </a>
-          </div>
-          <div className="ch-topbar-right">
-            <span className="ch-topbar-tag">🕒 Mon–Sat, 9 AM – 6 PM</span>
-            <span className="ch-topbar-tag">📍 Bangalore, India</span>
-          </div>
-        </div>
-      </div>
 
       {/* ══════════ MAIN NAV ══════════ */}
       <motion.nav

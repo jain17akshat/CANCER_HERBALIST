@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
-  FaFileSignature, FaCheckCircle, FaSpinner, FaShieldAlt,
-  FaLock, FaLeaf, FaPhone, FaEnvelope, FaArrowRight, FaInfoCircle
+  FaFileSignature, FaCheckCircle, FaShieldAlt,
+  FaLock, FaPhone, FaEnvelope, FaInfoCircle, FaLeaf
 } from 'react-icons/fa';
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 const ACCENT = '#38bed5';
 
 /* ── Consent Text ─────────────────────────────────────────────── */
@@ -16,7 +15,7 @@ const CONSENT_SECTIONS = [
   },
   {
     title: '2. No Claim of Cure',
-    text: `By signing this form, you acknowledge that Cancer Herbalist does not claim to diagnose, cure, treat, or prevent cancer or any other disease. Our practitioners are trained in integrative phytotherapy and nutritional science. Treatment outcomes vary between individuals and no specific results are guaranteed.`
+    text: `By agreeing to this form, you acknowledge that Cancer Herbalist does not claim to diagnose, cure, treat, or prevent cancer or any other disease. Our practitioners are trained in integrative phytotherapy and nutritional science. Treatment outcomes vary between individuals and no specific results are guaranteed.`
   },
   {
     title: '3. Information Accuracy',
@@ -42,81 +41,16 @@ const CONSENT_SECTIONS = [
 
 export default function ZohoConsent() {
   const [params] = useSearchParams();
-  const [step, setStep] = useState('form'); // 'form' | 'sending' | 'success' | 'error'
   const [agreed, setAgreed] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [requestId, setRequestId] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
 
-  // Pre-fill from URL query params (set after appointment booking)
-  const [formData, setFormData] = useState({
-    name: params.get('name') || '',
-    email: params.get('email') || '',
-    phone: params.get('phone') || '',
-    treatment: params.get('treatment') || '',
-    apptId: params.get('apptId') || '',
-  });
+  const name = params.get('name') || '';
+  const email = params.get('email') || '';
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!agreed) {
-      setErrorMsg('Please read and agree to all sections of the consent form before signing.');
-      return;
-    }
-    if (!formData.name || !formData.email) {
-      setErrorMsg('Your name and email are required to send the consent form.');
-      return;
-    }
-    setErrorMsg('');
-    setStep('sending');
-
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/zoho-sign/send-consent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      let data;
-      try {
-        data = await res.json();
-      } catch (e) {
-        data = {};
-      }
-
-      if (!res.ok || !data.success) {
-        const rawErr = data.error || data.message || `HTTP ${res.status}`;
-        if (rawErr.toLowerCase().includes('unauthorized') || res.status === 401 || res.status === 503) {
-          throw new Error('Zoho Sign service is pending API authorization on the server. You can confirm your digital consent directly below.');
-        }
-        throw new Error(rawErr);
-      }
-
-      setRequestId(data.requestId || '');
-      setStep('success');
-    } catch (err) {
-      let friendlyMsg = err.message || 'Failed to send consent form.';
-      if (friendlyMsg.toLowerCase().includes('unauthorized')) {
-        friendlyMsg = 'Zoho Sign API authorization error. You can submit your digital consent directly below.';
-      }
-      setErrorMsg(friendlyMsg);
-      setStep('error');
-    }
-  };
-
-  const inputStyle = {
-    width: '100%',
-    padding: '12px 16px',
-    border: '1.5px solid #e2e8f0',
-    borderRadius: '10px',
-    fontSize: '14px',
-    background: '#f8fafc',
-    color: '#0f172a',
-    outline: 'none',
-    boxSizing: 'border-box',
-    fontFamily: 'Poppins, sans-serif',
+  const handleConfirm = () => {
+    if (!agreed) return;
+    setConfirmed(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -125,17 +59,17 @@ export default function ZohoConsent() {
       {/* ── Hero ── */}
       <section style={{ textAlign: 'center', padding: '40px 20px 32px' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: `${ACCENT}18`, color: ACCENT, padding: '8px 18px', borderRadius: '999px', fontWeight: 600, fontSize: '13px', marginBottom: '16px' }}>
-          <FaShieldAlt /> Secure E-Signature · Powered by Zoho Sign
+          <FaShieldAlt /> Integrative Care Consent
         </div>
         <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(2rem, 5vw, 3rem)', color: '#0f172a', marginBottom: '12px' }}>
           Patient Consent <span style={{ color: ACCENT }}>Form</span>
         </h1>
-        <p style={{ maxWidth: '600px', margin: '0 auto', color: '#64748b', lineHeight: '1.8', fontSize: '1rem' }}>
-          Please read this consent form carefully and sign digitally. You will receive a signed copy in your email via Zoho Sign.
+        <p style={{ maxWidth: '580px', margin: '0 auto', color: '#64748b', lineHeight: '1.8', fontSize: '1rem' }}>
+          Please read this consent form carefully before agreeing. Your agreement confirms that you understand and accept the terms of our integrative care services.
         </p>
       </section>
 
-      <div style={{ maxWidth: '900px', margin: '0 auto 80px', padding: '0 20px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 300px', gap: '32px', alignItems: 'start' }}>
+      <div style={{ maxWidth: '860px', margin: '0 auto 80px', padding: '0 20px', display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 280px', gap: '32px', alignItems: 'start' }}>
 
         {/* ── Left: Consent Document ── */}
         <div style={{ background: '#fff', borderRadius: '24px', padding: '40px', boxShadow: '0 10px 40px rgba(0,0,0,0.08)', border: `1px solid ${ACCENT}20` }}>
@@ -163,13 +97,19 @@ export default function ZohoConsent() {
             </div>
           ))}
 
-          {/* Agreement checkbox */}
-          <div style={{ background: agreed ? '#f0fdf4' : '#f8fafc', border: `2px solid ${agreed ? '#22c55e' : '#e2e8f0'}`, borderRadius: '14px', padding: '20px', marginTop: '8px', transition: 'all 0.3s' }}>
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', cursor: 'pointer' }}>
+          {/* Agreement Checkbox */}
+          <div style={{
+            background: agreed ? '#f0fdf4' : '#f8fafc',
+            border: `2px solid ${agreed ? '#22c55e' : '#e2e8f0'}`,
+            borderRadius: '14px', padding: '20px', marginTop: '8px',
+            transition: 'all 0.3s'
+          }}>
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', cursor: confirmed ? 'default' : 'pointer' }}>
               <input
                 type="checkbox"
                 checked={agreed}
-                onChange={(e) => setAgreed(e.target.checked)}
+                onChange={(e) => !confirmed && setAgreed(e.target.checked)}
+                disabled={confirmed}
                 style={{ width: '20px', height: '20px', marginTop: '2px', accentColor: ACCENT, flexShrink: 0 }}
               />
               <span style={{ color: '#334155', fontSize: '14px', lineHeight: '1.7', fontWeight: 500 }}>
@@ -177,114 +117,107 @@ export default function ZohoConsent() {
               </span>
             </label>
           </div>
+
+          {/* Submit button (mobile — shows below consent doc) */}
+          <div style={{ marginTop: '24px', display: 'none' }} className="mobile-confirm-btn">
+            {!confirmed ? (
+              <button
+                onClick={handleConfirm}
+                disabled={!agreed}
+                style={{
+                  width: '100%', background: agreed ? ACCENT : '#94a3b8',
+                  color: '#fff', border: 'none', padding: '14px', borderRadius: '12px',
+                  fontWeight: 700, cursor: agreed ? 'pointer' : 'not-allowed',
+                  fontSize: '14px', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', gap: '8px', transition: 'all 0.2s',
+                }}
+              >
+                <FaCheckCircle /> I Agree & Confirm
+              </button>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '12px 0' }}>
+                <FaCheckCircle style={{ color: '#22c55e', fontSize: '28px', marginBottom: '8px' }} />
+                <p style={{ color: '#22c55e', fontWeight: 700, margin: 0 }}>Consent Confirmed</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* ── Right: Signature Panel ── */}
+        {/* ── Right: Action Panel ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'sticky', top: '110px' }}>
 
-          {/* Form Card */}
+          {/* Confirm Card */}
           <div style={{ background: '#fff', borderRadius: '20px', padding: '28px', boxShadow: '0 8px 32px rgba(0,0,0,0.09)', border: `1px solid ${ACCENT}20` }}>
-            <h3 style={{ color: '#0f172a', fontSize: '16px', fontWeight: 700, marginBottom: '4px' }}>
-              Sign This Document
-            </h3>
-            <p style={{ color: '#64748b', fontSize: '13px', marginBottom: '20px', lineHeight: '1.6' }}>
-              Fill in your details and we'll send the consent form to your email for digital signing via Zoho Sign.
-            </p>
-
-            {step === 'success' ? (
-              <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#f0fdf4', border: '3px solid #22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '28px', color: '#22c55e' }}>
-                  <FaCheckCircle />
+            {!confirmed ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <FaLeaf style={{ color: ACCENT, fontSize: '18px' }} />
+                  <h3 style={{ color: '#0f172a', fontSize: '16px', fontWeight: 700, margin: 0 }}>
+                    Your Agreement
+                  </h3>
                 </div>
-                <h4 style={{ color: '#0f172a', marginBottom: '8px' }}>Consent Form Sent!</h4>
-                <p style={{ color: '#64748b', fontSize: '13px', lineHeight: '1.7', marginBottom: '16px' }}>
-                  Check <strong>{formData.email}</strong> for the signing link from Zoho Sign. Please sign at your earliest convenience.
+                <p style={{ color: '#64748b', fontSize: '13px', marginBottom: '20px', lineHeight: '1.6' }}>
+                  Read the full consent document on the left, check the agreement box, then click below to confirm.
                 </p>
-                {requestId && (
-                  <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '10px 14px', fontSize: '12px', color: '#94a3b8' }}>
-                    Request ID: {requestId}
-                  </div>
-                )}
-                <Link to="/contact" style={{ display: 'inline-block', marginTop: '16px', color: ACCENT, fontWeight: 600, fontSize: '13px', textDecoration: 'none' }}>
-                  ← Back to Booking
-                </Link>
-              </div>
-            ) : step === 'error' ? (
-              <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
-                  <p style={{ color: '#dc2626', fontSize: '13px', margin: 0, lineHeight: '1.6' }}>⚠ {errorMsg}</p>
-                </div>
+
                 <button
-                  onClick={() => {
-                    setRequestId('CONSENT-REC-' + Math.floor(100000 + Math.random() * 900000));
-                    setStep('success');
-                  }}
+                  onClick={handleConfirm}
+                  disabled={!agreed}
                   style={{
-                    width: '100%', background: ACCENT, color: '#fff', border: 'none', padding: '13px',
-                    borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontSize: '14px', marginBottom: '12px'
+                    width: '100%',
+                    background: agreed
+                      ? `linear-gradient(135deg, ${ACCENT}, #2e9ab0)`
+                      : '#e2e8f0',
+                    color: agreed ? '#fff' : '#94a3b8',
+                    border: 'none', padding: '14px', borderRadius: '12px',
+                    fontWeight: 700, cursor: agreed ? 'pointer' : 'not-allowed',
+                    fontSize: '14px', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', gap: '8px',
+                    transition: 'all 0.3s',
+                    boxShadow: agreed ? '0 4px 18px rgba(56,190,213,0.35)' : 'none',
                   }}
                 >
-                  <FaCheckCircle style={{ marginRight: '6px' }} /> Record Consent Confirmation Directly
+                  <FaCheckCircle /> I Agree & Confirm
                 </button>
-                <p style={{ color: '#64748b', fontSize: '12.5px', lineHeight: '1.6', marginBottom: '16px' }}>
-                  Or send your signed confirmation via email to <strong>cancerherbalist@gmail.com</strong>
-                </p>
-                <button
-                  onClick={() => { setErrorMsg(''); setStep('form'); }}
-                  style={{ background: 'transparent', color: '#64748b', border: '1px solid #cbd5e1', padding: '8px 18px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '13px' }}
-                >
-                  ← Retry Zoho Sign
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '5px' }}>Full Name *</label>
-                <input
-                  name="name" value={formData.name} onChange={handleChange} required
-                  placeholder="Rahul Sharma" style={{ ...inputStyle, marginBottom: '14px' }}
-                  onFocus={(e) => (e.target.style.borderColor = ACCENT)}
-                  onBlur={(e) => (e.target.style.borderColor = '#e2e8f0')}
-                />
 
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '5px' }}>Email Address *</label>
-                <input
-                  name="email" type="email" value={formData.email} onChange={handleChange} required
-                  placeholder="your@email.com" style={{ ...inputStyle, marginBottom: '14px' }}
-                  onFocus={(e) => (e.target.style.borderColor = ACCENT)}
-                  onBlur={(e) => (e.target.style.borderColor = '#e2e8f0')}
-                />
-
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#334155', marginBottom: '5px' }}>Phone</label>
-                <input
-                  name="phone" type="tel" value={formData.phone} onChange={handleChange}
-                  placeholder="+91 98765 43210" style={{ ...inputStyle, marginBottom: '20px' }}
-                  onFocus={(e) => (e.target.style.borderColor = ACCENT)}
-                  onBlur={(e) => (e.target.style.borderColor = '#e2e8f0')}
-                />
-
-                {errorMsg && <p style={{ color: '#ef4444', fontSize: '12.5px', marginBottom: '12px' }}>⚠ {errorMsg}</p>}
-
-                <button
-                  type="submit"
-                  disabled={step === 'sending' || !agreed}
-                  style={{
-                    width: '100%', background: agreed ? ACCENT : '#94a3b8', color: '#fff',
-                    border: 'none', padding: '14px', borderRadius: '12px', fontWeight: 700,
-                    cursor: agreed ? 'pointer' : 'not-allowed', fontSize: '14px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  {step === 'sending'
-                    ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Sending…</>
-                    : <><FaFileSignature /> Send Consent for Signing</>}
-                </button>
                 {!agreed && (
-                  <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '11.5px', marginTop: '8px' }}>
-                    Please read and check the agreement box to enable signing
+                  <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '11.5px', marginTop: '10px' }}>
+                    Please read and check the agreement box first
                   </p>
                 )}
-              </form>
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                <div style={{
+                  width: '64px', height: '64px', borderRadius: '50%',
+                  background: '#f0fdf4', border: '3px solid #22c55e',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  margin: '0 auto 16px', fontSize: '28px', color: '#22c55e'
+                }}>
+                  <FaCheckCircle />
+                </div>
+                <h4 style={{ color: '#0f172a', marginBottom: '8px', fontWeight: 700 }}>Consent Confirmed!</h4>
+                {name && (
+                  <p style={{ color: '#64748b', fontSize: '13px', lineHeight: '1.6', marginBottom: '16px' }}>
+                    Thank you, <strong>{name}</strong>. Your consent has been recorded for this session.
+                  </p>
+                )}
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '12px', marginBottom: '16px' }}>
+                  <p style={{ color: '#166534', fontSize: '12px', margin: 0, lineHeight: '1.6' }}>
+                    ✓ Agreed on {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                  {email && <p style={{ color: '#166534', fontSize: '12px', margin: '4px 0 0' }}>✓ {email}</p>}
+                </div>
+                <Link
+                  to="/"
+                  style={{
+                    display: 'inline-block', color: ACCENT,
+                    fontWeight: 600, fontSize: '13px', textDecoration: 'none'
+                  }}
+                >
+                  ← Back to Home
+                </Link>
+              </div>
             )}
           </div>
 
@@ -292,14 +225,13 @@ export default function ZohoConsent() {
           <div style={{ background: 'linear-gradient(135deg, #0f172a, #1e3a5f)', borderRadius: '16px', padding: '20px', color: '#fff' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <FaLock style={{ color: ACCENT }} />
-              <span style={{ fontWeight: 700, fontSize: '13px' }}>Bank-Grade Security</span>
+              <span style={{ fontWeight: 700, fontSize: '13px' }}>Your Privacy is Protected</span>
             </div>
             {[
-              'Legally valid e-signature',
-              '256-bit SSL encryption',
-              'Tamper-proof audit trail',
-              'Signed copy sent to your email',
+              'Consent recorded securely',
+              'Data never sold to third parties',
               'Compliant with Indian IT Act',
+              'You may withdraw at any time',
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '12.5px', color: 'rgba(255,255,255,0.75)' }}>
                 <FaCheckCircle style={{ color: '#22c55e', flexShrink: 0, fontSize: '11px' }} />
@@ -325,13 +257,15 @@ export default function ZohoConsent() {
       </div>
 
       <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @media (max-width: 768px) {
           div[style*="grid-template-columns"] {
             grid-template-columns: 1fr !important;
           }
           div[style*="position: sticky"] {
             position: static !important;
+          }
+          .mobile-confirm-btn {
+            display: block !important;
           }
         }
       `}</style>

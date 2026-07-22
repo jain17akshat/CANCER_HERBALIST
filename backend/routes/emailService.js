@@ -388,7 +388,21 @@ function buildStatusEmailHtml(order, status, customerMessage) {
 </html>`;
 }
 
+/* ── Dedup cache: prevents the same order+status email firing more than once
+   within DEDUP_WINDOW_MS (5 minutes). Protects against double-clicks, retries,
+   or multiple code paths all calling sendStatusNotificationEmail for the same event. */
+const _emailSentCache = new Map(); // key: `${orderId}:${status}` → timestamp
+const DEDUP_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+
 async function sendStatusNotificationEmail(order, status, customerMessage) {
+  const dedupKey = `${order.orderId}:${status}`;
+  const lastSent = _emailSentCache.get(dedupKey);
+  if (lastSent && (Date.now() - lastSent) < DEDUP_WINDOW_MS) {
+    console.warn(`[emailService] DUPLICATE SUPPRESSED — email for ${dedupKey} was already sent ${Math.round((Date.now() - lastSent) / 1000)}s ago. Skipping.`);
+    return;
+  }
+  _emailSentCache.set(dedupKey, Date.now());
+
   console.log(`[emailService] Sending status notification email for order ${order.orderId}`);
   
   if (!order.email || !/\S+@\S+\.\S+/.test(order.email)) {

@@ -222,6 +222,179 @@ function buildAdminEmailHtml(data) {
 </html>`;
 }
 
+/* ── Cancellation email to patient ──────────────────────────────── */
+function buildCancellationEmailHtml({ name, treatment, appointmentDay, appointmentSlot }) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>Appointment Cancelled — Cancer Herbalist</title></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#7f1d1d 0%,#b91c1c 100%);padding:40px 40px 32px;text-align:center;">
+            <p style="margin:0 0 10px;font-size:36px;">🌿</p>
+            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">Cancer Herbalist</h1>
+            <p style="margin:8px 0 0;color:#fca5a5;font-size:13px;letter-spacing:0.5px;">APPOINTMENT CANCELLATION NOTICE</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:36px 40px 0;">
+            <h2 style="margin:0 0 12px;color:#0f172a;font-size:20px;">Dear ${name},</h2>
+            <p style="margin:0 0 24px;color:#64748b;font-size:14px;line-height:1.8;">
+              We regret to inform you that your appointment has been <strong style="color:#dc2626;">cancelled</strong> by our team. We sincerely apologise for any inconvenience caused.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Cancelled Appointment Card -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:14px;overflow:hidden;">
+              <tr>
+                <td style="padding:18px 24px;border-bottom:1px solid #fee2e2;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Cancelled Date</p>
+                  <p style="margin:0;font-size:15px;color:#7f1d1d;font-weight:700;">📅 ${appointmentDay}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 24px;border-bottom:1px solid #fee2e2;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Cancelled Slot</p>
+                  <p style="margin:0;font-size:15px;color:#7f1d1d;font-weight:700;">🕐 ${appointmentSlot}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 24px;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Consultation</p>
+                  <p style="margin:0;font-size:15px;color:#7f1d1d;font-weight:700;">🩺 ${treatment}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Rebook CTA -->
+        <tr>
+          <td style="padding:0 40px 36px;text-align:center;">
+            <p style="color:#64748b;font-size:14px;margin-bottom:20px;line-height:1.7;">To rebook your consultation or if you have any questions, please reach out to us:</p>
+            <a href="https://wa.me/918884588835" style="display:inline-block;background:#25d366;color:#ffffff;padding:14px 36px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:12px;">💬 Rebook via WhatsApp</a>
+            <p style="margin:12px 0 0;color:#94a3b8;font-size:12px;">Or call us at <a href="tel:+918884588835" style="color:#1a6e52;font-weight:600;">+91 88845 88835</a></p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
+            <p style="margin:0;color:#94a3b8;font-size:11.5px;line-height:1.7;">
+              Cancer Herbalist | Kaggalipura, Bangalore 560116<br/>
+              cancerherbalist@gmail.com | +91 88845 88835
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+/* ── Reschedule email to patient ─────────────────────────────────── */
+function buildRescheduleEmailHtml({ name, treatment, oldDay, oldSlot, newDay, newSlot }) {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><title>Appointment Rescheduled — Cancer Herbalist</title></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a6e52 0%,#0f3460 100%);padding:40px 40px 32px;text-align:center;">
+            <p style="margin:0 0 10px;font-size:36px;">🌿</p>
+            <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">Cancer Herbalist</h1>
+            <p style="margin:8px 0 0;color:#a7f3d0;font-size:13px;letter-spacing:0.5px;">APPOINTMENT RESCHEDULED</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:36px 40px 0;">
+            <h2 style="margin:0 0 12px;color:#0f172a;font-size:20px;">Dear ${name},</h2>
+            <p style="margin:0 0 24px;color:#64748b;font-size:14px;line-height:1.8;">
+              Your appointment has been <strong style="color:#1a6e52;">rescheduled</strong> by our team. Please note your updated consultation details below.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Old vs New Slot -->
+        <tr>
+          <td style="padding:0 40px 24px;">
+
+            <!-- Old slot (struck out) -->
+            <p style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin:0 0 8px;">Previous Slot (Cancelled)</p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;margin-bottom:16px;">
+              <tr><td style="padding:14px 20px;">
+                <p style="margin:0;font-size:14px;color:#94a3b8;text-decoration:line-through;">📅 ${oldDay} &nbsp; 🕐 ${oldSlot}</p>
+              </td></tr>
+            </table>
+
+            <!-- New slot (highlighted) -->
+            <p style="font-size:12px;font-weight:700;color:#1a6e52;text-transform:uppercase;letter-spacing:0.8px;margin:0 0 8px;">✅ New Slot (Confirmed)</p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdf4;border:1.5px solid #22c55e44;border-radius:14px;overflow:hidden;">
+              <tr>
+                <td style="padding:18px 24px;border-bottom:1px solid #dcfce7;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">New Date</p>
+                  <p style="margin:0;font-size:15px;color:#0f172a;font-weight:700;">📅 ${newDay}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 24px;border-bottom:1px solid #dcfce7;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">New Time</p>
+                  <p style="margin:0;font-size:15px;color:#0f172a;font-weight:700;">🕐 ${newSlot}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:18px 24px;">
+                  <p style="margin:0 0 3px;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Consultation</p>
+                  <p style="margin:0;font-size:15px;color:#0f172a;font-weight:700;">🩺 ${treatment}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- WhatsApp CTA -->
+        <tr>
+          <td style="padding:0 40px 36px;text-align:center;">
+            <p style="color:#64748b;font-size:14px;margin-bottom:20px;line-height:1.7;">If this new time does not suit you, please contact us immediately:</p>
+            <a href="https://wa.me/918884588835" style="display:inline-block;background:#25d366;color:#ffffff;padding:14px 36px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:12px;">💬 Chat on WhatsApp</a>
+            <p style="margin:12px 0 0;color:#94a3b8;font-size:12px;">Or call <a href="tel:+918884588835" style="color:#1a6e52;font-weight:600;">+91 88845 88835</a></p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
+            <p style="margin:0;color:#94a3b8;font-size:11.5px;line-height:1.7;">
+              Cancer Herbalist | Kaggalipura, Bangalore 560116<br/>
+              cancerherbalist@gmail.com | +91 88845 88835
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 /* ── Save appointment to Google Sheets ───────────────────────── */
 async function saveToSheets(appt) {
   const url = process.env.APPS_SCRIPT_URL;
@@ -517,14 +690,32 @@ router.delete('/appointments/:apptId', checkAdmin, async (req, res) => {
     if (idx === -1) {
       return res.status(404).json({ success: false, error: 'Appointment not found.' });
     }
-    
+
+    const appt = appointmentStore[idx];
+
+    // ── Send cancellation email to patient ──────────────────────
+    if (appt.email && appt.email !== '—') {
+      const transporter = createTransporter();
+      if (transporter) {
+        const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+        transporter.sendMail({
+          from: fromAddr,
+          to: appt.email,
+          subject: `❌ Appointment Cancelled — ${appt.appointmentDay} at ${appt.appointmentSlot} | Cancer Herbalist`,
+          text: `Dear ${appt.name},\n\nYour appointment on ${appt.appointmentDay} at ${appt.appointmentSlot} has been cancelled by our team.\n\nTo rebook, please WhatsApp us at +91 88845 88835 or call us directly.\n\n— Cancer Herbalist Team`,
+          html: buildCancellationEmailHtml(appt),
+        }).catch(e => console.error('[bookAppointment] Cancellation email failed:', e.message));
+        console.log(`[bookAppointment] Cancellation email sent to ${appt.email}`);
+      }
+    }
+
     // Remove from local cache
     appointmentStore.splice(idx, 1);
     lastApptSyncTime = 0;
-    
+
     // Delete from Sheets
     await deleteRowFromSheets(apptId);
-    
+
     res.json({ success: true, message: 'Appointment cancelled successfully.' });
   } catch (err) {
     console.error('[bookAppointment] DELETE error:', err.message);
@@ -536,18 +727,21 @@ router.delete('/appointments/:apptId', checkAdmin, async (req, res) => {
 router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
   const { apptId } = req.params;
   const { appointmentDay, appointmentSlot } = req.body;
-  
+
   try {
     await syncAppointmentsFromSheets();
     const idx = appointmentStore.findIndex(a => a.apptId === apptId);
     if (idx === -1) {
       return res.status(404).json({ success: false, error: 'Appointment not found.' });
     }
-    
+
     const currentAppt = appointmentStore[idx];
-    
+    const isActuallyRescheduled =
+      appointmentDay !== currentAppt.appointmentDay ||
+      appointmentSlot !== currentAppt.appointmentSlot;
+
     // Conflict check if date or slot is changing
-    if (appointmentDay !== currentAppt.appointmentDay || appointmentSlot !== currentAppt.appointmentSlot) {
+    if (isActuallyRescheduled) {
       const conflict = appointmentStore.find(a =>
         a.apptId !== apptId &&
         a.appointmentDay === appointmentDay &&
@@ -560,7 +754,7 @@ router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
         });
       }
     }
-    
+
     // Update local cache
     const updatedAppt = {
       ...currentAppt,
@@ -569,10 +763,33 @@ router.put('/appointments/:apptId', checkAdmin, async (req, res) => {
     };
     appointmentStore[idx] = updatedAppt;
     lastApptSyncTime = 0;
-    
+
     // Sync to Sheets
     await updateRowInSheets(updatedAppt);
-    
+
+    // ── Send reschedule email to patient (only if slot actually changed) ──
+    if (isActuallyRescheduled && currentAppt.email && currentAppt.email !== '—') {
+      const transporter = createTransporter();
+      if (transporter) {
+        const fromAddr = `"Cancer Herbalist" <${process.env.GMAIL_USER}>`;
+        transporter.sendMail({
+          from: fromAddr,
+          to: currentAppt.email,
+          subject: `📅 Appointment Rescheduled — New Slot: ${appointmentDay} at ${appointmentSlot} | Cancer Herbalist`,
+          text: `Dear ${currentAppt.name},\n\nYour appointment has been rescheduled by our team.\n\nOld: ${currentAppt.appointmentDay} at ${currentAppt.appointmentSlot}\nNew: ${appointmentDay} at ${appointmentSlot}\nConsultation: ${currentAppt.treatment}\n\nIf this time doesn't suit you, please WhatsApp us at +91 88845 88835.\n\n— Cancer Herbalist Team`,
+          html: buildRescheduleEmailHtml({
+            name: currentAppt.name,
+            treatment: currentAppt.treatment,
+            oldDay: currentAppt.appointmentDay,
+            oldSlot: currentAppt.appointmentSlot,
+            newDay: appointmentDay,
+            newSlot: appointmentSlot,
+          }),
+        }).catch(e => console.error('[bookAppointment] Reschedule email failed:', e.message));
+        console.log(`[bookAppointment] Reschedule email sent to ${currentAppt.email}`);
+      }
+    }
+
     res.json({ success: true, appointment: updatedAppt });
   } catch (err) {
     console.error('[bookAppointment] PUT error:', err.message);
