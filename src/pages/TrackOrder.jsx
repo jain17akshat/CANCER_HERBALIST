@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   FaSearch, FaTruck, FaClock, FaCheckCircle, FaExclamationTriangle, 
-  FaBoxOpen, FaClipboardList, FaExternalLinkAlt, FaQuestionCircle 
+  FaBoxOpen, FaClipboardList, FaExternalLinkAlt, FaQuestionCircle,
+  FaMoneyBillWave, FaTimesCircle, FaHourglassHalf
 } from 'react-icons/fa';
 
 const PRIMARY = '#1a6e52';
@@ -87,10 +88,10 @@ export default function TrackOrder() {
         {/* Page title */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.2rem', color: '#0f172a', marginBottom: '10px' }}>
-            Track Your <span style={{ color: PRIMARY }}>Order Status</span>
+            Track Order <span style={{ color: PRIMARY }}>&amp; Refund Status</span>
           </h1>
           <p style={{ color: '#64748b', fontSize: '15px' }}>
-            Enter your details below to check live shipping status and retrieve tracking URLs.
+            Enter your details to check live shipping status, view refund history, and retrieve tracking info.
           </p>
         </div>
 
@@ -453,6 +454,76 @@ export default function TrackOrder() {
                   ))}
                 </div>
               </div>
+
+              {/* ── Refund Status Section ── */}
+              {orderData.refund && (() => {
+                const r = orderData.refund;
+                const refundStatusConfig = {
+                  APPROVED:   { color: '#0284c7', bg: '#e0f2fe', icon: <FaHourglassHalf />, label: 'Refund Approved' },
+                  INITIATED:  { color: '#d97706', bg: '#fef3c7', icon: <FaHourglassHalf />, label: 'Refund Initiated' },
+                  PROCESSING: { color: '#7c3aed', bg: '#ede9fe', icon: <FaHourglassHalf />, label: 'Processing' },
+                  PROCESSED:  { color: '#16a34a', bg: '#dcfce7', icon: <FaCheckCircle />,   label: 'Refund Credited ✓' },
+                  FAILED:     { color: '#dc2626', bg: '#fee2e2', icon: <FaTimesCircle />,    label: 'Refund Failed' },
+                };
+                const cfg = refundStatusConfig[r.status] || refundStatusConfig.APPROVED;
+                return (
+                  <div style={{
+                    marginTop: '32px',
+                    borderTop: '1px solid #f1f5f9',
+                    paddingTop: '28px',
+                  }}>
+                    <h3 style={{ fontSize: '14px', color: '#334155', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <FaMoneyBillWave style={{ color: PRIMARY }} /> Refund Status
+                    </h3>
+                    <div style={{
+                      background: cfg.bg,
+                      border: `1.5px solid ${cfg.color}44`,
+                      borderRadius: '16px',
+                      padding: '20px 24px',
+                    }}>
+                      {/* Status badge + amount */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: '6px',
+                          background: '#fff', border: `1.5px solid ${cfg.color}66`,
+                          color: cfg.color, padding: '6px 14px', borderRadius: '50px',
+                          fontSize: '13px', fontWeight: 700
+                        }}>
+                          {cfg.icon} {cfg.label}
+                        </span>
+                        <span style={{ fontWeight: 800, fontSize: '1.2rem', color: cfg.color }}>
+                          ₹{Number(r.amount).toLocaleString('en-IN')}
+                        </span>
+                      </div>
+
+                      {/* Details grid */}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+                        {[
+                          { label: 'Refund ID', value: r.refundId },
+                          { label: 'Method',    value: r.method || '—' },
+                          { label: 'Reason',    value: r.reason || '—' },
+                          r.paymentGatewayRefundId && { label: 'Gateway Ref', value: r.paymentGatewayRefundId },
+                          r.approvedAt   && { label: 'Approved On',  value: new Date(r.approvedAt).toLocaleDateString('en-IN') },
+                          r.initiatedAt  && { label: 'Initiated On', value: new Date(r.initiatedAt).toLocaleDateString('en-IN') },
+                          r.processedAt  && { label: 'Credited On',  value: new Date(r.processedAt).toLocaleDateString('en-IN') },
+                        ].filter(Boolean).map((item, i) => (
+                          <div key={i}>
+                            <p style={{ margin: '0 0 2px', fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</p>
+                            <p style={{ margin: 0, fontSize: '13.5px', color: '#0f172a', fontWeight: 600, wordBreak: 'break-all' }}>{item.value}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Message for pending refunds */}
+                      {['APPROVED', 'INITIATED', 'PROCESSING'].includes(r.status) && (
+                        <p style={{ margin: '16px 0 0', fontSize: '12.5px', color: cfg.color, fontWeight: 500, opacity: 0.9 }}>
+                          ⏳ Your refund is being processed. It typically reflects in 5–7 business days from the initiation date.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Action Buttons Link to Order Details */}
               <div style={{
