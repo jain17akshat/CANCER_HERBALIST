@@ -19,7 +19,7 @@ const submitOrderSchema = {
   state: { type: 'string', required: true, min: 2, max: 100 },
   pincode: { type: 'string', required: true, format: 'pincode' },
   productName: { type: 'string', required: true, min: 2, max: 100 },
-  productId: { type: 'string', required: true, min: 2, max: 50 },
+  productId: { type: 'string', required: true, min: 1, max: 50 },
   quantity: { type: 'number', required: true, integer: true, min: 1, max: 10 },
   unitPrice: { type: 'number', required: true, min: 0 },
   orderAmount: { type: 'number', required: true, min: 0 },

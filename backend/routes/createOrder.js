@@ -13,7 +13,7 @@ const razorpay = new Razorpay({
 const createOrderSchema = {
   amount: { type: 'number', required: true, min: 1, max: 200000 },
   productName: { type: 'string', required: true, min: 2, max: 100 },
-  productId: { type: 'string', required: true, min: 2, max: 50 },
+  productId: { type: 'string', required: true, min: 1, max: 50 },
   customerName: { type: 'string', required: true, min: 2, max: 100, format: 'name' },
   phone: { type: 'string', required: true, format: 'phone' },
   email: { type: 'string', required: false, format: 'email', max: 100 },
