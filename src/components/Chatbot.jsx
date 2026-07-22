@@ -7,72 +7,82 @@ const faqs = [
   {
     q: 'What is cancer?',
     a: 'It is a disorder where Cells divide without limitation & create pressure on neighbor tissue and produce chemicals which lead to death.',
-    keywords: ['what is cancer', 'cancer', 'define cancer', 'cancer meaning'],
+    keywords: ['what is cancer', 'cancer', 'define cancer', 'cancer meaning', 'what is it'],
   },
   {
     q: 'Is cancer curable?',
     a: 'Although legally nobody can claim cure, there are numerous instances where people lived to their life after detection of cancer. Unfortunately the survival rate with Chemo/Radio therapy doesn\'t exceed single digit even with such an enormous amount of research and effort. Although many natural products have shown better than Chemo effect, due to lack of study as per FDA, none of them has been accepted as Standard Therapy. Thus non-commercial organisations like Universities, PG/PhD students and some traditional research scientists, or some small scale studies conducts research on natural products. Combining these research results provide enough evidence to prove their use to include them in cancer therapy.',
-    keywords: ['curable', 'cure', 'can cancer be cured', 'survival'],
+    keywords: ['curable', 'cure', 'can cancer be cured', 'survival', 'can it be cured', 'is it curable'],
   },
   {
     q: 'What is this treatment?',
     a: 'Standard therapy includes Surgery, Chemo/Radio therapy, as these have frequently proved to be a failure, it is essential to try other options. Other options include Ayurvedic Therapy, Herbal Therapy, Chinese Therapy, Homeopathy, Sidda/Unani, Acupuncture, Acupressure, Laetriele Therapy, Hyperbaric Oxy-therapy, Ketotherapy, Fasting, Yoga etc. Each of the above has its own advantages. Combining many of them has synergistic benefits. Herbal Chemotherapy (HCT) is a combination of many of the above systems and diet change, life style change and exercise. Objective of HCT is to use all options to provide relief of signs, symptoms, and pain to the patient.',
-    keywords: ['treatment', 'what is this treatment', 'hct', 'herbal chemotherapy', 'therapy options', 'ayurvedic', 'herbal therapy'],
+    keywords: ['treatment', 'what is this treatment', 'hct', 'herbal chemotherapy', 'therapy options', 'ayurvedic', 'herbal therapy', 'what therapy', 'which therapy'],
   },
   {
     q: 'Is it safe?',
     a: 'All ingredients are natural and proved to be safe. Most of them are routinely used in Kitchen like Turmeric, Ginger, Tea, Grapes etc.',
-    keywords: ['safe', 'safety', 'is it safe', 'side effects', 'harmful'],
+    keywords: ['safe', 'safety', 'is it safe', 'side effects', 'harmful', 'danger', 'risk', 'natural'],
+  },
+  {
+    q: 'Is this therapy approved?',
+    a: 'These nutraceutical food supplements (Withaferins, EGCG, Curcumin C3 complex, Gingerols etc.) are derived from FSSAI-approved food-grade herbs and plants. They are legally classified as dietary supplements or functional foods under Indian food safety regulations. They are not drugs and do not require drug approval. Each ingredient is sourced and manufactured under quality-controlled conditions and complies with FSSAI food supplement guidelines.',
+    keywords: ['approved', 'is this approved', 'is therapy approved', 'legal', 'certified', 'fssai', 'regulated', 'license', 'licence', 'government approved', 'authorized', 'authorised', 'permitted'],
+  },
+  {
+    q: 'Should I visit in person?',
+    a: 'In-person visits are not mandatory. We provide complete online consultations via WhatsApp and video call. You can share your medical reports, scans, and blood tests digitally. Prof. Ramesh Babu and our team will review your case and design a personalized nutraceutical supplement protocol that is shipped directly to your home anywhere in India. However, if you are based near our center and prefer a face-to-face review, you are most welcome to visit by scheduling a prior appointment.',
+    keywords: ['visit', 'should i visit', 'come in person', 'in person', 'physically visit', 'walk in', 'meet in person', 'offline', 'can i visit', 'do i need to visit', 'need to come', 'come to clinic', 'personally visit'],
   },
   {
     q: 'Can HCT be used during Chemo Therapy & Radio Therapy (CTRT)?',
     a: 'Absolutely yes, you can use HC during CTRT. As HC makes cancer cells more vulnerable to chemo, you would get results better than Chemo alone. HC also provides protection against CTRT induced adverse reactions. As many ingredients like Ashwagandha, Tulsi are adaptogenic, they would reduce your hospital stay, ICU stay, infections, pain during Surgery and CTRT.',
-    keywords: ['chemo', 'radio', 'ctrt', 'chemotherapy', 'radiation', 'alongside', 'during chemo', 'with chemo'],
+    keywords: ['chemo', 'radio', 'ctrt', 'chemotherapy', 'radiation', 'alongside', 'during chemo', 'with chemo', 'with chemotherapy', 'together with'],
   },
   {
     q: 'How long do we need to take this treatment?',
     a: 'There is no standard duration for a particular type of Cancer. As soon as signs disappear you can stop. As it is nutrition, you have the freedom to start or stop any time. General duration in initial stages may be 1-3 months.',
-    keywords: ['how long', 'duration', 'how many months', 'time period', 'stop treatment'],
+    keywords: ['how long', 'duration', 'how many months', 'time period', 'stop treatment', 'long term', 'short term'],
   },
   {
     q: 'How much does it cost per month?',
     a: 'Each patient is presented with different health conditions. Based on several tests, the therapy is personalised to suit their requirements. Please enquire about this during the review & counseling time of your case.',
-    keywords: ['cost', 'price', 'per month', 'how much', 'expensive', 'affordable', 'charges', 'fees'],
+    keywords: ['cost', 'price', 'per month', 'how much', 'expensive', 'affordable', 'charges', 'fees', 'rate', 'monthly'],
   },
   {
     q: 'What would be the cost of whole treatment?',
     a: 'It would be fraction of the Chemo/Radio therapy. A PETCT scan cost would cover the therapy for several months. As there is no standard format of duration for each type of cancer, it is not possible to calculate accurately.',
-    keywords: ['total cost', 'whole treatment cost', 'complete cost', 'overall cost', 'full treatment'],
+    keywords: ['total cost', 'whole treatment cost', 'complete cost', 'overall cost', 'full treatment', 'total price'],
   },
   {
     q: 'How much time is required to procure therapy?',
     a: 'In most cases formulations would be readily available for patients. In few cases special formulations would have to be prepared which would require a day or two. Prior information would reduce the delay.',
-    keywords: ['procure', 'time to get', 'delivery', 'ready', 'available', 'preparation time', 'how soon'],
+    keywords: ['procure', 'time to get', 'delivery', 'ready', 'available', 'preparation time', 'how soon', 'ship', 'shipping'],
   },
   {
     q: 'Is everyone eligible for Herbal Chemotherapy?',
-    a: 'Yes, everyone is eligible for Herbal Chemotherapy. Since it utilizes safe, non-toxic, and premium standardized botanical extracts tailored to each patient’s specific pathology and organ filtration capacity, it is suitable for individuals of all ages and health conditions.',
-    keywords: ['eligible', 'eligibility', 'everyone eligible', 'who is eligible'],
+    a: 'Yes, everyone is eligible for Herbal Chemotherapy. Since it utilizes safe, non-toxic, and premium standardized botanical extracts tailored to each patient\'s specific pathology and organ filtration capacity, it is suitable for individuals of all ages and health conditions.',
+    keywords: ['eligible', 'eligibility', 'everyone eligible', 'who is eligible', 'can i take', 'am i eligible'],
   },
   {
     q: 'Is there a recovery time required for Herbal Chemotherapy?',
     a: 'No recovery time is required as there are no serious side effects from Herbal Chemotherapy. Unlike conventional cytotoxic chemotherapy, HCT is gentle on the body and does not cause systemic toxicity, hair loss, or organ strain, allowing patients to maintain their daily routine.',
-    keywords: ['recovery', 'recovery time', 'side effects', 'serious side effects'],
+    keywords: ['recovery', 'recovery time', 'side effects', 'serious side effects', 'adverse effects', 'hair loss'],
   },
   {
     q: 'Is preparation required before starting Herbal Chemotherapy?',
-    a: 'No preparation is required. You can start Herbal Chemotherapy at the earliest. Our medical and pharmacological team only requires a review of your recent blood panels, diagnostic scans, and current conventional medication list to screen for drug-herb interactions and personalize your formula.',
-    keywords: ['preparation', 'prepare', 'what preparation', 'start chemotherapy'],
+    a: 'No preparation is required. You can start Herbal Chemotherapy at the earliest. Our team only requires a review of your recent blood panels, diagnostic scans, and current conventional medication list to screen for interactions and personalize your formula.',
+    keywords: ['preparation', 'prepare', 'what preparation', 'start chemotherapy', 'how to start', 'getting started', 'begin'],
   },
   {
     q: 'Are all types of cancers eligible for Herbal Chemotherapy?',
-    a: 'Yes, all types of cancers are eligible for Herbal Chemotherapy. Our protocols are customized to address various malignancies, including breast, lung, colon, prostate, liver, blood, and rare or advanced stage cancers, supporting the body’s healing response.',
-    keywords: ['all cancers', 'all type', 'every cancer', 'types of cancer'],
+    a: 'Yes, all types of cancers are eligible for Herbal Chemotherapy. Our protocols are customized to address various malignancies, including breast, lung, colon, prostate, liver, blood, and rare or advanced stage cancers, supporting the body\'s healing response.',
+    keywords: ['all cancers', 'all type', 'every cancer', 'types of cancer', 'breast cancer', 'lung cancer', 'prostate', 'liver cancer', 'colon cancer'],
   },
   {
     q: 'What are the key differences between HCT and conventional therapies?',
     a: 'There is an ocean of differences. Few key comparisons:\na. HCT works on non-dividing cancer cells.\nb. HCT works on metastasized cancer cells too.\nc. HCT works on CCC (Circulating Cancer Cells) too.\nd. HCT works on CSC (Cancer Stem Cells) too.\nFor complete differences, please visit the last page of our English yellow brochure.',
-    keywords: ['ocean', 'differences', 'comparison', 'non-dividing', 'metastasised', 'ccc', 'csc', 'brochure'],
+    keywords: ['ocean', 'differences', 'comparison', 'non-dividing', 'metastasised', 'ccc', 'csc', 'brochure', 'difference between', 'compare'],
   },
 ];
 
@@ -146,11 +156,12 @@ export default function Chatbot() {
     let bestMatch = -1;
     let bestScore = 0;
 
+    // Pass 1: phrase-level matching (longer phrases score higher)
     faqs.forEach((faq, index) => {
       let score = 0;
       faq.keywords.forEach(keyword => {
-        if (lowerText.includes(keyword)) {
-          score += keyword.split(' ').length; // longer keyword matches score higher
+        if (lowerText.includes(keyword.toLowerCase())) {
+          score += keyword.split(' ').length * 2; // longer keyword matches score higher
         }
       });
       if (score > bestScore) {
@@ -159,7 +170,23 @@ export default function Chatbot() {
       }
     });
 
-    return bestScore > 0 ? bestMatch : -1;
+    if (bestScore > 0) return bestMatch;
+
+    // Pass 2: individual word matching fallback (catches partial questions)
+    const words = lowerText.replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3);
+    faqs.forEach((faq, index) => {
+      let score = 0;
+      const allKeywordText = faq.keywords.join(' ').toLowerCase();
+      words.forEach(word => {
+        if (allKeywordText.includes(word)) score += 1;
+      });
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = index;
+      }
+    });
+
+    return bestScore >= 2 ? bestMatch : -1;
   };
 
   const handleUserMessage = (text) => {
