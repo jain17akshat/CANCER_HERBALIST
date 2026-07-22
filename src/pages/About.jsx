@@ -194,6 +194,84 @@ export default function About() {
         </div>
       </section>
 
+      {/* ══════════ OUR PHILOSOPHY ══════════ */}
+      <section style={{ background: '#f8fafc', padding: 'clamp(50px, 8vw, 100px) 20px', borderTop: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+            <span style={{ color: PRIMARY, fontWeight: 700, fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+              Core Principles
+            </span>
+            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', color: DARK, marginTop: '12px', marginBottom: '16px' }}>
+              Our <span style={{ color: PRIMARY }}>Philosophy</span>
+            </h2>
+            <p style={{ color: '#64748b', maxWidth: '620px', margin: '0 auto', lineHeight: '1.8', fontSize: '1rem' }}>
+              We believe in combining ancient botanical wisdom with modern evidence-based pharmacological research.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))', gap: '28px' }}>
+            {[
+              {
+                icon: <FaSeedling />,
+                title: 'Evidence-Based Phytotherapy',
+                desc: 'Every herb and botanical compound we use is backed by cellular research, pharmacological studies, and standardized active ingredients.'
+              },
+              {
+                icon: <FaShieldAlt />,
+                title: 'Synergy with Modern Care',
+                desc: 'We do not replace conventional treatments; our integrative protocols work alongside chemotherapy, radiation, and surgery to support organ resilience.'
+              },
+              {
+                icon: <FaHandHoldingHeart />,
+                title: 'Holistic Patient-Centricity',
+                desc: 'Cancer care extends beyond tumor targeted care — we focus on appetite support, vitality, cellular detox, and total quality of life.'
+              },
+              {
+                icon: <FaFlask />,
+                title: 'Safety & Quality Audits',
+                desc: 'Strict quality control, heavy metal screening, and purity testing ensure zero contamination across all our herbal formulations.'
+              }
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                whileHover={{ y: -6 }}
+                style={{
+                  background: '#fff',
+                  borderRadius: '20px',
+                  padding: '32px 28px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+                  border: '1px solid #e2e8f0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start'
+                }}
+              >
+                <div style={{
+                  width: '50px',
+                  height: '50px',
+                  borderRadius: '14px',
+                  background: `${PRIMARY}12`,
+                  color: PRIMARY,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '22px',
+                  marginBottom: '20px'
+                }}>
+                  {item.icon}
+                </div>
+                <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.25rem', color: DARK, margin: '0 0 12px' }}>
+                  {item.title}
+                </h3>
+                <p style={{ color: '#64748b', fontSize: '0.93rem', lineHeight: '1.7', margin: 0 }}>
+                  {item.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ══════════ OUR TEAM SECTION (MOVED INSIDE ABOUT US) ══════════ */}
       <section id="our-team" style={{ background: '#fff', padding: 'clamp(60px, 8vw, 100px) 20px', borderTop: '1px solid #e2e8f0' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>

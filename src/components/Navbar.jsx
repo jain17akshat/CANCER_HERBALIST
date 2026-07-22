@@ -14,14 +14,8 @@ const navLinks = [
   { label: 'Home',              href: '/' },
   { label: 'About',             href: '/about' },
   { label: 'Cancer Overview',   href: '/cancer-overview' },
-  {
-    label: 'Treatments',
-    href: '/integrative-therapies',
-    children: [
-      { label: 'Integrative Therapies',    href: '/integrative-therapies',        desc: 'Gene-targeted & holistic care' },
-      { label: 'Personalized Care',        href: '/personalized-treatment-plans', desc: 'Plans tailored just for you' },
-    ],
-  },
+  { label: 'Treatments',        href: '/integrative-therapies' },
+  { label: 'Personalized Care', href: '/personalized-treatment-plans' },
   { label: 'Stories',           href: '/testimonials' },
   {
     label: 'Products',
