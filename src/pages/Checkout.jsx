@@ -445,12 +445,7 @@ export default function Checkout() {
                   )}
                 </button>
 
-                <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '12px', marginTop: '12px' }}>
-                  <FaShieldAlt style={{ marginRight: '4px' }} />
-                  {paymentMethod === 'online'
-                    ? '🔒 Payment is processed securely by Razorpay. Your card/UPI details are never shared with us.'
-                    : 'Your data is secure. No payment collected online — COD / bank transfer on confirmation.'}
-                </p>
+
 
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               </form>
