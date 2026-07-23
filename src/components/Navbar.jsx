@@ -356,14 +356,14 @@ export default function Navbar() {
           box-shadow: 0 2px 24px rgba(0,0,0,0.09);
         }
         .ch-nav-inner {
-          max-width: 1280px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 0 28px;
+          padding: 0 16px;
           height: 68px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
+          gap: 8px;
         }
 
         /* ── Logo ── */
@@ -374,7 +374,7 @@ export default function Navbar() {
           align-items: center;
         }
         .ch-logo img {
-          height: 46px;
+          height: 44px;
           width: auto;
           object-fit: contain;
         }
@@ -383,21 +383,22 @@ export default function Navbar() {
         .ch-desktop-nav {
           display: flex;
           align-items: center;
-          gap: 0px;
+          gap: 2px;
           flex: 1;
           justify-content: center;
+          min-width: 0;
         }
-        .ch-nav-item { position: relative; }
+        .ch-nav-item { position: relative; flex-shrink: 0; }
 
         /* ── Links & buttons ── */
         .ch-nav-link,
         .ch-nav-btn {
           display: inline-flex;
           align-items: center;
-          gap: 4px;
-          padding: 8px 13px;
+          gap: 3px;
+          padding: 6px 8px;
           border-radius: 8px;
-          font-size: 14px;
+          font-size: 13.5px;
           font-weight: 500;
           letter-spacing: -0.01em;
           text-decoration: none;
@@ -483,13 +484,13 @@ export default function Navbar() {
 
         /* ── CTA Button ── */
         .ch-cta-btn {
-          padding: 10px 22px;
+          padding: 9px 18px;
           background: ${PRIMARY};
           color: #fff;
           border: none;
           border-radius: 50px;
           font-weight: 600;
-          font-size: 13.5px;
+          font-size: 13px;
           cursor: pointer;
           transition: background 0.2s, box-shadow 0.2s;
           white-space: nowrap;
@@ -605,7 +606,18 @@ export default function Navbar() {
         .ch-mob-cta:hover { background: #155c43; }
 
         /* ── Responsive ── */
-        @media (max-width: 1100px) {
+        @media (max-width: 1360px) {
+          .ch-nav-link,
+          .ch-nav-btn {
+            padding: 5px 6px;
+            font-size: 12.5px;
+          }
+          .ch-cta-btn {
+            padding: 8px 14px;
+            font-size: 12.5px;
+          }
+        }
+        @media (max-width: 1180px) {
           .ch-desktop-nav { display: none !important; }
           .ch-cta-btn     { display: none !important; }
           .ch-hamburger   { display: flex !important; align-items: center; }
@@ -615,7 +627,7 @@ export default function Navbar() {
           .ch-topbar { display: none !important; }
           .ch-topbar-contact { display: none !important; }
         }
-        @media (min-width: 1101px) {
+        @media (min-width: 1181px) {
           .ch-mobile-menu { display: none !important; }
         }
       `}</style>
