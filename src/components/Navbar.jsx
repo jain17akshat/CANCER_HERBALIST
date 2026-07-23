@@ -17,6 +17,7 @@ const navLinks = [
   { label: 'Treatments',        href: '/integrative-therapies' },
   { label: 'Personalized Care', href: '/personalized-treatment-plans' },
   { label: 'Stories',           href: '/testimonials' },
+  { label: 'Patient Onboarding', href: '/patient-onboarding' },
   {
     label: 'Products',
     href: '/products',
@@ -41,7 +42,6 @@ const navLinks = [
       { label: 'Healthy Recipes',     href: '/education-resources?category=healthy-recipes',         desc: 'Nourishing meals' },
     ],
   },
-  { label: 'Patient Onboarding', href: '/patient-onboarding' },
   { label: 'Contact',            href: '/contact' },
 ];
 

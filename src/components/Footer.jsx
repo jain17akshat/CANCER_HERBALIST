@@ -19,10 +19,10 @@ const quickLinks = [
   { label: 'Cancer Overview',   to: '/cancer-overview' },
   { label: 'Integrative Therapies', to: '/integrative-therapies' },
   { label: 'Personalized Plans', to: '/personalized-treatment-plans' },
-  { label: 'Products Hub',      to: '/products' },
-  { label: 'Patient Onboarding', to: '/patient-onboarding' },
-  { label: 'Education Resources', to: '/education-resources' },
   { label: 'Success Stories',   to: '/testimonials' },
+  { label: 'Patient Onboarding', to: '/patient-onboarding' },
+  { label: 'Products Hub',      to: '/products' },
+  { label: 'Education Resources', to: '/education-resources' },
   { label: 'Contact Us',        to: '/contact' },
 ];
 
