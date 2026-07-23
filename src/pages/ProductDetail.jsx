@@ -1258,7 +1258,7 @@ export default function ProductDetail() {
 
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: 'Poppins, sans-serif' }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: 'Poppins, sans-serif', overflowX: 'hidden' }}>
 
       {/* Breadcrumb / Top Store Bar */}
       <div style={{ background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '12px 24px' }}>
@@ -1518,9 +1518,10 @@ export default function ProductDetail() {
                   background: '#fff', border: '1px solid #e2e8f0',
                   borderRadius: '8px', padding: '7px 12px',
                   fontSize: '12px', color: '#374151', fontWeight: 500,
+                  flexShrink: 0, maxWidth: '100%',
                 }}>
-                  <span style={{ color: PRIMARY, fontSize: '12px' }}>{t.icon}</span>
-                  {t.label}
+                  <span style={{ color: PRIMARY, fontSize: '12px', flexShrink: 0 }}>{t.icon}</span>
+                  <span style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{t.label}</span>
                 </div>
               ))}
             </div>
@@ -2067,11 +2068,28 @@ export default function ProductDetail() {
           align-items: stretch;
         }
         @media (max-width: 480px) {
-          .pd-btn-row:first-of-type {
+          .pd-btn-row {
             flex-direction: column;
           }
-          .pd-btn-row:first-of-type > button {
-            width: 100%;
+          .pd-btn-row > button,
+          .pd-btn-row > a {
+            width: 100% !important;
+            flex: unset !important;
+          }
+        }
+        /* Prevent any child element from breaking out of viewport */
+        @media (max-width: 768px) {
+          .pd-layout * {
+            max-width: 100%;
+            word-break: break-word;
+          }
+        }
+        .review-form-row {
+          grid-template-columns: 1fr 1fr;
+        }
+        @media (max-width: 560px) {
+          .review-form-row {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "eventId": "EV-1784783912463-VDK9",
+    "orderId": "CH-1784783912368-78L8",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_PLACED",
+    "customerMessage": "Your order has been successfully placed. We are preparing it for confirmation.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-23T05:18:32.463Z"
+  },
+  {
+    "eventId": "EV-1784783917416-NEUY",
+    "orderId": "CH-1784783912368-78L8",
+    "eventType": "STATUS_UPDATE",
+    "status": "ORDER_CONFIRMED",
+    "customerMessage": "Your order has been confirmed. We are scheduling it for shipment.",
+    "internalMetadata": null,
+    "createdAt": "2026-07-23T05:18:37.416Z"
+  }
+]
