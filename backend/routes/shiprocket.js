@@ -69,8 +69,8 @@ async function createShiprocketOrder(orderRow) {
     .map(p => Number(p.trim()) || 0);
 
   const order_items = productNames.map((name, i) => ({
-    name:         name,
-    sku:          `SKU-${String(orderRow.productId || 'PROD').split(',')[i]?.trim() || i}`,
+    name:         name || `Product-${String(orderRow.productId || '').split(',')[i]?.trim() || (i + 1)}`,
+    sku:          `CH-SKU-${String(orderRow.productId || 'PROD').split(',')[i]?.trim() || i}`,
     units:        quantities[i] || quantities[0] || 1,
     selling_price: unitPrices[i] || unitPrices[0] || Number(orderRow.orderAmount) || 0,
     discount:     0,

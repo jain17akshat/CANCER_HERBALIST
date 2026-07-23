@@ -79,8 +79,8 @@ const initialProducts = [
     id: 1,
     name: 'Cap CH95 (30Cap)',
     category: 'Immunity',
-    price: 10,
-    originalPrice: 15,
+    price: 599,
+    originalPrice: 799,
     rating: 4.8,
     reviews: 124,
     images: [
