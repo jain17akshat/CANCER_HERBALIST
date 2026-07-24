@@ -4,6 +4,7 @@ import { FaBars, FaTimes, FaPhone, FaChevronDown, FaEnvelope } from 'react-icons
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useContent } from '../context/ContentContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const PRIMARY = '#1a6e52';
 const ACCENT  = '#38bed5';
@@ -187,6 +188,9 @@ export default function Navbar() {
 
           {/* CTA + hamburger */}
           <div className="ch-nav-actions">
+            <div className="ch-lang-desktop">
+              <LanguageSwitcher />
+            </div>
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.96 }}
@@ -279,6 +283,7 @@ export default function Navbar() {
               ))}
 
               <div className="ch-mob-footer">
+                <LanguageSwitcher mobile />
                 <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`} className="ch-mob-phone">
                   <FaPhone style={{ fontSize: '12px' }} />
                   {contactInfo.phone}
@@ -358,12 +363,12 @@ export default function Navbar() {
         .ch-nav-inner {
           max-width: 1400px;
           margin: 0 auto;
-          padding: 0 16px;
+          padding: 0 12px;
           height: 68px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 8px;
+          gap: 6px;
         }
 
         /* ── Logo ── */
@@ -383,10 +388,11 @@ export default function Navbar() {
         .ch-desktop-nav {
           display: flex;
           align-items: center;
-          gap: 2px;
+          gap: 1px;
           flex: 1;
           justify-content: center;
           min-width: 0;
+          overflow: visible;
         }
         .ch-nav-item { position: relative; flex-shrink: 0; }
 
@@ -396,9 +402,9 @@ export default function Navbar() {
           display: inline-flex;
           align-items: center;
           gap: 3px;
-          padding: 6px 8px;
+          padding: 6px 7px;
           border-radius: 8px;
-          font-size: 13.5px;
+          font-size: 13px;
           font-weight: 500;
           letter-spacing: -0.01em;
           text-decoration: none;
@@ -606,20 +612,21 @@ export default function Navbar() {
         .ch-mob-cta:hover { background: #155c43; }
 
         /* ── Responsive ── */
-        @media (max-width: 1360px) {
+        @media (max-width: 1400px) {
           .ch-nav-link,
           .ch-nav-btn {
-            padding: 5px 6px;
-            font-size: 12.5px;
+            padding: 5px 5px;
+            font-size: 12px;
           }
           .ch-cta-btn {
-            padding: 8px 14px;
-            font-size: 12.5px;
+            padding: 8px 13px;
+            font-size: 12px;
           }
         }
         @media (max-width: 1180px) {
           .ch-desktop-nav { display: none !important; }
           .ch-cta-btn     { display: none !important; }
+          .ch-lang-desktop { display: none !important; }
           .ch-hamburger   { display: flex !important; align-items: center; }
           .ch-topbar-right { display: none !important; }
         }

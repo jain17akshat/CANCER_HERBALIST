@@ -46,6 +46,7 @@ import RouteLoader from './components/RouteLoader';
 import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider } from './context/CartContext';
 import { ContentProvider } from './context/ContentContext';
+import { LanguageProvider } from './context/LanguageContext';
 import CartDrawer from './components/CartDrawer';
 import SEO from './components/SEO';
 
@@ -76,6 +77,7 @@ function App() {
   }, []);
 
   return (
+    <LanguageProvider>
     <ContentProvider>
       <CartProvider>
         <WishlistProvider>
@@ -161,6 +163,7 @@ function App() {
       </WishlistProvider>
     </CartProvider>
   </ContentProvider>
+  </LanguageProvider>
   );
 }
 
