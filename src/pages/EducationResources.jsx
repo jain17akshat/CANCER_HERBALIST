@@ -196,7 +196,12 @@ export default function EducationResources() {
             excerpt: b.excerpt || '',
             content: b.content || b.excerpt || ''
           }));
-          setArticles(prev => [...prev, ...formatted]);
+          // Deduplicate: only add dynamic articles not already present (by title)
+          setArticles(prev => {
+            const existingTitles = new Set(prev.map(a => a.title.trim().toLowerCase()));
+            const newOnly = formatted.filter(a => !existingTitles.has(a.title.trim().toLowerCase()));
+            return newOnly.length > 0 ? [...prev, ...newOnly] : prev;
+          });
         }
       } catch (err) {
         console.warn('Failed to load external articles:', err);
