@@ -112,21 +112,6 @@ export default function PersonalizedTreatmentPlansPage() {
         <div style={{ position: 'absolute', bottom: '-20%', left: '-5%', width: '300px', height: '300px', borderRadius: '50%', background: PRIMARY, opacity: 0.1, filter: 'blur(80px)' }} />
 
         <div style={{ maxWidth: '850px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <span style={{ 
-            background: 'rgba(251, 146, 60, 0.15)', 
-            border: '1px solid rgba(251, 146, 60, 0.35)', 
-            color: '#fdba74', 
-            padding: '8px 24px', 
-            borderRadius: '50px', 
-            fontSize: '13.5px', 
-            fontWeight: 700,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            display: 'inline-block',
-            marginBottom: '16px'
-          }}>
-            📋 Phase 5 — Clinical Customization
-          </span>
           <h1 style={{ 
             fontSize: 'clamp(2.2rem, 5.5vw, 3.8rem)', 
             fontFamily: 'Playfair Display, serif', 
