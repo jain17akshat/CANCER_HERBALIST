@@ -307,6 +307,29 @@ export default function AdminDashboard() {
     }
   };
 
+  /* ── Clear All Blocked Slots ───────────────────────────── */
+  const handleClearAllBlocks = async (day) => {
+    const blockedAppts = appointments.filter(a => a.appointmentDay === day && a.name === '[BLOCKED]');
+    if (blockedAppts.length === 0) {
+      showToast('No blocked slots found on this day.', 'info');
+      return;
+    }
+    if (!window.confirm(`Clear all ${blockedAppts.length} blocked slots on ${day}?`)) return;
+    
+    setLoading(true);
+    try {
+      await Promise.all(blockedAppts.map(a =>
+        fetch(`${BACKEND_URL}/api/appointments/${a.apptId}?key=${secret}`, { method: 'DELETE' })
+      ));
+      showToast('🔓 All blocked slots cleared successfully.');
+      fetchAppts(secret, filterDate);
+    } catch (err) {
+      showToast(`Error clearing blocked slots: ${err.message}`, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   /* ── Slot Manager: fetch config for a date ─────────────── */
   const fetchSlotConfig = useCallback(async (dateStr) => {
     if (!secret) return;
@@ -1696,7 +1719,7 @@ export default function AdminDashboard() {
                   );
                 })}
               </div>
-              <div style={{ display: 'flex', gap: '12px', marginTop: '12px', fontSize: '11px', color: textSecondary, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '12px', fontSize: '11px', color: textSecondary, flexWrap: 'wrap', alignItems: 'center' }}>
                 <span>🟢 Free</span>
                 <span>🔴 Booked</span>
                 <span>⚡ Emergency</span>
@@ -1709,6 +1732,21 @@ export default function AdminDashboard() {
                   </button>
                 )}
               </div>
+              {slotGridAppts.some(a => a.name === '[BLOCKED]') && (
+                <button
+                  onClick={() => handleClearAllBlocks(slotGridDate)}
+                  style={{
+                    marginTop: '12px', padding: '8px 14px', borderRadius: '8px', border: '1.5px solid #fca5a5',
+                    background: '#fee2e2', color: '#dc2626', fontWeight: 700, fontSize: '11px',
+                    cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '4px',
+                    transition: 'all 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#fecaca'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#fee2e2'}
+                >
+                  🔓 Clear All Blocked Slots ({slotGridDate === today ? 'Today' : 'This Day'})
+                </button>
+              )}
             </div>
 
             {/* Detail panel */}
@@ -2024,18 +2062,17 @@ export default function AdminDashboard() {
                 <span style={{ fontWeight: 700, color: EMERGENCY_COLOR }}>{editEmergencySlots.size}</span> emergency slots open for this day
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
-                {slotManagerIsCustom && (
-                  <button
-                    onClick={resetSlotConfig}
-                    style={{
-                      padding: '10px 18px', borderRadius: '10px', border: '1.5px solid #fca5a5',
-                      background: '#fee2e2', color: '#dc2626', fontWeight: 700, fontSize: '13px',
-                      cursor: 'pointer', fontFamily: 'inherit',
-                    }}
-                  >
-                    🔓 Reset to Default
-                  </button>
-                )}
+                <button
+                  onClick={resetSlotConfig}
+                  style={{
+                    padding: '10px 18px', borderRadius: '10px', border: '1.5px solid #cbd5e1',
+                    background: '#f1f5f9', color: '#475569', fontWeight: 700, fontSize: '13px',
+                    cursor: 'pointer', fontFamily: 'inherit',
+                  }}
+                  title="Clear any custom slots visibility configurations and restore all slots as open by default"
+                >
+                  🔓 Clear Custom Config
+                </button>
                 <button
                   onClick={saveSlotConfig}
                   disabled={slotManagerSaving}
