@@ -1650,16 +1650,43 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* WhatsApp quick action */}
-                    <a
-                      href={`https://wa.me/91${String(a.phone).replace(/\D/g,'')}`}
-                      target="_blank" rel="noreferrer"
-                      onClick={e => e.stopPropagation()}
-                      className="appointment-action-btn"
-                      style={{ background: '#25d366' }}
-                    >
-                      <FaWhatsapp /> Chat
-                    </a>
+                    {/* Action buttons */}
+                    {a.name === '[BLOCKED]' ? (
+                      <button
+                        onClick={e => {
+                          e.stopPropagation();
+                          handleUnblockSlot(a.apptId);
+                        }}
+                        className="appointment-action-btn"
+                        style={{ background: '#ef4444', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                        title="Unblock this slot"
+                      >
+                        <FaTrash style={{ fontSize: '11px' }} /> Clear
+                      </button>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                        <a
+                          href={`https://wa.me/91${String(a.phone).replace(/\D/g,'')}`}
+                          target="_blank" rel="noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="appointment-action-btn"
+                          style={{ background: '#25d366' }}
+                        >
+                          <FaWhatsapp /> Chat
+                        </a>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleCancelAppointment(a.apptId);
+                          }}
+                          className="appointment-action-btn"
+                          style={{ background: '#ef4444', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                          title="Cancel booking"
+                        >
+                          <FaTrash style={{ fontSize: '11px' }} /> Cancel
+                        </button>
+                      </div>
+                    )}
                   </div>
                   );
                 })}
