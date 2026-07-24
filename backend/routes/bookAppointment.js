@@ -14,6 +14,119 @@ const { validateSchema } = require('../utils/validateSchema');
 const { checkAuthLockout, recordAuthFailure, recordAuthSuccess } = require('../middleware/authRateLimiter');
 const router = express.Router();
 
+/* ── Slot constants ─────────────────────────────────────────────── */
+const REGULAR_SLOTS = [
+  '11:00 AM - 12:00 PM',
+  '12:00 PM - 01:00 PM',
+  '02:00 PM - 03:00 PM',
+  '03:00 PM - 04:00 PM',
+];
+
+const EMERGENCY_SLOTS = [
+  '11:00 AM - 11:15 AM',
+  '11:15 AM - 11:30 AM',
+  '12:00 PM - 12:15 PM',
+  '12:15 PM - 12:30 PM',
+  '02:00 PM - 02:15 PM',
+  '02:15 PM - 02:30 PM',
+  '03:00 PM - 03:15 PM',
+  '03:15 PM - 03:30 PM',
+];
+
+const ALL_SLOTS = [...REGULAR_SLOTS, ...EMERGENCY_SLOTS];
+
+/* ── Slot config store (per-day enabled slots) ───────────────────── */
+// slotConfigStore: { dateString → { regularSlots: Set, emergencySlots: Set } }
+// If a date has no entry, ALL slots are enabled (default/open).
+const slotConfigStore = {};
+let lastSlotConfigSyncTime = 0;
+const SLOT_CONFIG_SYNC_COOLDOWN_MS = 10000;
+
+async function syncSlotConfigFromSheets(force = false) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return false;
+  const now = Date.now();
+  if (!force && (now - lastSlotConfigSyncTime < SLOT_CONFIG_SYNC_COOLDOWN_MS)) return true;
+  try {
+    const res = await fetch(`${url}?action=getRows&sheet=slotConfig`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    const data = await res.json();
+    if (data.success) {
+      // Clear and rebuild from sheets
+      Object.keys(slotConfigStore).forEach(k => delete slotConfigStore[k]);
+      (data.rows || []).forEach(row => {
+        if (!row || !row.date) return;
+        if (!slotConfigStore[row.date]) {
+          slotConfigStore[row.date] = { regularSlots: new Set(), emergencySlots: new Set() };
+        }
+        if (row.slotType === 'emergency') {
+          slotConfigStore[row.date].emergencySlots.add(row.slot);
+        } else {
+          slotConfigStore[row.date].regularSlots.add(row.slot);
+        }
+      });
+      lastSlotConfigSyncTime = Date.now();
+      return true;
+    }
+  } catch (err) {
+    console.warn('[slotConfig] Failed to sync from Sheets:', err.message);
+  }
+  return false;
+}
+
+async function saveSlotConfigToSheets(date, slots, slotType) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return;
+  try {
+    // First delete existing rows for this date+type
+    const delUrl = new URL(url);
+    delUrl.searchParams.append('action', 'deleteSlotConfig');
+    delUrl.searchParams.append('date', date);
+    delUrl.searchParams.append('slotType', slotType);
+    await fetch(delUrl.toString()).catch(() => {});
+
+    // Then insert new rows
+    for (const slot of slots) {
+      const rowUrl = new URL(url);
+      rowUrl.searchParams.append('action', 'appendRow');
+      rowUrl.searchParams.append('sheet', 'slotConfig');
+      rowUrl.searchParams.append('date', date);
+      rowUrl.searchParams.append('slot', slot);
+      rowUrl.searchParams.append('slotType', slotType);
+      await fetch(rowUrl.toString()).catch(() => {});
+    }
+  } catch (err) {
+    console.warn('[slotConfig] Sheets save error:', err.message);
+  }
+}
+
+async function deleteSlotConfigFromSheets(date) {
+  const url = process.env.APPS_SCRIPT_URL;
+  if (!url) return;
+  try {
+    const delUrl = new URL(url);
+    delUrl.searchParams.append('action', 'deleteSlotConfig');
+    delUrl.searchParams.append('date', date);
+    await fetch(delUrl.toString());
+  } catch (err) {
+    console.warn('[slotConfig] Sheets delete error:', err.message);
+  }
+}
+
+// Returns { regularSlots: string[], emergencySlots: string[] } for a date.
+// If date has no config, returns all slots as enabled.
+function getEnabledSlotsForDate(date) {
+  const config = slotConfigStore[date];
+  if (!config) {
+    // No config = all slots open by default
+    return { regularSlots: [...REGULAR_SLOTS], emergencySlots: [...EMERGENCY_SLOTS] };
+  }
+  return {
+    regularSlots: [...config.regularSlots],
+    emergencySlots: [...config.emergencySlots],
+  };
+}
+
 /* ── Gmail transporter ───────────────────────────────────────────── */
 function createTransporter() {
   const user = process.env.GMAIL_USER;
@@ -445,6 +558,24 @@ async function syncAppointmentsFromSheets(force = false) {
     const data = await res.json();
     if (data.success) {
       const validAppts = (data.rows || []).filter(a => a && a.apptId && String(a.apptId).trim());
+      
+      // Normalize ISO date strings from Google Sheets to local 'en-IN' format in India timezone
+      const isoPattern = /^\d{4}-\d{2}-\d{2}/;
+      validAppts.forEach(a => {
+        if (a.appointmentDay && (a.appointmentDay instanceof Date || (typeof a.appointmentDay === 'string' && isoPattern.test(a.appointmentDay)))) {
+          const parsed = new Date(a.appointmentDay);
+          if (!isNaN(parsed.getTime())) {
+            a.appointmentDay = parsed.toLocaleDateString('en-IN', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+              timeZone: 'Asia/Kolkata'
+            });
+          }
+        }
+      });
+
       cachedAppointments = validAppts;
       appointmentStore.length = 0;
       appointmentStore.push(...validAppts);
@@ -573,22 +704,50 @@ router.post('/book-appointment', async (req, res) => {
 });
 
 /* ── GET /api/available-slots (public — no auth needed) ──────── */
-// Returns booked slot times for a given appointmentDay string.
-// Used by the Contact form to grey out already-booked slots.
+// Returns booked slot times + enabled slots for a given appointmentDay.
+// Used by the Contact form to grey out already-booked and disabled slots.
 router.get('/available-slots', async (req, res) => {
-  const { date } = req.query; // partial match on appointmentDay
+  const { date } = req.query;
   if (!date) {
     return res.status(400).json({ success: false, error: 'date query param required.' });
   }
   try {
     await syncAppointmentsFromSheets();
+    await syncSlotConfigFromSheets();
     const booked = appointmentStore
       .filter(a => a.appointmentDay.toLowerCase() === date.toLowerCase())
       .map(a => a.appointmentSlot);
-    res.json({ success: true, bookedSlots: booked });
+    const enabledSlots = getEnabledSlotsForDate(date);
+    res.json({
+      success: true,
+      bookedSlots: booked,
+      enabledSlots, // { regularSlots: [], emergencySlots: [] }
+      allRegularSlots: REGULAR_SLOTS,
+      allEmergencySlots: EMERGENCY_SLOTS,
+    });
   } catch (err) {
     console.error('[bookAppointment] /available-slots error:', err.message);
     res.status(500).json({ success: false, error: 'Failed to fetch available slots.' });
+  }
+});
+
+/* ── GET /api/slot-config (public) — enabled slots for a date ─── */
+router.get('/slot-config', async (req, res) => {
+  const { date } = req.query;
+  if (!date) {
+    return res.status(400).json({ success: false, error: 'date query param required.' });
+  }
+  try {
+    await syncSlotConfigFromSheets();
+    const enabledSlots = getEnabledSlotsForDate(date);
+    res.json({
+      success: true,
+      date,
+      enabledSlots,
+      isCustom: !!slotConfigStore[date],
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch slot config.' });
   }
 });
 
@@ -842,6 +1001,72 @@ router.post('/appointments/block', checkAdmin, async (req, res) => {
   } catch (err) {
     console.error('[bookAppointment] block error:', err.message);
     res.status(500).json({ success: false, error: 'Failed to block slot.' });
+  }
+});
+
+/* ── GET /api/admin/slot-config (Admin) — all configured dates ── */
+router.get('/admin/slot-config', checkAdmin, async (req, res) => {
+  try {
+    await syncSlotConfigFromSheets(true);
+    const configs = {};
+    Object.entries(slotConfigStore).forEach(([date, cfg]) => {
+      configs[date] = {
+        regularSlots: [...cfg.regularSlots],
+        emergencySlots: [...cfg.emergencySlots],
+      };
+    });
+    res.json({
+      success: true,
+      configs,
+      allRegularSlots: REGULAR_SLOTS,
+      allEmergencySlots: EMERGENCY_SLOTS,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to fetch slot configs.' });
+  }
+});
+
+/* ── POST /api/admin/slot-config (Admin) — set slots for a date ─ */
+router.post('/admin/slot-config', checkAdmin, async (req, res) => {
+  const { date, regularSlots, emergencySlots } = req.body;
+  if (!date) {
+    return res.status(400).json({ success: false, error: 'date is required.' });
+  }
+  try {
+    const validRegular = (regularSlots || []).filter(s => REGULAR_SLOTS.includes(s));
+    const validEmergency = (emergencySlots || []).filter(s => EMERGENCY_SLOTS.includes(s));
+
+    slotConfigStore[date] = {
+      regularSlots: new Set(validRegular),
+      emergencySlots: new Set(validEmergency),
+    };
+    lastSlotConfigSyncTime = 0;
+
+    // Persist to Sheets asynchronously
+    saveSlotConfigToSheets(date, validRegular, 'regular').catch(() => {});
+    saveSlotConfigToSheets(date, validEmergency, 'emergency').catch(() => {});
+
+    res.json({
+      success: true,
+      date,
+      enabledSlots: { regularSlots: validRegular, emergencySlots: validEmergency },
+    });
+  } catch (err) {
+    console.error('[slotConfig] POST error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to save slot config.' });
+  }
+});
+
+/* ── DELETE /api/admin/slot-config/:date (Admin) — reset to all open */
+router.delete('/admin/slot-config/:date', checkAdmin, async (req, res) => {
+  const { date } = req.params;
+  try {
+    delete slotConfigStore[date];
+    lastSlotConfigSyncTime = 0;
+    deleteSlotConfigFromSheets(date).catch(() => {});
+    res.json({ success: true, message: `Slot config for ${date} reset to default (all open).` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to reset slot config.' });
   }
 });
 

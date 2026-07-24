@@ -9,14 +9,30 @@ import {
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'https://cancer-herbalist-rhgj.vercel.app').replace(/\/+$/, '');
 
 const ACCENT = '#38bed5';
+const EMERGENCY_COLOR = '#f97316';
 
-// Time slots for each day
-const TIME_SLOTS = [
+// Regular 1-hour time slots
+const REGULAR_SLOTS = [
   '11:00 AM - 12:00 PM',
   '12:00 PM - 01:00 PM',
   '02:00 PM - 03:00 PM',
   '03:00 PM - 04:00 PM',
 ];
+
+// Emergency 15-min slots
+const EMERGENCY_SLOTS = [
+  '11:00 AM - 11:15 AM',
+  '11:15 AM - 11:30 AM',
+  '12:00 PM - 12:15 PM',
+  '12:15 PM - 12:30 PM',
+  '02:00 PM - 02:15 PM',
+  '02:15 PM - 02:30 PM',
+  '03:00 PM - 03:15 PM',
+  '03:15 PM - 03:30 PM',
+];
+
+// For backward compat (used in isSlotInPast check)
+const TIME_SLOTS = REGULAR_SLOTS;
 
 function isSlotInPast(slot) {
   const parts = slot.split(' - ');
@@ -43,11 +59,6 @@ function getAvailableDays() {
     d.setDate(today.getDate() + i);
     const dow = d.getDay(); // 0=Sun,6=Sat
     if (dow !== 0) { // skip Sundays
-      if (i === 0) {
-        // If today, check if all slots have already passed
-        const allPassed = TIME_SLOTS.every(slot => isSlotInPast(slot));
-        if (allPassed) continue;
-      }
       days.push({
         date: d,
         label: d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' }),
@@ -116,7 +127,10 @@ export default function Contact() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [bookedSlots, setBookedSlots] = useState([]); // slots already taken for selected day
+  const [enabledRegularSlots, setEnabledRegularSlots] = useState(REGULAR_SLOTS);
+  const [enabledEmergencySlots, setEnabledEmergencySlots] = useState(EMERGENCY_SLOTS);
   const [slotsLoading, setSlotsLoading] = useState(false);
+  const [apptType, setApptType] = useState('regular'); // 'regular' | 'emergency'
 
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '',
@@ -129,13 +143,21 @@ export default function Contact() {
 
   const handleDaySelect = async (day) => {
     setFormData({ ...formData, selectedDay: day, selectedSlot: '' });
-    // Fetch already-booked slots for this date
+    // Fetch already-booked slots and admin-configured enabled slots for this date
     setSlotsLoading(true);
     setBookedSlots([]);
+    setEnabledRegularSlots(REGULAR_SLOTS);
+    setEnabledEmergencySlots(EMERGENCY_SLOTS);
     try {
       const res  = await fetch(`${BACKEND_URL}/api/available-slots?date=${encodeURIComponent(day.full)}`);
       const data = await res.json();
-      if (data.success) setBookedSlots(data.bookedSlots || []);
+      if (data.success) {
+        setBookedSlots(data.bookedSlots || []);
+        if (data.enabledSlots) {
+          setEnabledRegularSlots(data.enabledSlots.regularSlots || REGULAR_SLOTS);
+          setEnabledEmergencySlots(data.enabledSlots.emergencySlots || EMERGENCY_SLOTS);
+        }
+      }
     } catch { /* silently ignore — slots will just all appear available */ }
     finally { setSlotsLoading(false); }
   };
@@ -212,6 +234,7 @@ export default function Contact() {
   const reset = () => {
     setStep(0);
     setConsentGiven(false);
+    setApptType('regular');
     setFormData({ name: '', phone: '', email: '', treatment: '', stage: '', message: '', selectedDay: null, selectedSlot: '' });
     setError('');
   };
@@ -295,9 +318,8 @@ export default function Contact() {
                   <p><strong>1. Nature of Services</strong><br />Cancer Herbalist provides integrative, evidence-based herbal and nutritional support as a <em>complementary</em> approach alongside conventional oncology treatments. These services are NOT a replacement for surgery, chemotherapy, radiotherapy, or any conventional medical treatment prescribed by your oncology team.</p>
                   <p><strong>2. No Claim of Cure</strong><br />You acknowledge that Cancer Herbalist does not claim to diagnose, cure, treat, or prevent cancer or any other disease. Treatment outcomes vary between individuals and no specific results are guaranteed.</p>
                   <p><strong>3. Information Accuracy</strong><br />You confirm that all personal, medical, and health-related information provided is accurate and complete to the best of your knowledge.</p>
-                  <p><strong>4. Data Privacy & Storage</strong><br />Your personal and medical information is stored securely and used solely to provide personalized care recommendations. We comply with applicable Indian data protection regulations. Your data will never be sold or shared with third parties without your explicit consent.</p>
-                  <p><strong>5. Voluntary Participation</strong><br />Participation is entirely voluntary. You may withdraw at any time without penalty.</p>
-                  <p><strong>6. Communication Consent</strong><br />You consent to receive consultation confirmations, appointment reminders, and health information via email, SMS, and/or WhatsApp at the contact details you provide.</p>
+                  <p><strong>4. Data Privacy & Storage</strong><br />Your personal and medical information is stored securely and used solely to provide personalized care recommendations. Your data will never be sold or shared with third parties without your explicit consent.</p>
+                  <p><strong>5. Communication Consent</strong><br />You consent to receive consultation confirmations, appointment reminders, and health information via email, SMS, and/or WhatsApp at the contact details you provide.</p>
                 </div>
 
                 <div style={{ background: consentGiven ? '#f0fdf4' : '#f8fafc', border: `2px solid ${consentGiven ? '#22c55e' : '#e2e8f0'}`, borderRadius: '12px', padding: '16px', marginBottom: '20px', transition: 'all 0.3s' }}>
@@ -330,9 +352,54 @@ export default function Contact() {
             {/* ── STEP 1: Patient Details ── */}
             {step === 1 && (
               <form onSubmit={handleNextStep}>
-                <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', marginBottom: '24px', fontSize: '1.5rem' }}>
-                  Book a <span style={{ color: ACCENT }}>Free Consultation</span>
+                <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', marginBottom: '16px', fontSize: '1.5rem' }}>
+                  Book a <span style={{ color: ACCENT }}>Consultation</span>
                 </h2>
+
+                {/* Appointment Type Toggle */}
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={labelStyle}>Appointment Type *</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => { setApptType('regular'); setFormData(f => ({ ...f, selectedSlot: '' })); }}
+                      style={{
+                        padding: '14px 10px', borderRadius: '12px', border: `2px solid ${apptType === 'regular' ? ACCENT : '#e2e8f0'}`,
+                        background: apptType === 'regular' ? `${ACCENT}18` : '#f8fafc',
+                        color: apptType === 'regular' ? ACCENT : '#64748b',
+                        fontWeight: 700, fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                        fontFamily: 'Poppins, sans-serif',
+                      }}
+                    >
+                      <span style={{ fontSize: '22px' }}>🩺</span>
+                      <span>Regular Consultation</span>
+                      <span style={{ fontSize: '11px', fontWeight: 400, opacity: 0.75 }}>1-hour slot</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setApptType('emergency'); setFormData(f => ({ ...f, selectedSlot: '' })); }}
+                      style={{
+                        padding: '14px 10px', borderRadius: '12px',
+                        border: `2px solid ${apptType === 'emergency' ? EMERGENCY_COLOR : '#e2e8f0'}`,
+                        background: apptType === 'emergency' ? `${EMERGENCY_COLOR}18` : '#f8fafc',
+                        color: apptType === 'emergency' ? EMERGENCY_COLOR : '#64748b',
+                        fontWeight: 700, fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                        fontFamily: 'Poppins, sans-serif',
+                      }}
+                    >
+                      <span style={{ fontSize: '22px' }}>⚡</span>
+                      <span>Emergency 15-Min Call</span>
+                      <span style={{ fontSize: '11px', fontWeight: 400, opacity: 0.75 }}>Quick urgent query</span>
+                    </button>
+                  </div>
+                  {apptType === 'emergency' && (
+                    <div style={{ marginTop: '10px', background: '#fff7ed', border: '1.5px solid #fed7aa', borderRadius: '10px', padding: '10px 14px', fontSize: '12.5px', color: '#9a3412', lineHeight: '1.6' }}>
+                      ⚡ <strong>Emergency slots are 15 minutes</strong> — for urgent queries, quick follow-ups, or critical questions. Our doctor will call you promptly at the booked time.
+                    </div>
+                  )}
+                </div>
 
                 <label style={labelStyle}>Full Name *</label>
                 <input type="text" name="name" placeholder="e.g. Rahul Sharma" value={formData.name} onChange={handleChange} required style={inputStyle}
@@ -390,9 +457,10 @@ export default function Contact() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100px, 100%), 1fr))', gap: '8px', marginBottom: '24px', maxHeight: '200px', overflowY: 'auto', paddingRight: '4px' }}>
                   {DAYS.slice(0, 18).map((day, i) => {
                     const selected = formData.selectedDay?.label === day.label;
+                    const activeColor = apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT;
                     return (
                       <button key={i} type="button" onClick={() => handleDaySelect(day)}
-                        style={{ padding: '10px 6px', borderRadius: '10px', border: `2px solid ${selected ? ACCENT : '#e2e8f0'}`, background: selected ? `${ACCENT}18` : '#f8fafc', color: selected ? ACCENT : '#475569', fontWeight: selected ? 700 : 500, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', lineHeight: '1.4' }}>
+                        style={{ padding: '10px 6px', borderRadius: '10px', border: `2px solid ${selected ? activeColor : '#e2e8f0'}`, background: selected ? `${activeColor}18` : '#f8fafc', color: selected ? activeColor : '#475569', fontWeight: selected ? 700 : 500, fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center', lineHeight: '1.4' }}>
                         {day.label}
                       </button>
                     );
@@ -403,66 +471,116 @@ export default function Contact() {
                 {formData.selectedDay && (
                   <>
                     <label style={labelStyle}>
-                      Select Time Slot for {formData.selectedDay.label} *
+                      {apptType === 'emergency' ? '⚡ Select 15-Min Emergency Slot' : 'Select Time Slot'} for {formData.selectedDay.label} *
                       {slotsLoading && <span style={{ color: '#94a3b8', fontSize: '11px', fontWeight: 400, marginLeft: '8px' }}>Loading availability…</span>}
                     </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
-                      {TIME_SLOTS.map((slot) => {
-                        const selected = formData.selectedSlot === slot;
-                        const isToday = formData.selectedDay && 
-                          new Date(formData.selectedDay.date).toDateString() === new Date().toDateString();
-                        const isPast = isToday && isSlotInPast(slot);
-                        const isBooked = bookedSlots.includes(slot) || isPast;
+
+                    {/* Emergency type info banner */}
+                    {apptType === 'emergency' && (
+                      <div style={{ background: '#fff7ed', border: '1.5px solid #fed7aa', borderRadius: '10px', padding: '8px 14px', marginBottom: '12px', fontSize: '12px', color: '#9a3412' }}>
+                        ⚡ Showing 15-minute emergency slots only
+                      </div>
+                    )}
+
+                    {(() => {
+                      const activeColor = apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT;
+                      const slotsToShow = apptType === 'emergency' ? EMERGENCY_SLOTS : REGULAR_SLOTS;
+                      const enabledSlots = apptType === 'emergency' ? enabledEmergencySlots : enabledRegularSlots;
+
+                      const isToday = formData.selectedDay &&
+                        new Date(formData.selectedDay.date).toDateString() === new Date().toDateString();
+
+                      // Filter out slots that have already passed so they are not visible
+                      const visibleSlots = slotsToShow.filter(slot => !(isToday && isSlotInPast(slot)));
+
+                      if (visibleSlots.length === 0) {
                         return (
-                          <button
-                            key={slot}
-                            type="button"
-                            disabled={isBooked}
-                            onClick={() => !isBooked && handleSlotSelect(slot)}
-                            title={isPast ? 'This slot has already passed' : isBooked ? 'This slot is already booked' : slot}
-                            style={{
-                              padding: '10px 4px', borderRadius: '10px',
-                              border: `2px solid ${isBooked ? '#e2e8f0' : selected ? ACCENT : '#e2e8f0'}`,
-                              background: isBooked ? '#f1f5f9' : selected ? ACCENT : '#f8fafc',
-                              color:  isBooked ? '#cbd5e1' : selected ? '#fff' : '#475569',
-                              fontWeight: 600, fontSize: '11px',
-                              cursor: isBooked ? 'not-allowed' : 'pointer',
-                              transition: 'all 0.2s',
-                              textDecoration: isBooked ? 'line-through' : 'none',
-                            }}
-                          >
-                            {slot}
-                            {isPast ? (
-                              <div style={{ fontSize: '9px', fontWeight: 700, color: '#94a3b8', textDecoration: 'none', marginTop: '2px' }}>PASSED</div>
-                            ) : isBooked ? (
-                              <div style={{ fontSize: '9px', fontWeight: 700, color: '#ef4444', textDecoration: 'none', marginTop: '2px' }}>BOOKED</div>
-                            ) : null}
-                          </button>
+                          <div style={{
+                            padding: '24px 16px',
+                            background: '#fff7ed',
+                            border: '1.5px dashed #fed7aa',
+                            borderRadius: '12px',
+                            textAlign: 'center',
+                            color: '#c2410c',
+                            fontSize: '13.5px',
+                            fontWeight: 500,
+                            lineHeight: '1.6',
+                            marginBottom: '24px'
+                          }}>
+                            ⚡ All slots for today have already passed. Please select another date above or connect with us on WhatsApp for emergency requests.
+                          </div>
                         );
-                      })}
-                    </div>
+                      }
+
+                      return (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, 100%), 1fr))', gap: '8px', marginBottom: '24px' }}>
+                          {visibleSlots.map((slot) => {
+                            const selected = formData.selectedSlot === slot;
+                            const isBooked = bookedSlots.includes(slot);
+                            const isDisabled = !enabledSlots.includes(slot);
+                            const unavailable = isBooked || isDisabled;
+                            return (
+                              <button
+                                key={slot}
+                                type="button"
+                                disabled={unavailable}
+                                onClick={() => !unavailable && handleSlotSelect(slot)}
+                                title={
+                                  isBooked ? 'This slot is already booked'
+                                  : isDisabled ? 'Not available today'
+                                  : slot
+                                }
+                                style={{
+                                  padding: '10px 4px', borderRadius: '10px',
+                                  border: `2px solid ${unavailable ? '#e2e8f0' : selected ? activeColor : '#e2e8f0'}`,
+                                  background: unavailable ? '#f1f5f9' : selected ? activeColor : '#f8fafc',
+                                  color:  unavailable ? '#cbd5e1' : selected ? '#fff' : '#475569',
+                                  fontWeight: 600, fontSize: '11px',
+                                  cursor: unavailable ? 'not-allowed' : 'pointer',
+                                  transition: 'all 0.2s',
+                                  textDecoration: isBooked ? 'line-through' : 'none',
+                                }}
+                              >
+                                {slot}
+                                {isBooked ? (
+                                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#ef4444', textDecoration: 'none', marginTop: '2px' }}>BOOKED</div>
+                                ) : isDisabled ? (
+                                  <div style={{ fontSize: '9px', fontWeight: 700, color: '#94a3b8', textDecoration: 'none', marginTop: '2px' }}>CLOSED</div>
+                                ) : null}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
                   </>
                 )}
 
                 {/* Booking Summary */}
                 {formData.selectedDay && formData.selectedSlot && (
-                  <div style={{ background: `${ACCENT}12`, border: `1.5px solid ${ACCENT}44`, borderRadius: '14px', padding: '16px 20px', marginBottom: '20px' }}>
+                  <div style={{ background: apptType === 'emergency' ? '#fff7ed' : `${ACCENT}12`, border: `1.5px solid ${apptType === 'emergency' ? '#fed7aa' : `${ACCENT}44`}`, borderRadius: '14px', padding: '16px 20px', marginBottom: '20px' }}>
+                    {apptType === 'emergency' && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: EMERGENCY_COLOR, color: '#fff', borderRadius: '20px', padding: '3px 12px', fontSize: '11px', fontWeight: 700, marginBottom: '10px' }}>
+                        ⚡ EMERGENCY 15-MIN CALL
+                      </div>
+                    )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <FaCalendarAlt style={{ color: ACCENT }} />
+                      <FaCalendarAlt style={{ color: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT }} />
                       <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>Appointment Summary</span>
                     </div>
                     <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>👤 <strong>{formData.name}</strong></p>
                     <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>🩺 {formData.treatment}</p>
                     <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>📅 {formData.selectedDay.full}</p>
                     <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>🕐 {formData.selectedSlot}</p>
+                    <p style={{ color: '#475569', fontSize: '13.5px', margin: '4px 0' }}>⏱ {apptType === 'emergency' ? '15-minute emergency call' : '1-hour consultation'}</p>
                   </div>
                 )}
 
                 {error && <p style={{ color: '#ef4444', fontSize: '13px', marginBottom: '12px' }}>⚠ {error}</p>}
 
                 <button onClick={handleSubmit} disabled={sending || !formData.selectedDay || !formData.selectedSlot}
-                  style={{ width: '100%', background: sending ? '#94a3b8' : ACCENT, color: '#fff', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: sending ? 'not-allowed' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s' }}>
-                  {sending ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Sending...</> : <><FaCheckCircle /> Confirm Appointment</>}
+                  style={{ width: '100%', background: sending ? '#94a3b8' : (apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT), color: '#fff', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: 700, cursor: sending ? 'not-allowed' : 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.2s' }}>
+                  {sending ? <><FaSpinner style={{ animation: 'spin 1s linear infinite' }} /> Sending...</> : <><FaCheckCircle /> {apptType === 'emergency' ? 'Book Emergency Call' : 'Confirm Appointment'}</>}
                 </button>
               </div>
             )}
@@ -470,24 +588,30 @@ export default function Contact() {
             {/* ── STEP 3: Success ── */}
             {step === 3 && (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: `${ACCENT}20`, border: `3px solid ${ACCENT}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '36px', color: ACCENT }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: apptType === 'emergency' ? `${EMERGENCY_COLOR}20` : `${ACCENT}20`, border: `3px solid ${apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '36px', color: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT }}>
                   <FaCheckCircle />
                 </div>
+                {apptType === 'emergency' && (
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: EMERGENCY_COLOR, color: '#fff', borderRadius: '20px', padding: '4px 14px', fontSize: '12px', fontWeight: 700, marginBottom: '14px' }}>
+                    ⚡ Emergency 15-Min Call Booked
+                  </div>
+                )}
                 <h2 style={{ color: '#0f172a', fontFamily: 'Playfair Display, serif', fontSize: '1.6rem', marginBottom: '12px' }}>
-                  Appointment Confirmed! 🌿
+                  {apptType === 'emergency' ? 'Emergency Call Confirmed! ⚡' : 'Appointment Confirmed! 🌿'}
                 </h2>
                 <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '8px' }}>
-                  A confirmation email has been sent to <strong style={{ color: ACCENT }}>{formData.email}</strong>
+                  A confirmation email has been sent to <strong style={{ color: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT }}>{formData.email}</strong>
                 </p>
                 <p style={{ color: '#64748b', lineHeight: '1.8', marginBottom: '24px' }}>
-                  Our team will also contact you at <strong>{formData.phone}</strong> to confirm your slot.
+                  Our team will call you at <strong>{formData.phone}</strong> at the booked time.
                 </p>
-                <div style={{ background: `${ACCENT}10`, border: `1px solid ${ACCENT}33`, borderRadius: '14px', padding: '16px 20px', marginBottom: '28px', textAlign: 'left' }}>
+                <div style={{ background: apptType === 'emergency' ? '#fff7ed' : `${ACCENT}10`, border: `1px solid ${apptType === 'emergency' ? '#fed7aa' : `${ACCENT}33`}`, borderRadius: '14px', padding: '16px 20px', marginBottom: '28px', textAlign: 'left' }}>
+                  {apptType === 'emergency' && <p style={{ margin: '0 0 6px', color: EMERGENCY_COLOR, fontSize: '12px', fontWeight: 700 }}>⚡ EMERGENCY 15-MIN CALL</p>}
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>📅 <strong>{formData.selectedDay?.full}</strong></p>
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>🕐 <strong>{formData.selectedSlot}</strong></p>
                   <p style={{ margin: '4px 0', color: '#475569', fontSize: '14px' }}>🩺 <strong>{formData.treatment}</strong></p>
                 </div>
-                <button onClick={reset} style={{ background: ACCENT, color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
+                <button onClick={reset} style={{ background: apptType === 'emergency' ? EMERGENCY_COLOR : ACCENT, color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}>
                   Book Another Appointment
                 </button>
 

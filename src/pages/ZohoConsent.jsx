@@ -23,18 +23,14 @@ const CONSENT_SECTIONS = [
   },
   {
     title: '4. Data Privacy & Storage',
-    text: `Your personal and medical information is stored securely and used solely to provide you with personalized care recommendations. We comply with applicable Indian data protection regulations. Your data will never be sold or shared with third parties without your explicit consent, except as required by law.`
+    text: `Your personal and medical information is stored securely and used solely to provide you with personalized care recommendations. Your data will never be sold or shared with third parties without your explicit consent, except as required by law.`
   },
   {
-    title: '5. Voluntary Participation',
-    text: `Participation in Cancer Herbalist's programs is entirely voluntary. You may withdraw at any time without penalty. You retain the right to refuse any recommended herbal formulation or dietary change at any time.`
-  },
-  {
-    title: '6. Communication Consent',
+    title: '5. Communication Consent',
     text: `You consent to receive consultation confirmations, appointment reminders, progress updates, and health information via email, SMS, and/or WhatsApp at the contact details you have provided. You may opt out of marketing communications at any time.`
   },
   {
-    title: '7. Photography / Testimonial (Optional)',
+    title: '6. Photography / Testimonial (Optional)',
     text: `Any photographs, case studies, or testimonials shared by you may be used for educational or promotional purposes only with your separate and explicit written permission. This consent form does not cover such use.`
   },
 ];
